@@ -1,0 +1,3 @@
+# BindAI CLI
+
+Coming soon.

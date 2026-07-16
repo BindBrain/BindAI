@@ -1,0 +1,14 @@
+[project]
+
+name = "bindai-provider-openai"
+
+version = "0.1.0"
+
+description = "OpenAI Provider for BindAI"
+
+requires-python = ">=3.12"
+
+dependencies = [
+    "bindai-core",
+    "openai>=2.0.0"
+]
