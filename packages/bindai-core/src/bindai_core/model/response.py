@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .tool_call import ToolCall
 from .usage import TokenUsage
@@ -16,4 +14,4 @@ class ModelResponse:
 
     usage: TokenUsage
 
-    tool_call: ToolCall | None = None
+    tool_calls: list[ToolCall] = field(default_factory=list)

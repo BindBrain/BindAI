@@ -1,69 +1,78 @@
-from openai import OpenAI
+from __future__ import annotations
 
-from bindai_core.model import (
+from bindai_core import (
     ModelProvider,
-    ProviderCapabilities,
     ModelRequest,
     ModelResponse,
+    ProviderCapabilities,
+    ProviderConfiguration,
+    TokenUsage,
 )
 
+from .client import OpenAIClient
 from .mapper import OpenAIMapper
-from .settings import OpenAISettings
 
 
 class OpenAIProvider(ModelProvider):
+    """
+    OpenAI implementation of ModelProvider.
+    """
 
     def __init__(
         self,
-        settings: OpenAISettings,
+        configuration: ProviderConfiguration,
     ):
+        super().__init__(configuration)
 
-        self._settings = settings
-
-        self._client = OpenAI(
-            api_key=settings.api_key,
-            base_url=settings.base_url,
-        )
+        self._client = OpenAIClient(configuration)
 
     @property
-    def name(self):
-
+    def name(self) -> str:
         return "openai"
 
     @property
-    def capabilities(self):
+    def capabilities(self) -> ProviderCapabilities:
 
-        return ProviderCapabilities(
+        capabilities = ProviderCapabilities()
 
-            chat=True,
+        capabilities.streaming = True
+        capabilities.tool_calling = True
 
-            streaming=True,
-
-            embeddings=True,
-
-            tool_calling=True,
-
-            structured_output=True,
-
-        )
+        return capabilities
 
     def generate(
         self,
         request: ModelRequest,
-    ):
+    ) -> ModelResponse:
 
-        response = self._client.chat.completions.create(
+        response = self._client.client.chat.completions.create(
 
-            model=self._settings.model,
+            model=self.configuration.model,
 
-            messages=OpenAIMapper.messages(request),
+            messages=OpenAIMapper.messages(
+                request.messages,
+            ),
 
+            temperature=request.temperature,
+
+            max_tokens=request.max_tokens,
+
+            top_p=request.top_p,
+
+            frequency_penalty=request.frequency_penalty,
+
+            presence_penalty=request.presence_penalty,
+
+            stop=request.stop,
+        )
+
+        usage = TokenUsage(
+            prompt_tokens=response.usage.prompt_tokens,
+            completion_tokens=response.usage.completion_tokens,
+            total_tokens=response.usage.total_tokens,
         )
 
         return ModelResponse(
-
-            content=response.choices[0].message.content,
-
-            model=response.model,
-
+            content=response.choices[0].message.content or "",
+            usage=usage,
         )

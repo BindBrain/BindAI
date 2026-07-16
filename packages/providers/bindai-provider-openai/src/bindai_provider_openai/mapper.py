@@ -1,18 +1,20 @@
-from bindai_core.model import ModelRequest
+from bindai_core import Message
 
 
 class OpenAIMapper:
+    """
+    Converts BindAI models into OpenAI SDK models.
+    """
 
     @staticmethod
-    def messages(request: ModelRequest):
+    def messages(
+        messages: list[Message],
+    ) -> list[dict]:
 
         return [
-
             {
                 "role": message.role.value,
                 "content": message.content,
             }
-
-            for message in request.messages
-
+            for message in messages
         ]
