@@ -28,3 +28,7 @@ class ExecutionContext:
     events: EventBus = field(default_factory=EventBus)
 
     variables: Variables = field(default_factory=Variables)
+
+    metadata: dict = field(
+        default_factory=dict,
+    )

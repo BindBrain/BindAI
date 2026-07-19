@@ -13,3 +13,5 @@ class ToolResult:
     output: Any = None
 
     error: str | None = None
+
+    metadata: dict[str, Any] | None = None

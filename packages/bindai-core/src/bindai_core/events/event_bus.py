@@ -11,7 +11,10 @@ class EventBus:
 
     def __init__(self):
 
-        self._handlers: dict[str, list[EventHandler]] = defaultdict(list)
+        self._handlers: dict[
+            str,
+            list[EventHandler],
+        ] = defaultdict(list)
 
     def subscribe(
         self,
@@ -19,9 +22,45 @@ class EventBus:
         handler: EventHandler,
     ) -> None:
 
-        self._handlers[event_name].append(handler)
+        self._handlers[event_name].append(
+            handler,
+        )
 
-    def publish(self, event: Event) -> None:
+    def unsubscribe(
+        self,
+        event_name: str,
+        handler: EventHandler,
+    ) -> None:
 
-        for handler in self._handlers[event.name]:
-            handler(event)
+        if handler in self._handlers[event_name]:
+
+            self._handlers[event_name].remove(
+                handler,
+            )
+
+    def publish(
+        self,
+        event: Event,
+    ) -> None:
+
+        handlers = (
+
+            self._handlers[event.name]
+            + self._handlers["*"]
+
+        )
+
+        for handler in handlers:
+
+            try:
+
+                handler(event)
+
+            except Exception:
+
+                #
+                # TODO:
+                # logging
+                #
+
+                pass

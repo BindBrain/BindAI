@@ -5,7 +5,8 @@ from abc import abstractmethod
 
 from bindai_core.provider.configuration import ProviderConfiguration
 
-from .capabilities import ProviderCapabilities
+from .embedding import EmbeddingResponse
+from .provider_capabilities import ProviderCapabilities
 from .request import ModelRequest
 from .response import ModelResponse
 from .stream_chunk import StreamChunk
@@ -13,14 +14,17 @@ from .stream_chunk import StreamChunk
 
 class ModelProvider(ABC):
     """
-    Base class for all LLM providers.
+    Base class for every model provider.
     """
 
     def __init__(
         self,
         configuration: ProviderConfiguration | None = None,
     ):
-        self.configuration = configuration or ProviderConfiguration()
+        self.configuration = (
+            configuration
+            or ProviderConfiguration()
+        )
 
     @property
     @abstractmethod
@@ -28,7 +32,9 @@ class ModelProvider(ABC):
         ...
 
     @property
-    def capabilities(self) -> ProviderCapabilities:
+    def capabilities(
+        self,
+    ) -> ProviderCapabilities:
         return ProviderCapabilities()
 
     @abstractmethod
@@ -46,15 +52,32 @@ class ModelProvider(ABC):
         request: ModelRequest,
     ):
         """
-        Stream model output.
+        Default streaming implementation.
 
-        Default implementation falls back
-        to generate().
+        Providers supporting true streaming
+        should override this.
         """
 
-        response = self.generate(request)
+        response = self.generate(
+            request,
+        )
 
         yield StreamChunk(
             delta=response.content,
             finished=True,
+        )
+
+    def embed(
+        self,
+        text: str,
+    ) -> EmbeddingResponse:
+        """
+        Embedding API.
+
+        Providers without embeddings
+        should override or raise.
+        """
+
+        raise NotImplementedError(
+            "Embeddings not supported."
         )

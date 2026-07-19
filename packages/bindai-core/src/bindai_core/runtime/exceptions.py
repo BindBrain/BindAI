@@ -1,2 +1,20 @@
-class RuntimeError(Exception):
-    """Raised when the runtime cannot execute a component."""
+class RuntimeException(Exception):
+    """
+    Base runtime exception.
+    """
+
+
+class RuntimeExecutionError(
+    RuntimeException,
+):
+    """
+    Executable failed.
+    """
+
+
+class RuntimeCancelled(
+    RuntimeException,
+):
+    """
+    Runtime cancelled.
+    """

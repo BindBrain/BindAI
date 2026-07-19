@@ -1,16 +1,25 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 
 @dataclass(slots=True)
 class ProviderCapabilities:
     """
-    Describes what a model provider supports.
+    Describes the features supported
+    by a model provider.
     """
 
     chat: bool = True
+
     streaming: bool = False
+
     vision: bool = False
+
     embeddings: bool = False
+
     tool_calling: bool = False
+
     structured_output: bool = False
+
     reasoning: bool = False

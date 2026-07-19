@@ -50,3 +50,63 @@ class Registry:
 
     def __len__(self) -> int:
         return len(self._items)
+
+    def __contains__(
+        self,
+        key: str,
+    ):
+
+        return key in self._items
+
+    def __iter__(
+        self,
+    ):
+
+        return iter(
+            self._items.values()
+        )
+
+    def __getitem__(
+        self,
+        key: str,
+    ):
+
+        return self.get(
+            key,
+        )
+
+    def __setitem__(
+        self,
+        key: str,
+        value,
+    ):
+
+        self.register(
+            key,
+            value,
+        )
+
+    def get_or_none(
+        self,
+        key,
+    ):
+
+        return self._items.get(
+            key,
+        )
+
+    def copy(self):
+
+        registry = Registry()
+
+        registry._items = self._items.copy()
+
+        return registry
+
+    def __repr__(self):
+
+        return (
+
+            f"Registry(items={len(self._items)})"
+
+        )

@@ -17,3 +17,8 @@ package = false
 authors = [
     { name = "Agim Kostari", email = "gim@bindbrain.com" }
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4",
+]

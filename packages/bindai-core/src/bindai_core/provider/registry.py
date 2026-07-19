@@ -2,20 +2,31 @@ from __future__ import annotations
 
 from bindai_core.model import ModelProvider
 
+from .exceptions import (
+    ProviderAlreadyRegistered,
+    ProviderNotFound,
+)
+
 
 class ProviderRegistry:
-    """
-    Registry of model providers.
-    """
 
     def __init__(self):
 
-        self._providers: dict[str, ModelProvider] = {}
+        self._providers: dict[
+            str,
+            ModelProvider,
+        ] = {}
 
     def register(
         self,
         provider: ModelProvider,
     ):
+
+        if provider.name in self._providers:
+
+            raise ProviderAlreadyRegistered(
+                provider.name,
+            )
 
         self._providers[
             provider.name
@@ -26,7 +37,15 @@ class ProviderRegistry:
         name: str,
     ) -> ModelProvider:
 
-        return self._providers[name]
+        if name not in self._providers:
+
+            raise ProviderNotFound(
+                name,
+            )
+
+        return self._providers[
+            name
+        ]
 
     def contains(
         self,
@@ -35,16 +54,42 @@ class ProviderRegistry:
 
         return name in self._providers
 
+    def remove(
+        self,
+        name: str,
+    ):
+
+        self._providers.pop(
+            name,
+            None,
+        )
+
+    def clear(
+        self,
+    ):
+
+        self._providers.clear()
+
     def names(
         self,
     ):
 
-        return list(
-            self._providers.keys()
+        return tuple(
+            self._providers.keys(),
         )
 
-    def __len__(self):
+    def all(
+        self,
+    ):
+
+        return tuple(
+            self._providers.values(),
+        )
+
+    def __len__(
+        self,
+    ):
 
         return len(
-            self._providers
+            self._providers,
         )

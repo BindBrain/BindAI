@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 from .tool_call import ToolCall
@@ -7,11 +9,19 @@ from .usage import TokenUsage
 @dataclass(slots=True)
 class ModelResponse:
     """
-    Response returned by a model provider.
+    Provider response.
     """
 
-    content: str
+    content: str = ""
 
-    usage: TokenUsage
+    tool_calls: list[ToolCall] = field(
+        default_factory=list,
+    )
 
-    tool_calls: list[ToolCall] = field(default_factory=list)
+    usage: TokenUsage = field(
+        default_factory=TokenUsage,
+    )
+
+    finish_reason: str | None = None
+
+    model: str | None = None

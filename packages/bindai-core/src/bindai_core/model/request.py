@@ -1,21 +1,24 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
-from .message import Message
-
+from bindai_core.schema import ResponseSchema
 from bindai_core.tool import ToolDefinition
+
+from .message import Message
 
 
 @dataclass(slots=True)
 class ModelRequest:
     """
-    Request sent to a model provider.
+    Provider-agnostic model request.
     """
 
-    messages: list[Message] = field(default_factory=list)
+    messages: list[Message] = field(
+        default_factory=list,
+    )
 
     temperature: float = 0.7
-
-    tools: list[ToolDefinition] = field(default_factory=list)
 
     max_tokens: int | None = None
 
@@ -29,4 +32,8 @@ class ModelRequest:
 
     stream: bool = False
 
-    
+    tools: list[ToolDefinition] = field(
+        default_factory=list,
+    )
+
+    response_schema: ResponseSchema | None = None

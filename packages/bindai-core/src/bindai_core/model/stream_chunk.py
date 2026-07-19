@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 
 @dataclass(slots=True)
 class StreamChunk:
     """
-    Represents a streamed model response chunk.
+    Single streamed token/chunk.
     """
 
-    delta: str
+    delta: str = ""
 
     finished: bool = False

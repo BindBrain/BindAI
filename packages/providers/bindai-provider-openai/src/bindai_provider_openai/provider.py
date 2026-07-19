@@ -1,78 +1,170 @@
 from __future__ import annotations
 
+import json
+
 from bindai_core import (
-    ModelProvider,
-    ModelRequest,
-    ModelResponse,
-    ProviderCapabilities,
-    ProviderConfiguration,
-    TokenUsage,
+	ModelProvider,
+	ModelRequest,
+	ModelResponse,
+	ProviderCapabilities,
+	ProviderConfiguration,
+	StreamChunk,
+	TokenUsage,
 )
 
 from .client import OpenAIClient
 from .mapper import OpenAIMapper
 
-
 class OpenAIProvider(ModelProvider):
-    """
-    OpenAI implementation of ModelProvider.
-    """
+	"""
+	OpenAI implementation of ModelProvider.
+	"""
 
-    def __init__(
-        self,
-        configuration: ProviderConfiguration,
-    ):
-        super().__init__(configuration)
+	def __init__(
+		self,
+		configuration: ProviderConfiguration,
+	):
+		super().__init__(configuration)
 
-        self._client = OpenAIClient(configuration)
+		self._client = OpenAIClient(configuration)
 
-    @property
-    def name(self) -> str:
-        return "openai"
+	@property
+	def name(self) -> str:
+		return "openai"
 
-    @property
-    def capabilities(self) -> ProviderCapabilities:
+	@property
+	def capabilities(self) -> ProviderCapabilities:
+		capabilities = ProviderCapabilities()
 
-        capabilities = ProviderCapabilities()
+		capabilities.streaming = True
+		capabilities.tool_calling = True
 
-        capabilities.streaming = True
-        capabilities.tool_calling = True
+		return capabilities
 
-        return capabilities
+	def _build_kwargs(
+		self,
+		request: ModelRequest,
+	) -> dict:
 
-    def generate(
-        self,
-        request: ModelRequest,
-    ) -> ModelResponse:
+		kwargs = {
+			"model": self.configuration.model,
+			"messages": OpenAIMapper.messages(
+				request.messages,
+			),
+		}
 
-        response = self._client.client.chat.completions.create(
+		if request.response_schema is not None:
 
-            model=self.configuration.model,
+			kwargs["response_format"] = {
+				"type": "json_schema",
+				"json_schema": {
+					"name": (
+						request.response_schema
+						.model
+						.__name__
+					),
+					"schema": (
+						request.response_schema
+						.json_schema
+					),
+				},
+			}
 
-            messages=OpenAIMapper.messages(
-                request.messages,
-            ),
+		if request.tools:
+			kwargs["tools"] = OpenAIMapper.tools(
+				request.tools,
+			)
 
-            temperature=request.temperature,
+		if request.temperature != 1:
+			kwargs["temperature"] = request.temperature
 
-            max_tokens=request.max_tokens,
+		if request.max_tokens is not None:
+			kwargs["max_tokens"] = request.max_tokens
 
-            top_p=request.top_p,
+		if request.top_p is not None:
+			kwargs["top_p"] = request.top_p
 
-            frequency_penalty=request.frequency_penalty,
+		if request.frequency_penalty is not None:
+			kwargs["frequency_penalty"] = request.frequency_penalty
 
-            presence_penalty=request.presence_penalty,
+		if request.presence_penalty is not None:
+			kwargs["presence_penalty"] = request.presence_penalty
 
-            stop=request.stop,
-        )
+		if request.stop is not None:
+			kwargs["stop"] = request.stop
 
-        usage = TokenUsage(
-            prompt_tokens=response.usage.prompt_tokens,
-            completion_tokens=response.usage.completion_tokens,
-            total_tokens=response.usage.total_tokens,
-        )
+		return kwargs
 
-        return ModelResponse(
-            content=response.choices[0].message.content or "",
-            usage=usage,
-        )
+	def generate(
+		self,
+		request: ModelRequest,
+	) -> ModelResponse:
+
+		response = self._client.client.chat.completions.create(
+			**self._build_kwargs(
+				request,
+			),
+		)
+
+		usage = TokenUsage(
+			prompt_tokens=response.usage.prompt_tokens,
+			completion_tokens=response.usage.completion_tokens,
+			total_tokens=response.usage.total_tokens,
+		)
+
+		structured_output = None
+
+		if request.response_schema is not None:
+
+			data = json.loads(
+				response.choices[0].message.content
+			)
+
+			structured_output = (
+				request.response_schema.model(
+					**data,
+				)
+			)
+
+		return ModelResponse(
+			content=response.choices[0].message.content or "",
+			usage=usage,
+			tool_calls=OpenAIMapper.tool_calls(
+				response.choices[0].message,
+			),
+			structured_output=structured_output,
+		)
+
+	def stream(
+		self,
+		request: ModelRequest,
+	):
+
+		response = self._client.client.chat.completions.create(
+			stream=True,
+			**self._build_kwargs(
+				request,
+			),
+		)
+
+		for chunk in response:
+
+			if not chunk.choices:
+				continue
+
+			delta = (
+				chunk.choices[0]
+				.delta
+				.content
+			)
+
+			if delta:
+
+				yield StreamChunk(
+					delta=delta,
+				)
+
+		yield StreamChunk(
+			delta="",
+			finished=True,
+		)

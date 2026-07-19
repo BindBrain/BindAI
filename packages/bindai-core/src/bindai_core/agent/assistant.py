@@ -1,18 +1,25 @@
 from __future__ import annotations
 
 from bindai_core.context import ExecutionContext
-from bindai_core.model import (
-    ModelRequest,
+from bindai_core.tool import (
+    Tool,
+    ToolRegistry,
 )
-from bindai_core.tool import Tool, ToolRegistry
 
 from .agent import Agent
+from .executor import AgentExecutor
 from .result import AgentResult
 
 
 class AssistantAgent(Agent):
     """
     Standard conversational AI agent.
+
+    The AssistantAgent is responsible for:
+
+    - holding agent configuration
+    - registering tools
+    - delegating execution to AgentExecutor
     """
 
     def __init__(
@@ -32,7 +39,11 @@ class AssistantAgent(Agent):
     def register_tool(
         self,
         tool: Tool,
-    ):
+    ) -> None:
+        """
+        Register a tool available to this agent.
+        """
+
         self.tools.register(tool)
 
     def execute_tool(
@@ -40,6 +51,10 @@ class AssistantAgent(Agent):
         tool_name: str,
         **kwargs,
     ):
+        """
+        Execute a registered tool.
+        """
+
         return self.tools.execute(
             tool_name,
             **kwargs,
@@ -49,52 +64,13 @@ class AssistantAgent(Agent):
         self,
         context: ExecutionContext,
     ) -> AgentResult:
+        """
+        Execute the agent using the AgentExecutor.
+        """
 
-        user_input = context.variables.get(
-            "input",
-            "",
-        )
+        executor = AgentExecutor()
 
-        if len(self.conversation) == 0:
-            self.conversation.add_system(
-                self.instructions,
-            )
-
-        self.conversation.add_user(
-            user_input,
-        )
-
-        request = self.conversation.to_request()
-
-        response = self.provider.generate(
-            request,
-        )
-
-        # Automatic tool execution
-        if response.tool_call is not None:
-
-            tool_result = self.execute_tool(
-                response.tool_call.name,
-                **response.tool_call.arguments,
-            )
-
-            tool_output = str(tool_result.output)
-
-            self.conversation.add_assistant(
-                tool_output,
-            )
-
-            return AgentResult(
-                success=tool_result.success,
-                output=tool_output,
-            )
-
-        # Normal assistant response
-        self.conversation.add_assistant(
-            response.content,
-        )
-
-        return AgentResult(
-            success=True,
-            output=response.content,
+        return executor.execute(
+            self,
+            context,
         )

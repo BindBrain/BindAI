@@ -1,17 +1,39 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from enum import Enum
+from dataclasses import dataclass, field
 
-
-class MessageRole(str, Enum):
-    SYSTEM = "system"
-    USER = "user"
-    ASSISTANT = "assistant"
-    TOOL = "tool"
+from .role import MessageRole
+from .tool_call import ToolCall
 
 
 @dataclass(slots=True)
 class Message:
+    """
+    Provider-agnostic conversation message.
+    """
+
     role: MessageRole
-    content: str
+
+    content: str = ""
+
+    #
+    # Tool response
+    #
+
+    tool_call_id: str | None = None
+
+    #
+    # Assistant tool requests
+    #
+
+    tool_calls: list[ToolCall] = field(
+        default_factory=list,
+    )
+
+    #
+    # Vision models
+    #
+
+    images: list[str] = field(
+        default_factory=list,
+    )

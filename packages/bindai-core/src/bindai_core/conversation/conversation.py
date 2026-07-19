@@ -1,92 +1,132 @@
 from __future__ import annotations
 
+from .message import ConversationMessage
+
 from bindai_core.model import (
     Message,
     MessageRole,
-    ModelRequest,
 )
-
-from .message import ConversationMessage
 
 
 class Conversation:
     """
-    Stores the conversation exchanged between the user,
-    assistant, system, tools, etc.
+    Conversation history.
+
+    Shared by every conversational agent.
     """
 
     def __init__(self):
 
-        self._messages: list[ConversationMessage] = []
+        self._messages: list[
+            ConversationMessage
+        ] = []
 
-    def add(
-        self,
-        role: MessageRole,
-        content: str,
-    ):
-
-        self._messages.append(
-            ConversationMessage(
-                role=role,
-                content=content,
-            )
-        )
-
-    def add_system(
-        self,
-        content: str,
-    ):
-
-        self.add(
-            MessageRole.SYSTEM,
-            content,
-        )
+    #
+    # Add messages
+    #
 
     def add_user(
         self,
-        content: str,
+        text: str,
     ):
 
-        self.add(
-            MessageRole.USER,
-            content,
+        self._messages.append(
+
+            ConversationMessage(
+
+                role=MessageRole.USER,
+
+                content=text,
+
+            )
+
         )
 
     def add_assistant(
         self,
-        content: str,
+        text: str,
     ):
 
-        self.add(
-            MessageRole.ASSISTANT,
-            content,
+        self._messages.append(
+
+            ConversationMessage(
+
+                role=MessageRole.ASSISTANT,
+
+                content=text,
+
+            )
+
         )
 
+    def add_system(
+        self,
+        text: str,
+    ):
+
+        self._messages.append(
+
+            ConversationMessage(
+
+                role=MessageRole.SYSTEM,
+
+                content=text,
+
+            )
+
+        )
+
+    #
+    # Access
+    #
+
     @property
-    def messages(self):
+    def messages(
+        self,
+    ) -> list[Message]:
 
-        return list(self._messages)
+        return [
 
-    def clear(self):
+            Message(
+
+                role=item.role,
+
+                content=item.content,
+
+            )
+
+            for item in self._messages
+
+        ]
+
+    def clear(
+        self,
+    ):
 
         self._messages.clear()
 
-    def __len__(self):
+    def last(
+        self,
+    ) -> ConversationMessage | None:
 
-        return len(self._messages)
+        if not self._messages:
 
-    def to_messages(self):
+            return None
 
-        return [
-            Message(
-                role=message.role,
-                content=message.content,
-            )
-            for message in self._messages
-        ]
+        return self._messages[-1]
 
-    def to_request(self):
+    def __len__(
+        self,
+    ):
 
-        return ModelRequest(
-            messages=self.to_messages(),
+        return len(
+            self._messages
+        )
+
+    def __iter__(
+        self,
+    ):
+
+        return iter(
+            self._messages
         )

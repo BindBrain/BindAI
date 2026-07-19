@@ -1,15 +1,25 @@
-def tool(name: str | None = None):
+from __future__ import annotations
+
+from typing import Callable
+
+from .function_tool import FunctionTool
+
+
+def tool(
+    name: str | None = None,
+):
     """
-    Placeholder decorator.
-
-    In future milestones this will expose metadata,
-    schemas, and automatic registration.
+    Decorator that converts a Python function
+    into a BindAI Tool.
     """
 
-    def wrapper(obj):
+    def wrapper(
+        function: Callable,
+    ):
 
-        obj.__tool_name__ = name or obj.__name__
-
-        return obj
+        return FunctionTool(
+            function=function,
+            name=name,
+        )
 
     return wrapper

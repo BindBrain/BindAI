@@ -1,28 +1,89 @@
 from __future__ import annotations
 
-from bindai_core.model import Message
+from bindai_core.model import (
+    Message,
+    MessageRole,
+)
+
+from .memory import Memory
 
 
-class ChatMemory:
+class ChatMemory(Memory):
     """
-    Stores conversation messages.
+    Conversation memory for an agent.
     """
-
-    def __init__(self):
-
-        self._messages: list[Message] = []
 
     def add(
         self,
         message: Message,
-    ):
+    ) -> None:
 
-        self._messages.append(message)
+        messages = self.load()
 
-    def clear(self):
+        messages.append(
+            message,
+        )
 
-        self._messages.clear()
+        self.save(
+            messages,
+        )
 
-    def messages(self):
+    def add_user(
+        self,
+        text: str,
+    ) -> None:
 
-        return list(self._messages)
+        self.add(
+
+            Message(
+
+                role=MessageRole.USER,
+
+                content=text,
+
+            )
+
+        )
+
+    def add_assistant(
+        self,
+        text: str,
+    ) -> None:
+
+        self.add(
+
+            Message(
+
+                role=MessageRole.ASSISTANT,
+
+                content=text,
+
+            )
+
+        )
+
+    def add_system(
+        self,
+        text: str,
+    ) -> None:
+
+        self.add(
+
+            Message(
+
+                role=MessageRole.SYSTEM,
+
+                content=text,
+
+            )
+
+        )
+
+    def messages(
+        self,
+    ) -> list[Message]:
+        """
+        Return a copy of all stored messages.
+        """
+
+        return self.load()

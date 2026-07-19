@@ -4,38 +4,51 @@ from bindai_core.model import ModelProvider
 
 
 class ProviderFactory:
-    """
-    Creates provider instances.
-    """
 
-    _providers: dict[str, type[ModelProvider]] = {}
+    _providers: dict[
+        str,
+        type[ModelProvider],
+    ] = {}
 
     @classmethod
     def register(
         cls,
         name: str,
-        provider_type: type[ModelProvider],
+        provider: type[ModelProvider],
     ):
 
-        cls._providers[name.lower()] = provider_type
+        cls._providers[
+            name.lower()
+        ] = provider
 
     @classmethod
     def create(
         cls,
         name: str,
-        **kwargs,
-    ) -> ModelProvider:
+        configuration=None,
+    ):
 
-        provider = cls._providers.get(name.lower())
+        provider = cls._providers.get(
+            name.lower(),
+        )
 
         if provider is None:
+
             raise ValueError(
                 f"Unknown provider '{name}'."
             )
 
-        return provider(**kwargs)
+        return provider(
+            configuration,
+        )
 
     @classmethod
-    def names(cls):
+    def names(
+        cls,
+    ):
 
-        return sorted(cls._providers.keys())
+        return tuple(
+            sorted(
+                cls._providers.keys(),
+            )
+        )
