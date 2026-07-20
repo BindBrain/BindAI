@@ -10,6 +10,7 @@ from bindai_core.model import (
 
 from .result import AgentResult
 from bindai_core.schema import SchemaSerializer
+from .output.parser import OutputParser
 
 if TYPE_CHECKING:
 	from .agent import Agent
@@ -31,6 +32,13 @@ class AgentExecutor:
 			context,
 		)
 
+		for hook in agent.hooks:
+
+			hook.on_start(
+				agent,
+				context,
+			)
+
 		while True:
 
 			request = self._build_request(
@@ -38,15 +46,28 @@ class AgentExecutor:
 				context,
 			)
 
+			for hook in agent.hooks:
+
+				hook.on_model_request(
+					request,
+				)
+
 			response = self._generate(
 				agent,
 				request,
 			)
 
+			for hook in agent.hooks:
+
+				hook.on_model_response(
+					response,
+				)
+
 			if not response.tool_calls:
 
 				return self._finish(
 					agent,
+					context,
 					response,
 				)
 
@@ -152,10 +173,31 @@ class AgentExecutor:
 
 		for tool_call in response.tool_calls:
 
+			#
+			# Hook: before tool execution
+			#
+
+			for hook in agent.hooks:
+
+				hook.on_tool_start(
+					tool_call,
+				)
+
 			result = agent.execute_tool(
 				tool_call.name,
 				**tool_call.arguments,
 			)
+
+			#
+			# Hook: after tool execution
+			#
+
+			for hook in agent.hooks:
+
+				hook.on_tool_end(
+					tool_call,
+					result,
+				)
 
 			agent.conversation.add_tool(
 				tool_call_id=tool_call.id,
@@ -169,6 +211,7 @@ class AgentExecutor:
 	def _finish(
 		self,
 		agent: Agent,
+		context: ExecutionContext,
 		response: ModelResponse,
 	) -> AgentResult:
 
@@ -176,7 +219,28 @@ class AgentExecutor:
 			response.content,
 		)
 
-		return AgentResult(
-			success=True,
-			output=response.content,
+		output_type = context.variables.get(
+			"output_type",
 		)
+
+		output = OutputParser.parse(
+			response.content,
+			output_type,
+		)
+
+		result = AgentResult(
+			success=True,
+			output=output,
+		)
+
+		#
+		# Notify hooks
+		#
+
+		for hook in agent.hooks:
+
+			hook.on_finish(
+				result,
+			)
+
+		return result

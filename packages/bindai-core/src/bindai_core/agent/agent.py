@@ -101,6 +101,18 @@ class Agent(Executable, ABC):
             tool,
         )
 
+
+    def add_tool(
+        self,
+        tool: Tool,
+    ):
+
+        self.register_tool(
+            tool,
+        )
+
+        return self
+
     #
     # Runtime extensions
     #

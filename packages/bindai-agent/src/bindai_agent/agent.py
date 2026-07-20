@@ -11,6 +11,8 @@ from bindai_memory import (
     InMemoryProvider,
 )
 
+from .configuration import AgentConfiguration
+
 class Agent:
 	"""
 	Base AI agent.
@@ -33,7 +35,15 @@ class Agent:
 			InMemoryProvider(),
 		)
 		self.tools = ToolRegistry()
+		self.configuration = AgentConfiguration()
+
 		self.executor = AgentExecutor()
+		
+		self.middleware = []
+
+		self.knowledge = None
+
+		self.hooks = []
 
 	def chat(
 		self,
@@ -108,3 +118,43 @@ class Agent:
 			name,
 			**kwargs,
 		)
+
+	def use_middleware(
+		self,
+		middleware,
+	) -> "Agent":
+
+		self.middleware.append(
+			middleware,
+		)
+
+		return self
+
+	def use_memory(
+		self,
+		memory,
+	) -> "Agent":
+
+		self.memory = memory
+
+		return self
+
+	def use_knowledge(
+		self,
+		knowledge,
+	) -> "Agent":
+
+		self.knowledge = knowledge
+
+		return self
+
+	def hook(
+		self,
+		hook,
+	) -> "Agent":
+
+		self.hooks.append(
+			hook,
+		)
+
+		return self

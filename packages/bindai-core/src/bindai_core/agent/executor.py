@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from bindai_core.context import ExecutionContext
+from bindai_core.events import Event, EventTypes
 from bindai_core.model import (
     Message,
     MessageRole,
     ModelRequest,
-)
-from bindai_core.events import (
-    Event,
-    EventTypes,
+    ModelResponse,
 )
 
 from .agent import Agent
@@ -20,16 +18,19 @@ class AgentExecutor:
     """
     Executes an Agent.
 
-    Responsibilities
+    Execution pipeline
 
-    - build prompt
-    - inject memory
-    - inject knowledge
-    - execute middleware
-    - call provider
-    - execute tool calls
-    - update conversation
-    - return AgentResult
+        prepare
+            ↓
+        middleware(before)
+            ↓
+        run until complete
+            ↓
+        middleware(after)
+            ↓
+        publish event
+            ↓
+        complete
     """
 
     #
@@ -44,99 +45,47 @@ class AgentExecutor:
 
         try:
 
-            agent.state = AgentState.RUNNING
+            self._prepare(agent)
 
-            #
-            # Middleware (before)
-            #
-
-            for middleware in agent.middleware:
-
-                middleware.before(
-                    agent,
-                    context,
-                )
-
-            #
-            # Build request
-            #
-
-            request = self._build_request(
+            self._run_before_middleware(
                 agent,
                 context,
             )
 
             #
-            # Provider call
+            # Insert the initial user message exactly once.
             #
 
-            response = agent.provider.generate(
-                request,
-            )
+            user = context.variables.get("message")
 
-            #
-            # Tool calls
-            #
+            if user is not None:
 
-            if response.tool_calls:
-
-                self._execute_tools(
-                    agent,
-                    context,
-                    response,
+                agent.conversation.add_user(
+                    user,
                 )
 
-            #
-            # Conversation
-            #
-
-            self._update_conversation(
+            response = self._run_until_complete(
                 agent,
                 context,
-                response,
             )
-
-            #
-            # Middleware (after)
-            #
 
             result = AgentResult(
-
                 success=True,
-
                 output=response.content,
-
             )
 
-            for middleware in agent.middleware:
-
-                middleware.after(
-                    agent,
-                    context,
-                    result,
-                )
-
-            #
-            # Publish event
-            #
-
-            context.events.publish(
-
-                Event(
-
-                    name=EventTypes.AGENT_FINISHED,
-
-                    payload={
-
-                        "agent": agent.name,
-
-                    },
-
-                )
-
+            self._run_after_middleware(
+                agent,
+                context,
+                result,
             )
 
-            agent.state = AgentState.COMPLETED
+            self._publish_finished_event(
+                agent,
+                context,
+            )
+
+            self._complete(agent)
 
             return result
 
@@ -145,11 +94,8 @@ class AgentExecutor:
             agent.state = AgentState.FAILED
 
             return AgentResult(
-
                 success=False,
-
                 error=str(ex),
-
             )
 
     #
@@ -172,7 +118,154 @@ class AgentExecutor:
         )
 
     #
-    # Request builder
+    # Execution Loop
+    #
+
+    def _run_until_complete(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ) -> ModelResponse:
+
+        iterations = 0
+
+        while True:
+
+            response = self._execute_turn(
+                agent,
+                context,
+            )
+
+            #
+            # Finished
+            #
+
+            if not response.tool_calls:
+
+                return response
+
+            iterations += 1
+
+            if (
+                iterations
+                >= agent.configuration.max_tool_iterations
+            ):
+
+                raise RuntimeError(
+                    "Maximum tool iterations exceeded."
+                )
+
+    def _execute_turn(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ) -> ModelResponse:
+
+        request = self._build_request(
+            agent,
+            context,
+        )
+
+        response = self._call_provider(
+            agent,
+            request,
+        )
+
+        tool_messages = self._execute_tools(
+            agent,
+            context,
+            response,
+        )
+
+        self._append_tool_messages(
+            agent,
+            tool_messages,
+        )
+
+        self._update_conversation(
+            agent,
+            context,
+            response,
+        )
+
+        return response
+
+    #
+    # Pipeline
+    #
+
+    def _prepare(
+        self,
+        agent: Agent,
+    ):
+
+        agent.state = AgentState.RUNNING
+
+    def _complete(
+        self,
+        agent: Agent,
+    ):
+
+        agent.state = AgentState.COMPLETED
+
+    def _run_before_middleware(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ):
+
+        for middleware in agent.middleware:
+
+            middleware.before(
+                agent,
+                context,
+            )
+
+    def _run_after_middleware(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+        result: AgentResult,
+    ):
+
+        for middleware in agent.middleware:
+
+            middleware.after(
+                agent,
+                context,
+                result,
+            )
+
+    def _call_provider(
+        self,
+        agent: Agent,
+        request: ModelRequest,
+    ) -> ModelResponse:
+
+        return agent.provider.generate(
+            request,
+        )
+
+    def _publish_finished_event(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ):
+
+        context.events.publish(
+
+            Event(
+
+                name=EventTypes.AGENT_FINISHED,
+
+                payload={
+                    "agent": agent.name,
+                },
+            )
+        )
+
+    #
+    # Request Builder
     #
 
     def _build_request(
@@ -181,62 +274,24 @@ class AgentExecutor:
         context: ExecutionContext,
     ) -> ModelRequest:
 
-        messages = []
-
-        #
-        # System
-        #
+        messages: list[Message] = []
 
         messages.append(
 
             Message(
-
                 role=MessageRole.SYSTEM,
-
                 content=agent.instructions,
-
             )
-
         )
-
-        #
-        # Memory
-        #
 
         if agent.memory is not None:
 
             messages.extend(
-
                 agent.memory.messages()
-
             )
-
-        #
-        # Conversation
-        #
 
         messages.extend(
-
             agent.conversation.messages
-
-        )
-
-        #
-        # User
-        #
-
-        messages.append(
-
-            Message(
-
-                role=MessageRole.USER,
-
-                content=context.variables.get(
-                    "message",
-                ),
-
-            )
-
         )
 
         return ModelRequest(
@@ -248,19 +303,23 @@ class AgentExecutor:
             temperature=agent.configuration.temperature,
 
             max_tokens=agent.configuration.max_tokens,
-
         )
 
     #
-    # Execute tool calls
+    # Tool Calls
     #
 
     def _execute_tools(
         self,
         agent: Agent,
         context: ExecutionContext,
-        response,
-    ):
+        response: ModelResponse,
+    ) -> list[Message]:
+
+        messages: list[Message] = []
+
+        if not response.tool_calls:
+            return messages
 
         for call in response.tool_calls:
 
@@ -268,41 +327,97 @@ class AgentExecutor:
                 call.name,
             )
 
-            result = tool.invoke(
+            result = tool.execute(
                 **call.arguments,
             )
 
+            #
+            # Store in execution context
+            #
+
             context.variables.set(
-
                 call.name,
-
                 result,
+            )
+
+            #
+            # Build Tool Message
+            #
+
+            output = ""
+
+            if result.output is not None:
+
+                output = str(
+                    result.output,
+                )
+
+            elif result.error is not None:
+
+                output = result.error
+
+            messages.append(
+
+                Message(
+
+                    role=MessageRole.TOOL,
+
+                    content=output,
+
+                    tool_call_id=getattr(
+                        call,
+                        "id",
+                        None,
+                    ),
+
+                )
 
             )
 
-    #
-    # Conversation update
-    #
+        return messages
+
+    def _append_tool_messages(
+        self,
+        agent: Agent,
+        messages: list[Message],
+    ):
+
+        for message in messages:
+
+            if message.role == MessageRole.ASSISTANT:
+
+                agent.conversation.add_assistant(
+                    message.content,
+                    tool_calls=message.tool_calls,
+                )
+
+            elif message.role == MessageRole.TOOL:
+
+                agent.conversation.add_tool(
+                    tool_call_id=message.tool_call_id,
+                    text=message.content,
+                )
+
+            elif message.role == MessageRole.USER:
+
+                agent.conversation.add_user(
+                    message.content,
+                )
+
+            elif message.role == MessageRole.SYSTEM:
+
+                agent.conversation.add_system(
+                    message.content,
+                )
 
     def _update_conversation(
         self,
         agent: Agent,
         context: ExecutionContext,
-        response,
+        response: ModelResponse,
     ):
 
-        user = context.variables.get(
-            "message",
-        )
-
-        if user is not None:
-
-            agent.conversation.add_user(
-                user,
+            agent.conversation.add_assistant(
+                response.content,
+                tool_calls=response.tool_calls,
             )
-
-        agent.conversation.add_assistant(
-
-            response.content,
-
-        )

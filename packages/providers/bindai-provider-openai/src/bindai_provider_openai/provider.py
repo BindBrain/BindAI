@@ -168,3 +168,19 @@ class OpenAIProvider(ModelProvider):
 			delta="",
 			finished=True,
 		)
+
+	@property
+	def capabilities(
+		self,
+	):
+
+		return ProviderCapabilities(
+
+			supports_tools=True,
+
+			supports_streaming=True,
+
+			supports_structured_output=True,
+
+			supports_vision=True,
+		)

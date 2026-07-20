@@ -52,7 +52,7 @@ class AgentConfiguration:
 
     tool_choice: str = "auto"
 
-    max_iterations: int = 10
+    max_tool_iterations: int = 10
 
     #
     # Memory

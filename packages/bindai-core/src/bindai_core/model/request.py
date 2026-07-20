@@ -32,6 +32,8 @@ class ModelRequest:
 
     stream: bool = False
 
+    output_type: type | None = None
+
     tools: list[ToolDefinition] = field(
         default_factory=list,
     )

@@ -28,7 +28,9 @@ class ModelProvider(ABC):
 
     @property
     @abstractmethod
-    def name(self) -> str:
+    def capabilities(
+        self,
+    ) -> ProviderCapabilities:
         ...
 
     @property

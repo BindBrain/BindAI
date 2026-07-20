@@ -8,6 +8,7 @@ from .exceptions import (
 from .factory import ProviderFactory
 from .manager import ProviderManager
 from .registry import ProviderRegistry
+from .capabilities import ProviderCapabilities
 
 __all__ = [
     "ProviderConfiguration",
@@ -18,4 +19,5 @@ __all__ = [
     "ProviderNotFound",
     "ProviderAlreadyRegistered",
     "DefaultProviderNotConfigured",
+    "ProviderCapabilities",
 ]

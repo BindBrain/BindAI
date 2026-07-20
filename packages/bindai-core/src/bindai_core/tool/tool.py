@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import inspect
-
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
 
 from .definition import ToolDefinition
 from .result import ToolResult
+from .inspector import ToolInspector
 
 
 class Tool(ABC):
@@ -25,13 +24,11 @@ class Tool(ABC):
         return ""
 
     @property
-    def parameters(self) -> dict[str, Any]:
-        """
-        Automatically generate a JSON schema
-        from execute().
-        """
+    def parameters(
+        self,
+    ) -> dict[str, Any]:
 
-        signature = inspect.signature(
+        return ToolInspector.parameters(
             self.execute,
         )
 

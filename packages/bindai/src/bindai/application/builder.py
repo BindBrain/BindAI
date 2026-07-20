@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .application import Application
 
+from dotenv import load_dotenv
 
 class ApplicationBuilder:
 
@@ -33,6 +34,7 @@ class ApplicationBuilder:
 
     def build(
         self,
+        load_dotenv()
     ) -> Application:
 
         return self._application

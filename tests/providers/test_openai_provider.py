@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 if "OPENAI_API_KEY" not in os.environ:
@@ -5,8 +7,6 @@ if "OPENAI_API_KEY" not in os.environ:
         "OPENAI_API_KEY not configured",
         allow_module_level=True,
     )
-    
-import os
 
 from bindai_core import (
     Message,

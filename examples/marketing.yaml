@@ -1,0 +1,51 @@
+group:
+
+  name: Marketing
+
+  process: sequential
+
+  agents:
+
+    - id: researcher
+
+      name: Research Agent
+
+      provider: openai
+
+      model: gpt-4.1
+
+      instructions: |
+        Research companies and summarize findings.
+
+    - id: writer
+
+      name: Writer Agent
+
+      provider: openai
+
+      model: gpt-4.1
+
+      instructions: |
+        Write professional reports.
+
+  tasks:
+
+    - id: research
+
+      description: Research OpenAI.
+
+      expected_output: Business summary
+
+      agent: researcher
+
+    - id: report
+
+      description: Write an executive report using the research.
+
+      expected_output: Markdown report
+
+      agent: writer
+
+      context:
+
+        - research

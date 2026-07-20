@@ -1,6 +1,5 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
+from typing import Any
 
 from .tool_call import ToolCall
 from .usage import TokenUsage
@@ -25,3 +24,5 @@ class ModelResponse:
     finish_reason: str | None = None
 
     model: str | None = None
+
+    structured_output: Any | None = None

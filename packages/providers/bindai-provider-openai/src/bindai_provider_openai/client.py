@@ -8,6 +8,9 @@ from bindai_core import ProviderConfiguration
 class OpenAIClient:
     """
     Thin wrapper around the official OpenAI SDK.
+
+    The OpenAI client is created lazily so the provider
+    can be constructed before credentials are available.
     """
 
     def __init__(
@@ -15,12 +18,24 @@ class OpenAIClient:
         configuration: ProviderConfiguration,
     ):
 
-        self._client = OpenAI(
-            api_key=configuration.api_key,
-            base_url=configuration.endpoint,
-            organization=configuration.organization,
-        )
+        self._configuration = configuration
+
+        self._client: OpenAI | None = None
 
     @property
-    def client(self) -> OpenAI:
+    def client(
+        self,
+    ) -> OpenAI:
+
+        if self._client is None:
+
+            self._client = OpenAI(
+
+                api_key=self._configuration.api_key,
+
+                base_url=self._configuration.endpoint,
+
+                organization=self._configuration.organization,
+            )
+
         return self._client

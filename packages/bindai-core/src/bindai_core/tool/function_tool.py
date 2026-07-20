@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import inspect
 from typing import Any, Callable
 
 from .result import ToolResult
 from .tool import Tool
 
+from .inspector import ToolInspector
 
 class FunctionTool(Tool):
     """
@@ -39,13 +39,11 @@ class FunctionTool(Tool):
         ).strip()
 
     @property
-    def parameters(self) -> dict[str, Any]:
-        """
-        Build a provider-agnostic parameter schema
-        from the wrapped Python function signature.
-        """
+    def parameters(
+        self,
+    ) -> dict[str, Any]:
 
-        signature = inspect.signature(
+        return ToolInspector.parameters(
             self.function,
         )
 

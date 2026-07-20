@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from .message import ConversationMessage
-
 from bindai_core.model import (
     Message,
     MessageRole,
@@ -12,27 +10,38 @@ class Conversation:
     """
     Conversation history.
 
-    Shared by every conversational agent.
+    Stores every message exchanged during an agent execution.
     """
 
     def __init__(self):
 
-        self._messages: list[
-            ConversationMessage
-        ] = []
+        self._messages: list[Message] = []
 
     #
-    # Add messages
+    # Generic API
+    #
+
+    def add(
+        self,
+        message: Message,
+    ) -> None:
+
+        self._messages.append(
+            message,
+        )
+
+    #
+    # Convenience helpers
     #
 
     def add_user(
         self,
         text: str,
-    ):
+    ) -> None:
 
-        self._messages.append(
+        self.add(
 
-            ConversationMessage(
+            Message(
 
                 role=MessageRole.USER,
 
@@ -45,13 +54,26 @@ class Conversation:
     def add_assistant(
         self,
         text: str,
+        tool_calls=None,
     ):
-
-        self._messages.append(
-
-            ConversationMessage(
-
+        self.add(
+            Message(
                 role=MessageRole.ASSISTANT,
+                content=text,
+                tool_calls=tool_calls or [],
+            )
+        )
+
+    def add_system(
+        self,
+        text: str,
+    ) -> None:
+
+        self.add(
+
+            Message(
+
+                role=MessageRole.SYSTEM,
 
                 content=text,
 
@@ -59,18 +81,21 @@ class Conversation:
 
         )
 
-    def add_system(
+    def add_tool(
         self,
         text: str,
-    ):
+        tool_call_id: str | None = None,
+    ) -> None:
 
-        self._messages.append(
+        self.add(
 
-            ConversationMessage(
+            Message(
 
-                role=MessageRole.SYSTEM,
+                role=MessageRole.TOOL,
 
                 content=text,
+
+                tool_call_id=tool_call_id,
 
             )
 
@@ -85,29 +110,19 @@ class Conversation:
         self,
     ) -> list[Message]:
 
-        return [
-
-            Message(
-
-                role=item.role,
-
-                content=item.content,
-
-            )
-
-            for item in self._messages
-
-        ]
+        return list(
+            self._messages,
+        )
 
     def clear(
         self,
-    ):
+    ) -> None:
 
         self._messages.clear()
 
     def last(
         self,
-    ) -> ConversationMessage | None:
+    ) -> Message | None:
 
         if not self._messages:
 
@@ -119,14 +134,10 @@ class Conversation:
         self,
     ):
 
-        return len(
-            self._messages
-        )
+        return len(self._messages)
 
     def __iter__(
         self,
     ):
 
-        return iter(
-            self._messages
-        )
+        return iter(self._messages)
