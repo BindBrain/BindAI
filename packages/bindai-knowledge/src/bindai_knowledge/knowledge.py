@@ -14,7 +14,6 @@ class Knowledge:
         self,
         provider: KnowledgeProvider,
     ):
-
         self.provider = provider
 
     def add(
@@ -60,3 +59,42 @@ class Knowledge:
     ) -> KnowledgeResult:
 
         return self.provider.clear()
+
+    def retrieve(
+        self,
+        query: str,
+        limit: int = 5,
+    ) -> str:
+
+        result = self.search(
+            query,
+            limit,
+        )
+
+        if (
+            not result.success
+            or not result.value
+        ):
+            return ""
+
+        return "\n\n".join(
+            document.content
+            for document in result.value
+        )
+
+    def load(
+        self,
+        loader,
+    ) -> int:
+
+        documents = loader.load()
+
+        for document in documents:
+
+            self.add(
+                document,
+            )
+
+        return len(
+            documents,
+        )

@@ -150,6 +150,18 @@ class AgentExecutor:
             user_input,
         )
 
+        if agent.knowledge is not None:
+
+            context_text = agent.knowledge.retrieve(
+                user_input,
+            )
+
+            if context_text:
+
+                agent.conversation.add_system(
+                    f"Relevant knowledge:\n{context_text}",
+                )
+
     def _load_memory(
         self,
         agent: Agent,

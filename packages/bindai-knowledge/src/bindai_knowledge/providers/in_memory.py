@@ -46,24 +46,44 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
         limit: int = 5,
     ) -> KnowledgeResult:
 
-        query = query.lower()
+        words = [
+            word.strip(".,?!")
+            for word in query.lower().split()
+            if len(word) > 2
+        ]
 
         results = []
 
         for document in self._documents.values():
 
-            if (
-                query in document.title.lower()
-                or query in document.content.lower()
-            ):
+            haystack = (
+                document.title
+                + " "
+                + document.content
+            ).lower()
+
+            score = sum(
+                word in haystack
+                for word in words
+            )
+
+            if score > 0:
 
                 results.append(
-                    document,
+                    (score, document),
                 )
+
+        results.sort(
+            key=lambda item: item[0],
+            reverse=True,
+        )
 
         return KnowledgeResult(
             success=True,
-            value=results[:limit],
+            value=[
+                document
+                for _, document in results[:limit]
+            ],
         )
 
     def delete(
