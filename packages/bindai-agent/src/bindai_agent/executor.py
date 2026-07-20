@@ -4,243 +4,315 @@ from typing import TYPE_CHECKING
 
 from bindai_core.context import ExecutionContext
 from bindai_core.model import (
-	ModelRequest,
-	ModelResponse,
+    ModelRequest,
+    ModelResponse,
 )
-
-from .result import AgentResult
 from bindai_core.schema import SchemaSerializer
+
 from .output.parser import OutputParser
+from .result import AgentResult
 
 if TYPE_CHECKING:
-	from .agent import Agent
+    from .agent import Agent
 
 
 class AgentExecutor:
-	"""
-	Executes an agent by driving the full execution loop.
-	"""
+    """
+    Executes an agent by driving the full execution loop.
+    """
 
-	def execute(
-		self,
-		agent: Agent,
-		context: ExecutionContext,
-	) -> AgentResult:
+    def execute(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ) -> AgentResult:
 
-		self._initialize(
-			agent,
-			context,
-		)
+        self._initialize(
+            agent,
+            context,
+        )
 
-		for hook in agent.hooks:
+        for middleware in agent.middleware:
 
-			hook.on_start(
-				agent,
-				context,
-			)
+            middleware.before_execute(
+                agent,
+                context,
+            )
 
-		while True:
+        for hook in agent.hooks:
 
-			request = self._build_request(
-				agent,
-				context,
-			)
+            hook.on_start(
+                agent,
+                context,
+            )
 
-			for hook in agent.hooks:
+        while True:
 
-				hook.on_model_request(
-					request,
-				)
+            request = self._build_request(
+                agent,
+                context,
+            )
 
-			response = self._generate(
-				agent,
-				request,
-			)
+            for hook in agent.hooks:
 
-			for hook in agent.hooks:
+                hook.on_model_request(
+                    request,
+                )
 
-				hook.on_model_response(
-					response,
-				)
+            response = self._generate(
+                agent,
+                request,
+            )
 
-			if not response.tool_calls:
+            for hook in agent.hooks:
 
-				return self._finish(
-					agent,
-					context,
-					response,
-				)
+                hook.on_model_response(
+                    response,
+                )
 
-			self._execute_tool_calls(
-				agent,
-				response,
-			)
+            if not response.tool_calls:
 
-	def stream(
-		self,
-		agent: Agent,
-		context: ExecutionContext,
-	):
+                result = self._finish(
+                    agent,
+                    context,
+                    response,
+                )
 
-		self._initialize(
-			agent,
-			context,
-		)
+                for middleware in reversed(
+                    agent.middleware,
+                ):
 
-		request = self._build_request(
-			agent,
-			context,
-		)
+                    middleware.after_execute(
+                        agent,
+                        context,
+                        result,
+                    )
 
-		content = ""
+                return result
 
-		for chunk in agent.provider.stream(
-			request,
-		):
+            self._execute_tool_calls(
+                agent,
+                response,
+            )
 
-			content += chunk.delta
+    def stream(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ):
 
-			yield chunk
+        self._initialize(
+            agent,
+            context,
+        )
 
-		agent.conversation.add_assistant(
-			content,
-		)
+        request = self._build_request(
+            agent,
+            context,
+        )
 
-	def _initialize(
-		self,
-		agent: Agent,
-		context: ExecutionContext,
-	) -> None:
+        content = ""
 
-		user_input = context.variables.get(
-			"input",
-			"",
-		)
+        for chunk in agent.provider.stream(
+            request,
+        ):
 
-		if len(agent.conversation) == 0:
+            content += chunk.delta
 
-			agent.conversation.add_system(
-				agent.instructions,
-			)
+            yield chunk
 
-		agent.conversation.add_user(
-			user_input,
-		)
+        agent.conversation.add_assistant(
+            content,
+        )
 
-	def _build_request(
-		self,
-		agent: Agent,
-		context: ExecutionContext,
-	) -> ModelRequest:
+    def _initialize(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ) -> None:
 
-		request = agent.conversation.to_request()
+        user_input = context.variables.get(
+            "input",
+            "",
+        )
 
-		request.tools = agent.tools.definitions()
+        if len(agent.conversation) == 0:
 
-		output_type = context.variables.get(
-			"output_type",
-		)
+            agent.conversation.add_system(
+                agent.instructions,
+            )
 
-		if output_type is not None:
+            self._load_memory(
+                agent,
+            )
 
-			request.response_schema = (
-				SchemaSerializer.serialize(
-					output_type,
-				)
-			)
+        agent.conversation.add_user(
+            user_input,
+        )
 
-		return request
+    def _load_memory(
+        self,
+        agent: Agent,
+    ) -> None:
 
-	def _generate(
-		self,
-		agent: Agent,
-		request: ModelRequest,
-	) -> ModelResponse:
+        result = agent.memory.get(
+            "__context__",
+        )
 
-		return agent.provider.generate(
-			request,
-		)
+        if not result.success:
+            return
 
-	def _execute_tool_calls(
-		self,
-		agent: Agent,
-		response: ModelResponse,
-	) -> None:
+        record = result.value
 
-		agent.conversation.add_assistant_tool_call(
-			response.tool_calls,
-		)
+        if record is None:
+            return
 
-		for tool_call in response.tool_calls:
+        agent.conversation.add_system(
+            f"Relevant memory:\n{record.value}",
+        )
 
-			#
-			# Hook: before tool execution
-			#
+    def _save_memory(
+        self,
+        agent: Agent,
+    ) -> None:
 
-			for hook in agent.hooks:
+        transcript = []
 
-				hook.on_tool_start(
-					tool_call,
-				)
+        for message in agent.conversation.messages:
 
-			result = agent.execute_tool(
-				tool_call.name,
-				**tool_call.arguments,
-			)
+            transcript.append(
+                f"{message.role.value}: {message.content}"
+            )
 
-			#
-			# Hook: after tool execution
-			#
+        from bindai_memory import MemoryRecord
 
-			for hook in agent.hooks:
+        agent.memory.set(
+            MemoryRecord(
+                key="__context__",
+                value="\n".join(
+                    transcript,
+                ),
+            )
+        )
 
-				hook.on_tool_end(
-					tool_call,
-					result,
-				)
+    def _build_request(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+    ) -> ModelRequest:
 
-			agent.conversation.add_tool(
-				tool_call_id=tool_call.id,
-				content=(
-					str(result.output)
-					if result.success
-					else f"ERROR: {result.error}"
-				),
-			)
+        request = agent.conversation.to_request()
 
-	def _finish(
-		self,
-		agent: Agent,
-		context: ExecutionContext,
-		response: ModelResponse,
-	) -> AgentResult:
+        request.tools = agent.tools.definitions()
 
-		agent.conversation.add_assistant(
-			response.content,
-		)
+        output_type = context.variables.get(
+            "output_type",
+        )
 
-		output_type = context.variables.get(
-			"output_type",
-		)
+        if output_type is not None:
 
-		output = OutputParser.parse(
-			response.content,
-			output_type,
-		)
+            request.response_schema = (
+                SchemaSerializer.serialize(
+                    output_type,
+                )
+            )
 
-		result = AgentResult(
-			success=True,
-			output=output,
-		)
+        return request
 
-		#
-		# Notify hooks
-		#
+    def _generate(
+        self,
+        agent: Agent,
+        request: ModelRequest,
+    ) -> ModelResponse:
 
-		for hook in agent.hooks:
+        return agent.provider.generate(
+            request,
+        )
 
-			hook.on_finish(
-				result,
-			)
+    def _execute_tool_calls(
+        self,
+        agent: Agent,
+        response: ModelResponse,
+    ) -> None:
 
-		return result
+        agent.conversation.add_assistant_tool_call(
+            response.tool_calls,
+        )
+
+        for tool_call in response.tool_calls:
+
+            #
+            # Hook: before tool execution
+            #
+
+            for hook in agent.hooks:
+
+                hook.on_tool_start(
+                    tool_call,
+                )
+
+            result = agent.execute_tool(
+                tool_call.name,
+                **tool_call.arguments,
+            )
+
+            #
+            # Hook: after tool execution
+            #
+
+            for hook in agent.hooks:
+
+                hook.on_tool_end(
+                    tool_call,
+                    result,
+                )
+
+            agent.conversation.add_tool(
+                tool_call_id=tool_call.id,
+                content=(
+                    str(result.output)
+                    if result.success
+                    else f"ERROR: {result.error}"
+                ),
+            )
+
+    def _finish(
+        self,
+        agent: Agent,
+        context: ExecutionContext,
+        response: ModelResponse,
+    ) -> AgentResult:
+
+        agent.conversation.add_assistant(
+            response.content,
+        )
+
+        self._save_memory(
+            agent,
+        )
+
+        output_type = context.variables.get(
+            "output_type",
+        )
+
+        output = OutputParser.parse(
+            response.content,
+            output_type,
+        )
+
+        result = AgentResult(
+            success=True,
+            output=output,
+        )
+
+        #
+        # Notify hooks
+        #
+
+        for hook in agent.hooks:
+
+            hook.on_finish(
+                result,
+            )
+
+        return result

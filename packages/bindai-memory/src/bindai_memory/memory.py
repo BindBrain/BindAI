@@ -4,6 +4,7 @@ from .provider import MemoryProvider
 from .record import MemoryRecord
 from .result import MemoryResult
 
+from .registry import MemoryRegistry
 
 class Memory:
     """
@@ -12,8 +13,22 @@ class Memory:
 
     def __init__(
         self,
-        provider: MemoryProvider,
+        provider: MemoryProvider | str | None = None,
     ):
+
+        if provider is None:
+
+            provider = "memory"
+
+        if isinstance(
+            provider,
+            str,
+        ):
+
+            provider = (
+                MemoryRegistry
+                .provider(provider)
+            )()
 
         self.provider = provider
 
