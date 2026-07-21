@@ -20,6 +20,24 @@ class KnowledgeProvider(ABC):
         ...
 
     @abstractmethod
+    def add_many(
+        self,
+        documents: list[KnowledgeDocument],
+    ) -> KnowledgeResult:
+
+        results = []
+
+        for document in documents:
+            results.append(
+                self.add(document)
+            )
+
+        return KnowledgeResult(
+            success=all(r.success for r in results),
+            value=[r.value for r in results],
+        )
+
+    @abstractmethod
     def get(
         self,
         document_id: str,
@@ -31,6 +49,25 @@ class KnowledgeProvider(ABC):
         self,
         query: str,
         limit: int = 5,
+        filters: dict[str, object] | None = None,
+    ) -> KnowledgeResult:
+        ...
+
+    @abstractmethod
+    def search_with_scores(
+        self,
+        query: str,
+        limit: int = 5,
+        filters: dict[str, object] | None = None,
+    ) -> KnowledgeResult:
+        ...
+
+    @abstractmethod
+    def hybrid_search(
+        self,
+        query: str,
+        limit: int = 5,
+        filters: dict[str, object] | None = None,
     ) -> KnowledgeResult:
         ...
 

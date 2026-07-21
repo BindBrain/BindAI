@@ -1,12 +1,8 @@
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, field
 
 
 @dataclass(slots=True)
 class KnowledgeDocument:
-    """
-    Represents one knowledge document.
-    """
 
     id: str
 
@@ -14,4 +10,6 @@ class KnowledgeDocument:
 
     content: str
 
-    metadata: dict[str, Any] | None = None
+    metadata: dict[str, object] = field(
+        default_factory=dict,
+    )
