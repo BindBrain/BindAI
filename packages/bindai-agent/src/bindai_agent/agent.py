@@ -12,149 +12,174 @@ from bindai_memory import (
 )
 
 from .configuration import AgentConfiguration
+from .execution.data import ExecutionData
 
-class Agent:
-	"""
-	Base AI agent.
-	"""
+from bindai_core.executable import Executable
 
-	def __init__(
-		self,
-		*,
-		name: str,
-		provider,
-		instructions: str = "",
-	):
+class Agent(Executable):
+    """
+    Base AI agent.
+    """
 
-		self.name = name
-		self.provider = provider
-		self.instructions = instructions
+    def __init__(
+        self,
+        *,
+        name: str,
+        provider,
+        instructions: str = "",
+    ):
 
-		self.conversation = Conversation()
-		self.memory = Memory(
-			InMemoryProvider(),
-		)
-		self.tools = ToolRegistry()
-		self.configuration = AgentConfiguration()
+        self.name = name
+        self.provider = provider
+        self.instructions = instructions
 
-		self.executor = AgentExecutor()
-		
-		self.middleware = []
+        self.conversation = Conversation()
+        self.memory = Memory(
+            InMemoryProvider(),
+        )
+        self.tools = ToolRegistry()
+        self.configuration = AgentConfiguration()
 
-		self.knowledge = None
+        self.executor = AgentExecutor()
+        
+        self.middleware = []
 
-		self.hooks = []
+        self.knowledge = None
 
-	def chat(
-		self,
-		message: str,
-		output: type | None = None,
-	):
+        self.hooks = []
 
-		context = ExecutionContext()
+    def chat(
+        self,
+        message: str,
+        output: type | None = None,
+    ):
 
-		context.variables.set(
-			"input",
-			message,
-		)
+        context = ExecutionContext()
 
-		context.variables.set(
-			"output_type",
-			output,
-		)
+        context.data = ExecutionData()
 
-		return self.executor.execute(
-			self,
-			context,
-		)
+        context.variables.set(
+            "input",
+            message,
+        )
 
-	def stream(
-		self,
-		message: str,
-		output: type | None = None,
-	):
+        context.variables.set(
+            "output_type",
+            output,
+        )
 
-		context = ExecutionContext()
+        return self.executor.execute(
+            self,
+            context,
+        )
 
-		context.variables.set(
-			"input",
-			message,
-		)
+    def stream(
+        self,
+        message: str,
+        output: type | None = None,
+    ):
 
-		context.variables.set(
-			"output_type",
-			output,
-		)
+        context = ExecutionContext()
 
-		return self.executor.stream(
-			self,
-			context,
-		)
+        context.data = ExecutionData()
 
-	def tool(
-		self,
-		tool,
-	) -> "Agent":
-		"""
-		Register a tool.
-		"""
+        context.variables.set(
+            "input",
+            message,
+        )
 
-		self.tools.register(
-			tool,
-		)
+        context.variables.set(
+            "output_type",
+            output,
+        )
 
-		return self
+        return self.executor.stream(
+            self,
+            context,
+        )
 
-	def execute_tool(
-		self,
-		name: str,
-		**kwargs,
-	):
-		"""
-		Execute a registered tool.
-		"""
+    def tool(
+        self,
+        tool,
+    ) -> "Agent":
+        """
+        Register a tool.
+        """
 
-		return self.tools.execute(
-			name,
-			**kwargs,
-		)
+        self.tools.register(
+            tool,
+        )
 
-	def use_middleware(
-		self,
-		middleware,
-	) -> "Agent":
+        return self
 
-		self.middleware.append(
-			middleware,
-		)
+    def execute(
+        self,
+        context,
+    ):
 
-		return self
+        return self.executor.execute(
+            self,
+            context,
+        )
 
-	def use_memory(
-		self,
-		memory,
-	) -> "Agent":
+    def execute_tool(
+        self,
+        name: str,
+        **kwargs,
+    ):
+        """
+        Execute a registered tool.
+        """
 
-		self.memory = memory
+        return self.tools.execute(
+            name,
+            **kwargs,
+        )
 
-		return self
+    def use_middleware(
+        self,
+        middleware,
+    ) -> "Agent":
 
-	def use_knowledge(
-		self,
-		knowledge,
-	) -> "Agent":
+        self.middleware.append(
+            middleware,
+        )
 
-		self.knowledge = knowledge
+        return self
 
-		return self
+    def use_memory(
+        self,
+        memory,
+    ) -> "Agent":
 
-	def hook(
-		self,
-		hook,
-	) -> "Agent":
+        self.memory = memory
 
-		self.hooks.append(
-			hook,
-		)
+        return self
 
-		return self
+    def use_knowledge(
+        self,
+        knowledge,
+    ) -> "Agent":
+
+        self.knowledge = knowledge
+
+        return self
+
+    def hook(
+        self,
+        hook,
+    ) -> "Agent":
+
+        self.hooks.append(
+            hook,
+        )
+
+        return self
+
+    def session(self):
+
+        from .session import AgentSession
+
+        return AgentSession(
+            self,
+        )

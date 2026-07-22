@@ -3,13 +3,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from bindai_core.context import ExecutionContext
+
+from .execution.memory_step import MemoryStep
+from .execution.knowledge_step import KnowledgeStep
+from .execution.prompt_builder import PromptBuilder
+from .execution.tool_executor import ToolExecutor
+from .execution.finish_step import FinishStep
+
 from bindai_core.model import (
     ModelRequest,
     ModelResponse,
 )
-from bindai_core.schema import SchemaSerializer
 
-from .output.parser import OutputParser
 from .result import AgentResult
 
 if TYPE_CHECKING:
@@ -20,6 +25,16 @@ class AgentExecutor:
     """
     Executes an agent by driving the full execution loop.
     """
+
+    memory = MemoryStep()
+    
+    knowledge = KnowledgeStep()
+
+    prompt_builder = PromptBuilder()
+
+    tool_executor = ToolExecutor()
+
+    finish_step = FinishStep()
 
     def execute(
         self,
@@ -48,7 +63,7 @@ class AgentExecutor:
 
         while True:
 
-            request = self._build_request(
+            request = self.prompt_builder.build(
                 agent,
                 context,
             )
@@ -72,10 +87,11 @@ class AgentExecutor:
 
             if not response.tool_calls:
 
-                result = self._finish(
+                result = self.finish_step.finish(
                     agent,
                     context,
                     response,
+                    self.memory,
                 )
 
                 for middleware in reversed(
@@ -90,7 +106,7 @@ class AgentExecutor:
 
                 return result
 
-            self._execute_tool_calls(
+            self.tool_executor.execute(
                 agent,
                 response,
             )
@@ -106,7 +122,7 @@ class AgentExecutor:
             context,
         )
 
-        request = self._build_request(
+        request = self.prompt_builder.build(
             agent,
             context,
         )
@@ -136,13 +152,27 @@ class AgentExecutor:
             "",
         )
 
+        from .bootstrap import register_agent_services
+
+        register_agent_services(
+            context.container,
+        )
+
+        memory = context.container.resolve(
+            MemoryStep,
+        )
+
+        knowledge = context.container.resolve(
+            KnowledgeStep,
+        )
+
         if len(agent.conversation) == 0:
 
             agent.conversation.add_system(
                 agent.instructions,
             )
 
-            self._load_memory(
+            memory.load(
                 agent,
             )
 
@@ -150,86 +180,10 @@ class AgentExecutor:
             user_input,
         )
 
-        if agent.knowledge is not None:
-
-            context_text = agent.knowledge.retrieve(
-                user_input,
-            )
-
-            if context_text:
-
-                agent.conversation.add_system(
-                    f"Relevant knowledge:\n{context_text}",
-                )
-
-    def _load_memory(
-        self,
-        agent: Agent,
-    ) -> None:
-
-        result = agent.memory.get(
-            "__context__",
+        knowledge.inject(
+            agent,
+            user_input,
         )
-
-        if not result.success:
-            return
-
-        record = result.value
-
-        if record is None:
-            return
-
-        agent.conversation.add_system(
-            f"Relevant memory:\n{record.value}",
-        )
-
-    def _save_memory(
-        self,
-        agent: Agent,
-    ) -> None:
-
-        transcript = []
-
-        for message in agent.conversation.messages:
-
-            transcript.append(
-                f"{message.role.value}: {message.content}"
-            )
-
-        from bindai_memory import MemoryRecord
-
-        agent.memory.set(
-            MemoryRecord(
-                key="__context__",
-                value="\n".join(
-                    transcript,
-                ),
-            )
-        )
-
-    def _build_request(
-        self,
-        agent: Agent,
-        context: ExecutionContext,
-    ) -> ModelRequest:
-
-        request = agent.conversation.to_request()
-
-        request.tools = agent.tools.definitions()
-
-        output_type = context.variables.get(
-            "output_type",
-        )
-
-        if output_type is not None:
-
-            request.response_schema = (
-                SchemaSerializer.serialize(
-                    output_type,
-                )
-            )
-
-        return request
 
     def _generate(
         self,
@@ -240,91 +194,3 @@ class AgentExecutor:
         return agent.provider.generate(
             request,
         )
-
-    def _execute_tool_calls(
-        self,
-        agent: Agent,
-        response: ModelResponse,
-    ) -> None:
-
-        agent.conversation.add_assistant_tool_call(
-            response.tool_calls,
-        )
-
-        for tool_call in response.tool_calls:
-
-            #
-            # Hook: before tool execution
-            #
-
-            for hook in agent.hooks:
-
-                hook.on_tool_start(
-                    tool_call,
-                )
-
-            result = agent.execute_tool(
-                tool_call.name,
-                **tool_call.arguments,
-            )
-
-            #
-            # Hook: after tool execution
-            #
-
-            for hook in agent.hooks:
-
-                hook.on_tool_end(
-                    tool_call,
-                    result,
-                )
-
-            agent.conversation.add_tool(
-                tool_call_id=tool_call.id,
-                content=(
-                    str(result.output)
-                    if result.success
-                    else f"ERROR: {result.error}"
-                ),
-            )
-
-    def _finish(
-        self,
-        agent: Agent,
-        context: ExecutionContext,
-        response: ModelResponse,
-    ) -> AgentResult:
-
-        agent.conversation.add_assistant(
-            response.content,
-        )
-
-        self._save_memory(
-            agent,
-        )
-
-        output_type = context.variables.get(
-            "output_type",
-        )
-
-        output = OutputParser.parse(
-            response.content,
-            output_type,
-        )
-
-        result = AgentResult(
-            success=True,
-            output=output,
-        )
-
-        #
-        # Notify hooks
-        #
-
-        for hook in agent.hooks:
-
-            hook.on_finish(
-                result,
-            )
-
-        return result

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from bindai_core.model import ModelProvider
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bindai_core.model.provider import ModelProvider
 
 from .exceptions import (
     ProviderAlreadyRegistered,
@@ -14,12 +17,12 @@ class ProviderRegistry:
 
         self._providers: dict[
             str,
-            ModelProvider,
+            "ModelProvider",
         ] = {}
 
     def register(
         self,
-        provider: ModelProvider,
+        provider: "ModelProvider",
     ):
 
         if provider.name in self._providers:
@@ -35,7 +38,7 @@ class ProviderRegistry:
     def get(
         self,
         name: str,
-    ) -> ModelProvider:
+    ) -> "ModelProvider":
 
         if name not in self._providers:
 

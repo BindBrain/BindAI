@@ -1,20 +1,23 @@
 from __future__ import annotations
 
-from bindai_core.model import ModelProvider
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bindai_core.model.provider import ModelProvider
 
 
 class ProviderFactory:
 
     _providers: dict[
         str,
-        type[ModelProvider],
+        type["ModelProvider"],
     ] = {}
 
     @classmethod
     def register(
         cls,
         name: str,
-        provider: type[ModelProvider],
+        provider: type["ModelProvider"],
     ):
 
         cls._providers[

@@ -9,6 +9,7 @@ from .factory import ProviderFactory
 from .manager import ProviderManager
 from .registry import ProviderRegistry
 from .capabilities import ProviderCapabilities
+from .base import BaseProvider
 
 __all__ = [
     "ProviderConfiguration",
@@ -20,4 +21,5 @@ __all__ = [
     "ProviderAlreadyRegistered",
     "DefaultProviderNotConfigured",
     "ProviderCapabilities",
+    "BaseProvider",
 ]

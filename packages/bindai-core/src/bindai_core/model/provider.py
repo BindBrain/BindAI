@@ -27,16 +27,15 @@ class ModelProvider(ABC):
         )
 
     @property
-    @abstractmethod
     def capabilities(
         self,
     ) -> ProviderCapabilities:
-        ...
+        """
+        Default provider capabilities.
 
-    @property
-    def capabilities(
-        self,
-    ) -> ProviderCapabilities:
+        Providers override when needed.
+        """
+
         return ProviderCapabilities()
 
     @abstractmethod

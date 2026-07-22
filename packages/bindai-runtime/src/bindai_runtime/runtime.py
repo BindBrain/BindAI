@@ -1,19 +1,35 @@
-from bindai_core import ExecutionContext
+from __future__ import annotations
 
-from .executor import Executor
+from bindai_core.context import ExecutionContext
+
+from .bootstrap import create_registry
+from .engine import ExecutionEngine
+from .scheduler import Scheduler
 
 
 class BindRuntime:
+    """
+    Central runtime for BindAI.
+    """
 
     def __init__(self):
 
-        self._executor = Executor()
+        self.context = ExecutionContext()
 
-    def run(self, executable):
+        self.registry = create_registry()
 
-        context = ExecutionContext()
+        self.engine = ExecutionEngine(
+            self.registry,
+        )
 
-        return self._executor.execute(
+        self.scheduler = Scheduler()
+
+    def run(
+        self,
+        executable,
+    ):
+
+        return self.engine.execute(
             executable,
-            context,
+            self.context,
         )

@@ -32,3 +32,5 @@ class ExecutionContext:
     metadata: dict = field(
         default_factory=dict,
     )
+
+    data: object | None = None

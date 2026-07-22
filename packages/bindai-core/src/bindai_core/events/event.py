@@ -5,11 +5,8 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, kw_only=True)
 class Event:
-    """
-    Base event class.
-    """
 
     name: str
 
@@ -17,4 +14,10 @@ class Event:
 
     id: str = field(default_factory=lambda: str(uuid4()))
 
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(
+        default_factory=lambda: datetime.now(UTC)
+    )
+
+    @property
+    def name(self) -> str:
+        raise NotImplementedError

@@ -3,184 +3,175 @@ from __future__ import annotations
 import json
 
 from bindai_core import (
-	ModelProvider,
-	ModelRequest,
-	ModelResponse,
-	ProviderCapabilities,
-	ProviderConfiguration,
-	StreamChunk,
-	TokenUsage,
+    ModelProvider,
+    ModelRequest,
+    ModelResponse,
+    ProviderCapabilities,
+    ProviderConfiguration,
+    StreamChunk,
+    TokenUsage,
 )
 
 from .client import OpenAIClient
 from .mapper import OpenAIMapper
 
 class OpenAIProvider(ModelProvider):
-	"""
-	OpenAI implementation of ModelProvider.
-	"""
+    """
+    OpenAI implementation of ModelProvider.
+    """
 
-	def __init__(
-		self,
-		configuration: ProviderConfiguration,
-	):
-		super().__init__(configuration)
+    def __init__(
+        self,
+        configuration: ProviderConfiguration,
+    ):
+        super().__init__(configuration)
 
-		self._client = OpenAIClient(configuration)
+        self._client = OpenAIClient(configuration)
 
-	@property
-	def name(self) -> str:
-		return "openai"
+    @property
+    def name(self) -> str:
+        return "openai"
 
-	@property
-	def capabilities(self) -> ProviderCapabilities:
-		capabilities = ProviderCapabilities()
+    def _build_kwargs(
+        self,
+        request: ModelRequest,
+    ) -> dict:
 
-		capabilities.streaming = True
-		capabilities.tool_calling = True
+        kwargs = {
+            "model": self.configuration.model,
+            "messages": OpenAIMapper.messages(
+                request.messages,
+            ),
+        }
 
-		return capabilities
+        if request.response_schema is not None:
 
-	def _build_kwargs(
-		self,
-		request: ModelRequest,
-	) -> dict:
+            kwargs["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": (
+                        request.response_schema
+                        .model
+                        .__name__
+                    ),
+                    "schema": (
+                        request.response_schema
+                        .json_schema
+                    ),
+                },
+            }
 
-		kwargs = {
-			"model": self.configuration.model,
-			"messages": OpenAIMapper.messages(
-				request.messages,
-			),
-		}
+        if request.tools:
+            kwargs["tools"] = OpenAIMapper.tools(
+                request.tools,
+            )
 
-		if request.response_schema is not None:
+        if request.temperature != 1:
+            kwargs["temperature"] = request.temperature
 
-			kwargs["response_format"] = {
-				"type": "json_schema",
-				"json_schema": {
-					"name": (
-						request.response_schema
-						.model
-						.__name__
-					),
-					"schema": (
-						request.response_schema
-						.json_schema
-					),
-				},
-			}
+        if request.max_tokens is not None:
+            kwargs["max_tokens"] = request.max_tokens
 
-		if request.tools:
-			kwargs["tools"] = OpenAIMapper.tools(
-				request.tools,
-			)
+        if request.top_p is not None:
+            kwargs["top_p"] = request.top_p
 
-		if request.temperature != 1:
-			kwargs["temperature"] = request.temperature
+        if request.frequency_penalty is not None:
+            kwargs["frequency_penalty"] = request.frequency_penalty
 
-		if request.max_tokens is not None:
-			kwargs["max_tokens"] = request.max_tokens
+        if request.presence_penalty is not None:
+            kwargs["presence_penalty"] = request.presence_penalty
 
-		if request.top_p is not None:
-			kwargs["top_p"] = request.top_p
+        if request.stop is not None:
+            kwargs["stop"] = request.stop
 
-		if request.frequency_penalty is not None:
-			kwargs["frequency_penalty"] = request.frequency_penalty
+        return kwargs
 
-		if request.presence_penalty is not None:
-			kwargs["presence_penalty"] = request.presence_penalty
+    def generate(
+        self,
+        request: ModelRequest,
+    ) -> ModelResponse:
 
-		if request.stop is not None:
-			kwargs["stop"] = request.stop
+        response = self._client.client.chat.completions.create(
+            **self._build_kwargs(
+                request,
+            ),
+        )
 
-		return kwargs
+        usage = TokenUsage(
+            prompt_tokens=response.usage.prompt_tokens,
+            completion_tokens=response.usage.completion_tokens,
+            total_tokens=response.usage.total_tokens,
+        )
 
-	def generate(
-		self,
-		request: ModelRequest,
-	) -> ModelResponse:
+        structured_output = None
 
-		response = self._client.client.chat.completions.create(
-			**self._build_kwargs(
-				request,
-			),
-		)
+        if request.response_schema is not None:
 
-		usage = TokenUsage(
-			prompt_tokens=response.usage.prompt_tokens,
-			completion_tokens=response.usage.completion_tokens,
-			total_tokens=response.usage.total_tokens,
-		)
+            data = json.loads(
+                response.choices[0].message.content
+            )
 
-		structured_output = None
+            structured_output = (
+                request.response_schema.model(
+                    **data,
+                )
+            )
 
-		if request.response_schema is not None:
+        return ModelResponse(
+            content=response.choices[0].message.content or "",
+            usage=usage,
+            tool_calls=OpenAIMapper.tool_calls(
+                response.choices[0].message,
+            ),
+            structured_output=structured_output,
+        )
 
-			data = json.loads(
-				response.choices[0].message.content
-			)
+    def stream(
+        self,
+        request: ModelRequest,
+    ):
 
-			structured_output = (
-				request.response_schema.model(
-					**data,
-				)
-			)
+        response = self._client.client.chat.completions.create(
+            stream=True,
+            **self._build_kwargs(
+                request,
+            ),
+        )
 
-		return ModelResponse(
-			content=response.choices[0].message.content or "",
-			usage=usage,
-			tool_calls=OpenAIMapper.tool_calls(
-				response.choices[0].message,
-			),
-			structured_output=structured_output,
-		)
+        for chunk in response:
 
-	def stream(
-		self,
-		request: ModelRequest,
-	):
+            if not chunk.choices:
+                continue
 
-		response = self._client.client.chat.completions.create(
-			stream=True,
-			**self._build_kwargs(
-				request,
-			),
-		)
+            delta = (
+                chunk.choices[0]
+                .delta
+                .content
+            )
 
-		for chunk in response:
+            if delta:
 
-			if not chunk.choices:
-				continue
+                yield StreamChunk(
+                    delta=delta,
+                )
 
-			delta = (
-				chunk.choices[0]
-				.delta
-				.content
-			)
+        yield StreamChunk(
+            delta="",
+            finished=True,
+        )
 
-			if delta:
+    @property
+    def capabilities(
+        self,
+    ):
 
-				yield StreamChunk(
-					delta=delta,
-				)
+        return ProviderCapabilities(
 
-		yield StreamChunk(
-			delta="",
-			finished=True,
-		)
+            supports_tools=True,
 
-	@property
-	def capabilities(
-		self,
-	):
+            supports_streaming=True,
 
-		return ProviderCapabilities(
+            supports_structured_output=True,
 
-			supports_tools=True,
-
-			supports_streaming=True,
-
-			supports_structured_output=True,
-
-			supports_vision=True,
-		)
+            supports_vision=True,
+        )
