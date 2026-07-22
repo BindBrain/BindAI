@@ -2,7 +2,6 @@ from bindai_core import (
     AssistantAgent,
     ExecutionContext,
     ModelProvider,
-    ModelRequest,
     ModelResponse,
     TokenUsage,
     ToolCall,

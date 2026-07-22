@@ -4,7 +4,6 @@ from bindai_core.context import ExecutionContext
 from bindai_core.model import (
     ModelProvider,
     ProviderCapabilities,
-    ModelRequest,
     ModelResponse,
 )
 

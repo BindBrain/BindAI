@@ -94,7 +94,6 @@ from .agent import (
 from .provider import (
     ProviderConfiguration,
     ProviderFactory,
-    ProviderManager,
     ProviderRegistry,
 )
 
@@ -181,7 +180,6 @@ __all__ = [
     # Providers
     "ProviderConfiguration",
     "ProviderFactory",
-    "ProviderManager",
     # Prompt
     "Prompt",
     "PromptBuilder",

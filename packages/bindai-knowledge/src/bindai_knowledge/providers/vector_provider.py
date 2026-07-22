@@ -139,8 +139,6 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             filters=filters,
         )
 
-        keyword_scores = {document.id: score for score, document in keyword.value}
-
         #
         # Vector ranking
         #
@@ -150,8 +148,6 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             limit=1000,
             filters=filters,
         )
-
-        vector_scores = {document.id: score for score, document in vector.value}
 
         #
         # Merge

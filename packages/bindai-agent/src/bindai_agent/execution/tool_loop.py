@@ -21,20 +21,16 @@ class ToolLoop(
         state: ExecutionState = context.data
 
         while True:
-
             response = state.response
 
             #
             # No tool calls
             #
 
-            if (
-                response is None
-                or not getattr(
-                    response,
-                    "tool_calls",
-                    None,
-                )
+            if response is None or not getattr(
+                response,
+                "tool_calls",
+                None,
             ):
                 return
 
@@ -43,11 +39,8 @@ class ToolLoop(
             #
 
             for call in response.tool_calls:
-
-                result = (
-                    agent.tool_executor.execute(
-                        call,
-                    )
+                result = agent.tool_executor.execute(
+                    call,
                 )
 
                 agent.conversation.add_tool(
@@ -59,8 +52,6 @@ class ToolLoop(
             # Ask model again
             #
 
-            state.response = (
-                agent.provider.generate(
-                    state.request,
-                )
+            state.response = agent.provider.generate(
+                state.request,
             )

@@ -25,9 +25,7 @@ class ExecutionPipeline:
     ):
 
         while True:
-
             for step in self.steps:
-
                 result = step.execute(
                     agent,
                     context,

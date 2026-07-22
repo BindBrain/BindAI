@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from uuid import uuid4
 
 from bindai_core.container import BindContainer
-from bindai_core.events import EventBus
+from bindai_core.events.event_bus import EventBus
 from bindai_core.registry import Registry
 
 from .state import ExecutionState

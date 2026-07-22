@@ -42,36 +42,6 @@ class FunctionTool(Tool):
             self.function,
         )
 
-        schema: dict[str, Any] = {}
-
-        for name, parameter in signature.parameters.items():
-            annotation = parameter.annotation
-
-            if annotation is int:
-                parameter_type = "integer"
-
-            elif annotation is float:
-                parameter_type = "number"
-
-            elif annotation is bool:
-                parameter_type = "boolean"
-
-            elif annotation is list:
-                parameter_type = "array"
-
-            elif annotation is dict:
-                parameter_type = "object"
-
-            else:
-                parameter_type = "string"
-
-            schema[name] = {
-                "type": parameter_type,
-                "required": (parameter.default is inspect.Parameter.empty),
-            }
-
-        return schema
-
     def execute(
         self,
         **kwargs,

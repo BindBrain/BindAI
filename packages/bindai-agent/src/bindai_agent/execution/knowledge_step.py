@@ -36,10 +36,7 @@ class KnowledgeStep(
         if not documents:
             return
 
-        content = "\n\n".join(
-            doc.content
-            for doc in documents
-        )
+        content = "\n\n".join(doc.content for doc in documents)
 
         agent.conversation.add_system(
             f"Relevant knowledge:\n{content}",

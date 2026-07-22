@@ -4,7 +4,6 @@ from bindai_core.context import ExecutionContext
 
 from .result import WorkflowResult
 from .workflow import Workflow
-from .instance import WorkflowInstance
 
 
 class WorkflowExecutor:

@@ -21,10 +21,7 @@ class ToolExecutor(
 
         response = state.response
 
-        if (
-            response is None
-            or not response.tool_calls
-        ):
+        if response is None or not response.tool_calls:
             return
 
         agent.conversation.add_assistant_tool_call(
@@ -32,7 +29,6 @@ class ToolExecutor(
         )
 
         for tool_call in response.tool_calls:
-
             #
             # Hooks
             #
@@ -56,9 +52,7 @@ class ToolExecutor(
             agent.conversation.add_tool(
                 tool_call_id=tool_call.id,
                 content=(
-                    str(result.output)
-                    if result.success
-                    else f"ERROR: {result.error}"
+                    str(result.output) if result.success else f"ERROR: {result.error}"
                 ),
             )
 

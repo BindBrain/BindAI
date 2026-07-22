@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .workflow import Workflow
+from .validator import WorkflowValidator
 
 
 class WorkflowBuilder:
@@ -14,11 +15,13 @@ class WorkflowBuilder:
 
         validator = WorkflowValidator()
 
-    errors = validator.validate(
-        self._workflow,
-    )
+        errors = validator.validate(
+            self._workflow,
+        )
 
-    if errors:
-        raise ValueError("\n".join(errors))
+        if errors:
+            raise ValueError(
+                "\n".join(errors),
+            )
 
-    return self._workflow
+        return self._workflow

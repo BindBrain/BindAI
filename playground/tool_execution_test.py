@@ -3,7 +3,6 @@ from bindai_core import (
     Tool,
     ToolResult,
     ModelProvider,
-    ModelRequest,
     ModelResponse,
     TokenUsage,
 )

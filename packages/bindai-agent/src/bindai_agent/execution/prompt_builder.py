@@ -28,10 +28,8 @@ class PromptBuilder:
         )
 
         if output_type is not None:
-            request.response_schema = (
-                SchemaSerializer.serialize(
-                    output_type,
-                )
+            request.response_schema = SchemaSerializer.serialize(
+                output_type,
             )
 
         state.request = request

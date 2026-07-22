@@ -34,7 +34,8 @@ class ApplicationBuilder:
 
     def build(
         self,
-        load_dotenv()
     ) -> Application:
+
+        load_dotenv()
 
         return self._application

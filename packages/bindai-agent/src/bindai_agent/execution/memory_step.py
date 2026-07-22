@@ -43,9 +43,7 @@ class MemoryStep(
         transcript = []
 
         for message in agent.conversation.messages:
-            transcript.append(
-                f"{message.role.value}: {message.content}"
-            )
+            transcript.append(f"{message.role.value}: {message.content}")
 
         agent.memory.set(
             MemoryRecord(

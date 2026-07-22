@@ -22,3 +22,7 @@ authors = [
 dev = [
     "pytest>=8.4",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"packages/bindai-core/src/bindai_core/events/__init__.py" = ["F403"]
+"packages/bindai-core/src/bindai_core/exceptions/__init__.py" = ["F403"]

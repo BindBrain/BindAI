@@ -16,10 +16,7 @@ class GraphNode(ABC):
         self,
         name: str | None = None,
     ):
-        self.name = (
-            name
-            or self.__class__.__name__
-        )
+        self.name = name or self.__class__.__name__
 
     @abstractmethod
     def execute(

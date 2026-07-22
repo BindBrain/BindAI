@@ -29,7 +29,6 @@ class FinishStep(
         #
 
         if state.response is not None:
-
             response = state.response.content
 
             agent.conversation.add_assistant(
@@ -41,7 +40,6 @@ class FinishStep(
         #
 
         if agent.memory is not None:
-
             transcript = "\n".join(
                 f"{message.role.value}: {message.content}"
                 for message in agent.conversation.messages

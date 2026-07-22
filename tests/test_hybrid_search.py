@@ -4,9 +4,6 @@ from bindai_knowledge import (
     VectorKnowledgeProvider,
 )
 from bindai_knowledge import (
-    Knowledge,
-    KnowledgeDocument,
-    VectorKnowledgeProvider,
     FakeEmbeddingProvider,
 )
 
