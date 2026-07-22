@@ -7,9 +7,7 @@ from bindai_knowledge.document import KnowledgeDocument
 
 
 class DocumentLoader(ABC):
-
     @abstractmethod
     def load(
         self,
-    ) -> list[KnowledgeDocument]:
-        ...
+    ) -> list[KnowledgeDocument]: ...

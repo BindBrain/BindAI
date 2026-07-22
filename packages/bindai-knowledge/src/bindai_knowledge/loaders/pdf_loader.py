@@ -8,7 +8,6 @@ from .base import DocumentLoader
 
 
 class PDFLoader(DocumentLoader):
-
     def __init__(
         self,
         path: str,
@@ -24,15 +23,12 @@ class PDFLoader(DocumentLoader):
         text = ""
 
         for page in reader.pages:
-
             page_text = page.extract_text()
 
             if page_text:
-
                 text += page_text + "\n"
 
         return [
-
             KnowledgeDocument(
                 id=self.path.stem,
                 title=self.path.name,
@@ -42,5 +38,4 @@ class PDFLoader(DocumentLoader):
                     "extension": self.path.suffix,
                 },
             )
-
         ]

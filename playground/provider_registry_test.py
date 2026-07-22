@@ -7,7 +7,6 @@ from bindai_core import (
 
 
 class DummyProvider(ModelProvider):
-
     @property
     def name(self):
         return "dummy"
@@ -26,14 +25,8 @@ registry.register(
     DummyProvider(),
 )
 
-print(
-    registry.names()
-)
+print(registry.names())
 
-print(
-    registry.contains("dummy")
-)
+print(registry.contains("dummy"))
 
-print(
-    registry.get("dummy").name
-)
+print(registry.get("dummy").name)

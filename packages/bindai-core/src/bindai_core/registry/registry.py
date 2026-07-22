@@ -16,17 +16,13 @@ class Registry:
 
     def register(self, key: str, value: Any) -> None:
         if key in self._items:
-            raise ValueError(
-                f"'{key}' is already registered."
-            )
+            raise ValueError(f"'{key}' is already registered.")
 
         self._items[key] = value
 
     def get(self, key: str) -> Any:
         if key not in self._items:
-            raise KeyError(
-                f"'{key}' is not registered."
-            )
+            raise KeyError(f"'{key}' is not registered.")
 
         return self._items[key]
 
@@ -62,9 +58,7 @@ class Registry:
         self,
     ):
 
-        return iter(
-            self._items.values()
-        )
+        return iter(self._items.values())
 
     def __getitem__(
         self,
@@ -105,8 +99,4 @@ class Registry:
 
     def __repr__(self):
 
-        return (
-
-            f"Registry(items={len(self._items)})"
-
-        )
+        return f"Registry(items={len(self._items)})"

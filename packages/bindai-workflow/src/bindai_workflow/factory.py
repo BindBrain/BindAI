@@ -23,9 +23,7 @@ class WorkflowFactory:
     ) -> Workflow:
 
         workflow = Workflow(
-
             name=data["name"],
-
         )
 
         workflow.id = data["id"]
@@ -35,13 +33,10 @@ class WorkflowFactory:
         workflow.start_node = data["start_node"]
 
         for node_data in data["nodes"]:
-
             node = self.node_factory.create(
                 node_data,
             )
 
-            workflow.nodes[
-                node.id
-            ] = node
+            workflow.nodes[node.id] = node
 
         return workflow

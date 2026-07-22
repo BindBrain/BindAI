@@ -51,9 +51,7 @@ class Workflow:
         """
 
         if node.id in self.nodes:
-            raise ValueError(
-                f"Node '{node.id}' already exists."
-            )
+            raise ValueError(f"Node '{node.id}' already exists.")
 
         self.nodes[node.id] = node
 
@@ -80,18 +78,11 @@ class Workflow:
         #
 
         for node in self.nodes.values():
-
             if node_id in node.next_nodes:
-
                 node.disconnect(node_id)
 
         if self.start_node == node_id:
-
-            self.start_node = (
-                next(iter(self.nodes))
-                if self.nodes
-                else None
-            )
+            self.start_node = next(iter(self.nodes)) if self.nodes else None
 
     def get(
         self,
@@ -117,14 +108,10 @@ class Workflow:
         """
 
         if source not in self.nodes:
-            raise KeyError(
-                f"Unknown source node '{source}'."
-            )
+            raise KeyError(f"Unknown source node '{source}'.")
 
         if target not in self.nodes:
-            raise KeyError(
-                f"Unknown target node '{target}'."
-            )
+            raise KeyError(f"Unknown target node '{target}'.")
 
         self.nodes[source].connect(target)
 

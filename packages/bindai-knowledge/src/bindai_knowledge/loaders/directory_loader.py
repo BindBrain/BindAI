@@ -30,7 +30,6 @@ class DirectoryLoader(DocumentLoader):
         pattern = "**/*" if self.recursive else "*"
 
         for file in self.path.glob(pattern):
-
             if not file.is_file():
                 continue
 

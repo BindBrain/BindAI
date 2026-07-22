@@ -10,7 +10,6 @@ from bindai_core import (
 
 
 class DummyProvider(ModelProvider):
-
     @property
     def name(self):
         return "dummy"
@@ -23,7 +22,6 @@ class DummyProvider(ModelProvider):
 
 
 class LoggingMiddleware(Middleware):
-
     def before_execute(
         self,
         agent,

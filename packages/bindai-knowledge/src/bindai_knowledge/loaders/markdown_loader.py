@@ -5,7 +5,6 @@ from .base import DocumentLoader
 
 
 class MarkdownLoader(DocumentLoader):
-
     def __init__(
         self,
         path: str,

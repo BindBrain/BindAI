@@ -7,7 +7,6 @@ from .store import WorkflowStore
 class MemoryWorkflowStore(
     WorkflowStore,
 ):
-
     def __init__(self):
 
         self.instances = {}
@@ -17,9 +16,7 @@ class MemoryWorkflowStore(
         instance: WorkflowInstance,
     ):
 
-        self.instances[
-            instance.id
-        ] = instance
+        self.instances[instance.id] = instance
 
     def load(
         self,

@@ -21,10 +21,7 @@ class ModelProvider(ABC):
         self,
         configuration: ProviderConfiguration | None = None,
     ):
-        self.configuration = (
-            configuration
-            or ProviderConfiguration()
-        )
+        self.configuration = configuration or ProviderConfiguration()
 
     @property
     def capabilities(
@@ -79,6 +76,4 @@ class ModelProvider(ABC):
         should override or raise.
         """
 
-        raise NotImplementedError(
-            "Embeddings not supported."
-        )
+        raise NotImplementedError("Embeddings not supported.")

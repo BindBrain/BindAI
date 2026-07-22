@@ -15,28 +15,16 @@ class WorkflowExpression:
         variables,
     ) -> bool:
 
-        scope = {
-
-            key: value
-
-            for key, value in variables.items()
-
-        }
+        scope = {key: value for key, value in variables.items()}
 
         scope["true"] = True
         scope["false"] = False
         scope["null"] = None
 
         return bool(
-
             eval(
-
                 expression,
-
                 {},
-
                 scope,
-
             )
-
         )

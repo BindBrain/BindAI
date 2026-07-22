@@ -4,7 +4,6 @@ from .embedding import EmbeddingProvider
 
 
 class FakeEmbeddingProvider(EmbeddingProvider):
-
     def embed(
         self,
         text: str,

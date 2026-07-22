@@ -4,7 +4,6 @@ from .session import AgentSession
 
 
 class SessionManager:
-
     def create(
         self,
         agent,

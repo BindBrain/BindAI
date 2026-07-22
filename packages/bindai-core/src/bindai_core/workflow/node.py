@@ -91,9 +91,5 @@ class WorkflowNode(ABC):
 
         self.id = data["id"]
         self.name = data.get("name", self.id)
-        self.next_nodes = list(
-            data.get("next_nodes", [])
-        )
-        self.metadata = dict(
-            data.get("metadata", {})
-        )
+        self.next_nodes = list(data.get("next_nodes", []))
+        self.metadata = dict(data.get("metadata", {}))

@@ -29,8 +29,6 @@ class SubWorkflowNode(
         context,
     ):
 
-        context.subworkflow = (
-            self.workflow_id
-        )
+        context.subworkflow = self.workflow_id
 
         return context

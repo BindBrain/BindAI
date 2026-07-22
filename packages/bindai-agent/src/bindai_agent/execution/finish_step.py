@@ -1,64 +1,67 @@
 from __future__ import annotations
 
-from ..output.parser import OutputParser
-from ..result import AgentResult
+from bindai_memory import MemoryRecord
+
+from .result import ExecutionResult
+from .state import ExecutionState
+from .step import ExecutionStep
 
 
-class FinishStep:
+class FinishStep(
+    ExecutionStep,
+):
     """
-    Finalizes an agent execution.
+    Finalizes execution.
     """
 
-    def finish(
+    def execute(
         self,
         agent,
         context,
-        response,
-        memory_step,
-    ) -> AgentResult:
+    ):
+
+        state: ExecutionState = context.data
+
+        response = None
 
         #
-        # Save assistant message
+        # Store assistant message
         #
 
-        agent.conversation.add_assistant(
-            response.content,
-        )
+        if state.response is not None:
 
-        #
-        # Persist memory
-        #
+            response = state.response.content
 
-        memory_step.save(
-            agent,
-        )
-
-        #
-        # Structured output
-        #
-
-        output_type = context.variables.get(
-            "output_type",
-        )
-
-        output = OutputParser.parse(
-            response.content,
-            output_type,
-        )
-
-        result = AgentResult(
-            success=True,
-            output=output,
-        )
-
-        #
-        # Hooks
-        #
-
-        for hook in agent.hooks:
-
-            hook.on_finish(
-                result,
+            agent.conversation.add_assistant(
+                response,
             )
+
+        #
+        # Persist conversation memory
+        #
+
+        if agent.memory is not None:
+
+            transcript = "\n".join(
+                f"{message.role.value}: {message.content}"
+                for message in agent.conversation.messages
+            )
+
+            agent.memory.set(
+                MemoryRecord(
+                    key="__context__",
+                    value=transcript,
+                )
+            )
+
+        result = ExecutionResult(
+            success=True,
+            response=response,
+            iterations=state.iterations,
+        )
+
+        #
+        # Middleware (after)
+        #
 
         return result

@@ -2,7 +2,6 @@ from bindai_runtime import BindRuntime
 
 
 class HelloWorkflow:
-
     def execute(self, context):
 
         print("Hello from BindAI Runtime")
@@ -14,9 +13,7 @@ class HelloWorkflow:
 
 runtime = BindRuntime()
 
-result = runtime.run(
-    HelloWorkflow()
-)
+result = runtime.run(HelloWorkflow())
 
 print(result.success)
 

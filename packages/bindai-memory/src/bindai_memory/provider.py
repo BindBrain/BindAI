@@ -16,36 +16,31 @@ class MemoryProvider(ABC):
     def set(
         self,
         record: MemoryRecord,
-    ) -> MemoryResult:
-        ...
+    ) -> MemoryResult: ...
 
     @abstractmethod
     def get(
         self,
         key: str,
         namespace: str = "default",
-    ) -> MemoryResult:
-        ...
+    ) -> MemoryResult: ...
 
     @abstractmethod
     def delete(
         self,
         key: str,
         namespace: str = "default",
-    ) -> MemoryResult:
-        ...
+    ) -> MemoryResult: ...
 
     @abstractmethod
     def exists(
         self,
         key: str,
         namespace: str = "default",
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
     @abstractmethod
     def clear(
         self,
         namespace: str = "default",
-    ) -> MemoryResult:
-        ...
+    ) -> MemoryResult: ...

@@ -12,7 +12,6 @@ from bindai_core.model import (
 
 
 class CaptureProvider:
-
     def __init__(self):
 
         self.last_request = None
@@ -37,15 +36,10 @@ def test_knowledge_is_injected():
     )
 
     knowledge.add(
-
         KnowledgeDocument(
-
             id="1",
-
             title="BindAI",
-
             content="BindAI is an AI framework.",
-
         )
     )
 
@@ -53,9 +47,7 @@ def test_knowledge_is_injected():
 
     agent = (
         AssistantAgent.builder()
-        .instructions(
-            "You are helpful."
-        )
+        .instructions("You are helpful.")
         .knowledge(
             knowledge,
         )
@@ -65,16 +57,10 @@ def test_knowledge_is_injected():
         .build()
     )
 
-    agent.chat(
-        "What is BindAI?"
-    )
+    agent.chat("What is BindAI?")
 
     conversation = "\n".join(
-
-        message.content
-
-        for message in provider.last_request.messages
-
+        message.content for message in provider.last_request.messages
     )
 
     assert "Relevant knowledge:" in conversation

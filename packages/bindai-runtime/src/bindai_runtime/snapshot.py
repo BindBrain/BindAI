@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
+
 @dataclass(slots=True)
 class ExecutionSnapshot:
-
     execution_id: str
 
     state: object

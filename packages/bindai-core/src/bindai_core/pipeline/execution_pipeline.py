@@ -30,20 +30,16 @@ class ExecutionPipeline:
 
         # New API
         if isinstance(request_or_agent, ExecutionRequest):
-
             request = request_or_agent
             agent = request.agent
             context = request.context
 
         # Old API
         else:
-
             agent = request_or_agent
 
             if context is None:
-                raise ValueError(
-                    "ExecutionContext is required."
-                )
+                raise ValueError("ExecutionContext is required.")
 
         # Before execution
         for middleware in self._middleware:

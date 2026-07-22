@@ -30,18 +30,13 @@ class ToolRegistry:
         self,
     ) -> list[ToolDefinition]:
 
-        return [
-            tool.definition
-            for tool in self._tools.values()
-        ]
+        return [tool.definition for tool in self._tools.values()]
 
     def all(
         self,
     ):
 
-        return list(
-            self._tools.values()
-        )
+        return list(self._tools.values())
 
     def contains(
         self,

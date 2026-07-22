@@ -1,7 +1,18 @@
 from __future__ import annotations
 
+from collections import deque
+
 
 class GraphExecutor:
+    """
+    Executes an ExecutionGraph.
+
+    Supports:
+        • DAG traversal
+        • conditional routing
+        • multiple outgoing edges
+        • future parallel execution
+    """
 
     def execute(
         self,
@@ -9,26 +20,44 @@ class GraphExecutor:
         agent,
         context,
     ):
+        queue = deque(
+            graph.roots(),
+        )
 
-        current = "start"
+        visited = set()
 
-        while current:
+        while queue:
+            current = queue.popleft()
 
-            node = graph.nodes[current]
+            if current in visited:
+                continue
 
-            node.execute(
+            visited.add(
+                current,
+            )
+
+            node = graph.get_node(
+                current,
+            )
+
+            node.run(
                 agent,
                 context,
             )
 
-            next_node = None
+            for edge in graph.outgoing(
+                current,
+            ):
+                #
+                # Conditional edge
+                #
 
-            for edge in graph.edges:
+                if edge.condition is not None:
+                    if not edge.condition(
+                        context,
+                    ):
+                        continue
 
-                if edge.source == current:
-
-                    next_node = edge.target
-
-                    break
-
-            current = next_node
+                queue.append(
+                    edge.target,
+                )

@@ -16,10 +16,7 @@ class Memory:
         backend: MemoryBackend | None = None,
     ):
 
-        self.backend = (
-            backend
-            or InMemoryBackend()
-        )
+        self.backend = backend or InMemoryBackend()
 
     def save(
         self,

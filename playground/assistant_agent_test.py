@@ -9,7 +9,6 @@ from bindai_core import (
 
 
 class DummyProvider(ModelProvider):
-
     @property
     def name(self):
         return "dummy"

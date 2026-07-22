@@ -9,9 +9,7 @@ from bindai_core.executable import ExecutionResult
 class RuntimeExecutable(
     Protocol,
 ):
-
     def execute(
         self,
         context: ExecutionContext,
-    ) -> ExecutionResult:
-        ...
+    ) -> ExecutionResult: ...

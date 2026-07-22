@@ -6,7 +6,6 @@ from ..result import KnowledgeResult
 
 
 class InMemoryKnowledgeProvider(KnowledgeProvider):
-
     def __init__(self):
 
         self._documents: dict[
@@ -19,9 +18,7 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
         document: KnowledgeDocument,
     ) -> KnowledgeResult:
 
-        self._documents[
-            document.id
-        ] = document
+        self._documents[document.id] = document
 
         return KnowledgeResult(
             success=True,
@@ -34,9 +31,7 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
     ) -> KnowledgeResult:
 
         for document in documents:
-            self._documents[
-                document.id
-            ] = document
+            self._documents[document.id] = document
 
         return KnowledgeResult(
             success=True,
@@ -70,10 +65,7 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
 
         return KnowledgeResult(
             success=result.success,
-            value=[
-                document
-                for _, document in result.value
-            ],
+            value=[document for _, document in result.value],
         )
 
     def search_with_scores(
@@ -85,25 +77,16 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
 
         query = query.strip().lower()
 
-        words = [
-            word.strip(".,?!")
-            for word in query.split()
-            if len(word) > 2
-        ]
+        words = [word.strip(".,?!") for word in query.split() if len(word) > 2]
 
-        results: list[
-            tuple[int, KnowledgeDocument]
-        ] = []
+        results: list[tuple[int, KnowledgeDocument]] = []
 
         for document in self._documents.values():
-
             if filters:
-
                 metadata = document.metadata or {}
 
                 if not all(
-                    metadata.get(key) == value
-                    for key, value in filters.items()
+                    metadata.get(key) == value for key, value in filters.items()
                 ):
                     continue
 
@@ -111,14 +94,12 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
             content = document.content.lower()
 
             metadata_text = " ".join(
-                str(value)
-                for value in (document.metadata or {}).values()
+                str(value) for value in (document.metadata or {}).values()
             ).lower()
 
             score = 0
 
             if query:
-
                 if query in title:
                     score += 10
 
@@ -126,7 +107,6 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
                     score += 5
 
             for word in words:
-
                 if word in title:
                     score += 5
                     score += title.count(word)
@@ -139,7 +119,6 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
                     score += 1
 
             if score > 0:
-
                 results.append(
                     (
                         score,

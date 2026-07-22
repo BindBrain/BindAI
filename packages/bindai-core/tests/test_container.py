@@ -53,13 +53,11 @@ def test_resolve_missing_service():
     container = BindContainer()
 
     try:
-
         container.resolve(Service)
 
         assert False
 
     except KeyError:
-
         assert True
 
 

@@ -25,10 +25,7 @@ def test_directory_loader(tmp_path: Path):
 
     assert len(documents) == 2
 
-    titles = {
-        d.title
-        for d in documents
-    }
+    titles = {d.title for d in documents}
 
     assert "a.txt" in titles
 

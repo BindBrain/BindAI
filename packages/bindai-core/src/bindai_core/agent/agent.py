@@ -32,10 +32,7 @@ class Agent(Executable, ABC):
         configuration: AgentConfiguration | None = None,
     ):
 
-        self.configuration = (
-            configuration
-            or AgentConfiguration()
-        )
+        self.configuration = configuration or AgentConfiguration()
 
         self.configuration.name = name
         self.configuration.instructions = instructions
@@ -100,7 +97,6 @@ class Agent(Executable, ABC):
         self.tools.register(
             tool,
         )
-
 
     def add_tool(
         self,

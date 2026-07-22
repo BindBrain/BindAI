@@ -6,7 +6,6 @@ from ..node import WorkflowNode
 class ToolNode(
     WorkflowNode,
 ):
-
     def __init__(
         self,
         node_id: str,

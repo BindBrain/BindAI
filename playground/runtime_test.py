@@ -7,7 +7,6 @@ from bindai_core import (
 
 
 class HelloExecutable(Executable):
-
     def execute(
         self,
         context: ExecutionContext,
@@ -23,9 +22,7 @@ class HelloExecutable(Executable):
 
 runtime = BindRuntime()
 
-result = runtime.execute(
-    HelloExecutable()
-)
+result = runtime.execute(HelloExecutable())
 
 print(result.success)
 print(result.output)

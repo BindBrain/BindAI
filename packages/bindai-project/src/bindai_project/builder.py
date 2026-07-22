@@ -3,7 +3,6 @@ from .project import Project
 
 
 class ProjectBuilder:
-
     def __init__(
         self,
         name: str,

@@ -37,8 +37,6 @@ agent = (
     .build()
 )
 
-result = agent.chat(
-    "What is 24 + 18?"
-)
+result = agent.chat("What is 24 + 18?")
 
 print(result.output)

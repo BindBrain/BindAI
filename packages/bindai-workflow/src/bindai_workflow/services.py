@@ -31,11 +31,9 @@ class WorkflowServices:
     ):
 
         try:
-
             return self.resolve(
                 service_type,
             )
 
         except Exception:
-
             return None

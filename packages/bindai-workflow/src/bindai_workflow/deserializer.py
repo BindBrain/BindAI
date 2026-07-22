@@ -25,24 +25,18 @@ class WorkflowDeserializer:
     ):
 
         return self.factory.create(
-
             json.loads(
                 data,
             )
-
         )
 
     def load(
         self,
-        path: str |Path,
+        path: str | Path,
     ):
 
         return self.from_json(
-
             Path(path).read_text(
-
                 encoding="utf8",
-
             )
-
         )

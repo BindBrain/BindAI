@@ -71,9 +71,7 @@ class Project:
         application: Application,
     ):
 
-        self.applications[
-            application.name
-        ] = application
+        self.applications[application.name] = application
 
         return self
 
@@ -82,9 +80,7 @@ class Project:
         name: str,
     ) -> Application:
 
-        return self.applications[
-            name
-        ]
+        return self.applications[name]
 
     #
     # Shared Tools
@@ -137,14 +133,11 @@ class Project:
         message: str,
     ):
 
-        return (
-            self.application(
-                application,
-            )
-            .run(
-                agent=agent,
-                message=message,
-            )
+        return self.application(
+            application,
+        ).run(
+            agent=agent,
+            message=message,
         )
 
     def stream(
@@ -155,14 +148,11 @@ class Project:
         message: str,
     ):
 
-        return (
-            self.application(
-                application,
-            )
-            .stream(
-                agent=agent,
-                message=message,
-            )
+        return self.application(
+            application,
+        ).stream(
+            agent=agent,
+            message=message,
         )
 
     #
@@ -174,26 +164,19 @@ class Project:
         name: str,
     ):
 
-        return (
-            name
-            in self.applications
-        )
+        return name in self.applications
 
     def __len__(
         self,
     ):
 
-        return len(
-            self.applications
-        )
+        return len(self.applications)
 
     def __iter__(
         self,
     ):
 
-        return iter(
-            self.applications.values()
-        )
+        return iter(self.applications.values())
 
     def add_schedule(
         self,

@@ -10,9 +10,7 @@ PLAYGROUND = ROOT / "playground"
 
 def main():
 
-    tests = sorted(
-        PLAYGROUND.glob("*_test.py")
-    )
+    tests = sorted(PLAYGROUND.glob("*_test.py"))
 
     passed = []
     failed = []
@@ -22,7 +20,6 @@ def main():
     print("=" * 70)
 
     for test in tests:
-
         print(f"\nRunning {test.name}...")
 
         result = subprocess.run(
@@ -43,7 +40,6 @@ def main():
     print(f"Failed: {len(failed)}")
 
     if failed:
-
         print("\nFailed tests:")
 
         for name in failed:

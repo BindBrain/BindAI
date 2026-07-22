@@ -5,17 +5,14 @@ from abc import abstractmethod
 
 
 class EmbeddingProvider(ABC):
-
     @abstractmethod
     def embed(
         self,
         text: str,
-    ) -> list[float]:
-        ...
+    ) -> list[float]: ...
 
 
 class Embedding:
-
     def __init__(
         self,
         provider: EmbeddingProvider,

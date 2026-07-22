@@ -6,7 +6,6 @@ from ..node import WorkflowNode
 class StartNode(
     WorkflowNode,
 ):
-
     def execute(
         self,
         context,

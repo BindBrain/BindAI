@@ -10,7 +10,6 @@ from .in_memory import InMemoryKnowledgeProvider
 
 
 class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
-
     def __init__(
         self,
         embedding: EmbeddingProvider,
@@ -32,9 +31,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
 
         result = super().add(document)
 
-        self._vectors[
-            document.id
-        ] = VectorRecord(
+        self._vectors[document.id] = VectorRecord(
             document=document,
             embedding=self.embedding.embed(
                 document.content,
@@ -49,14 +46,9 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
     ) -> KnowledgeResult:
 
         for document in documents:
+            self._documents[document.id] = document
 
-            self._documents[
-                document.id
-            ] = document
-
-            self._vectors[
-                document.id
-            ] = VectorRecord(
+            self._vectors[document.id] = VectorRecord(
                 document=document,
                 embedding=self.embedding.embed(
                     document.content,
@@ -83,10 +75,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
 
         return KnowledgeResult(
             success=result.success,
-            value=[
-                document
-                for _, document in result.value
-            ],
+            value=[document for _, document in result.value],
         )
 
     def search_with_scores(
@@ -100,19 +89,14 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             query,
         )
 
-        ranked: list[
-            tuple[float, KnowledgeDocument]
-        ] = []
+        ranked: list[tuple[float, KnowledgeDocument]] = []
 
         for record in self._vectors.values():
-
             if filters:
-
                 metadata = record.document.metadata or {}
 
                 if not all(
-                    metadata.get(key) == value
-                    for key, value in filters.items()
+                    metadata.get(key) == value for key, value in filters.items()
                 ):
                     continue
 
@@ -155,10 +139,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             filters=filters,
         )
 
-        keyword_scores = {
-            document.id: score
-            for score, document in keyword.value
-        }
+        keyword_scores = {document.id: score for score, document in keyword.value}
 
         #
         # Vector ranking
@@ -170,10 +151,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             filters=filters,
         )
 
-        vector_scores = {
-            document.id: score
-            for score, document in vector.value
-        }
+        vector_scores = {document.id: score for score, document in vector.value}
 
         #
         # Merge
@@ -188,34 +166,22 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
         ] = {}
 
         for score, document in keyword.value:
-
-            merged[
-                document.id
-            ] = (
+            merged[document.id] = (
                 score * 0.4,
                 document,
             )
 
         for score, document in vector.value:
-
             if document.id in merged:
+                merged_score, _ = merged[document.id]
 
-                merged_score, _ = merged[
-                    document.id
-                ]
-
-                merged[
-                    document.id
-                ] = (
+                merged[document.id] = (
                     merged_score + score * 0.6,
                     document,
                 )
 
             else:
-
-                merged[
-                    document.id
-                ] = (
+                merged[document.id] = (
                     score * 0.6,
                     document,
                 )
@@ -228,10 +194,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
 
         return KnowledgeResult(
             success=True,
-            value=[
-                document
-                for _, document in ranked[:limit]
-            ],
+            value=[document for _, document in ranked[:limit]],
         )
 
     def delete(

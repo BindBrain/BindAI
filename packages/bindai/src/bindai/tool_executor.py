@@ -25,7 +25,6 @@ class ToolExecutor:
         tool = self.registry.get(tool_name)
 
         if tool is None:
-
             return ToolResult(
                 success=False,
                 error=f"Unknown tool '{tool_name}'",

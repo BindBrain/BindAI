@@ -5,7 +5,6 @@ from .step import PlanStep
 
 @dataclass
 class ExecutionPlan:
-
     steps: list[PlanStep] = field(
         default_factory=list,
     )

@@ -8,7 +8,6 @@ from bindai_core.model import (
 
 
 class DummyProvider:
-
     def generate(
         self,
         request,
@@ -27,7 +26,6 @@ class DummyProvider:
 
 
 class RecordingMiddleware(Middleware):
-
     def __init__(self):
 
         self.calls = []
@@ -56,9 +54,7 @@ def test_middleware_executes():
 
     agent = (
         AssistantAgent.builder()
-        .instructions(
-            "You are helpful."
-        )
+        .instructions("You are helpful.")
         .provider(
             DummyProvider(),
         )
@@ -68,9 +64,7 @@ def test_middleware_executes():
         .build()
     )
 
-    agent.chat(
-        "Hello"
-    )
+    agent.chat("Hello")
 
     assert middleware.calls == [
         "before",

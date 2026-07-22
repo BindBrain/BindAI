@@ -7,7 +7,6 @@ from bindai_core.model import (
 
 
 class DemoProvider(ModelProvider):
-
     @property
     def name(self):
         return "demo"

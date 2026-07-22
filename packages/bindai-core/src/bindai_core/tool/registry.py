@@ -7,7 +7,6 @@ from .tool import Tool
 
 
 class ToolRegistry:
-
     def __init__(self):
 
         self._tools: dict[str, Tool] = {}
@@ -18,14 +17,11 @@ class ToolRegistry:
     ):
 
         if tool.name in self._tools:
-
             raise ToolAlreadyRegistered(
                 tool.name,
             )
 
-        self._tools[
-            tool.name
-        ] = tool
+        self._tools[tool.name] = tool
 
     def get(
         self,
@@ -33,7 +29,6 @@ class ToolRegistry:
     ) -> Tool:
 
         if name not in self._tools:
-
             raise ToolNotFound(
                 name,
             )
@@ -75,13 +70,7 @@ class ToolRegistry:
         self,
     ):
 
-        return [
-
-            tool.definition
-
-            for tool in self._tools.values()
-
-        ]
+        return [tool.definition for tool in self._tools.values()]
 
     def execute(
         self,

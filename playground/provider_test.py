@@ -9,7 +9,6 @@ from bindai_core.provider import ProviderManager
 
 
 class DummyProvider(ModelProvider):
-
     @property
     def name(self):
         return "dummy"
@@ -31,9 +30,7 @@ manager.register(
 
 provider = manager.default()
 
-response = provider.generate(
-    ModelRequest()
-)
+response = provider.generate(ModelRequest())
 
 print(provider.name)
 print(response.content)

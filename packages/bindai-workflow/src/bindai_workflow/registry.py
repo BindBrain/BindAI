@@ -17,9 +17,7 @@ class WorkflowRegistry:
         workflow: Workflow,
     ):
 
-        self._workflows[
-            workflow.id
-        ] = workflow
+        self._workflows[workflow.id] = workflow
 
     def get(
         self,
@@ -34,9 +32,7 @@ class WorkflowRegistry:
         self,
     ) -> list[Workflow]:
 
-        return list(
-            self._workflows.values()
-        )
+        return list(self._workflows.values())
 
     def remove(
         self,

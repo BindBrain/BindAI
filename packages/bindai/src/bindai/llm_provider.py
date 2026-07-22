@@ -15,5 +15,4 @@ class LLMProvider(ABC):
     def generate(
         self,
         prompt: str,
-    ) -> LLMResult:
-        ...
+    ) -> LLMResult: ...

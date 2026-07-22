@@ -12,11 +12,8 @@ def tool(
         func.__bind_tool__ = True
 
         func.__metadata__ = ToolMetadata(
-
             name=name or func.__name__,
-
             description=description or "",
-
         )
 
         func.__signature__ = inspect.signature(func)

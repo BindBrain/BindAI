@@ -8,7 +8,6 @@ from bindai_agent import AgentRegistry
 class AgentNode(
     WorkflowNode,
 ):
-
     def __init__(
         self,
         node_id: str,
@@ -51,11 +50,8 @@ class AgentNode(
         )
 
         context.set(
-
             self.output_variable,
-
             result,
-
         )
 
         return context
@@ -67,17 +63,11 @@ class AgentNode(
         data = super().to_dict()
 
         data.update(
-
             {
-
                 "agent": self.agent,
-
                 "input_variable": self.input_variable,
-
                 "output_variable": self.output_variable,
-
             }
-
         )
 
         return data

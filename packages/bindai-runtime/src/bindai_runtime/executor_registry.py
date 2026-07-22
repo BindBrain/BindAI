@@ -20,9 +20,7 @@ class ExecutorRegistry:
         executor,
     ) -> None:
 
-        self._executors[
-            executable_type
-        ] = executor
+        self._executors[executable_type] = executor
 
     def resolve(
         self,
@@ -30,14 +28,10 @@ class ExecutorRegistry:
     ):
 
         for executable_type, executor in self._executors.items():
-
             if isinstance(
                 executable,
                 executable_type,
             ):
                 return executor
 
-        raise RuntimeError(
-            f"No executor registered for "
-            f"{type(executable).__name__}."
-        )
+        raise RuntimeError(f"No executor registered for {type(executable).__name__}.")

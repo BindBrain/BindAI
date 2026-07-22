@@ -20,7 +20,6 @@ class SequentialProcess(Process):
         outputs = []
 
         for task in group.tasks:
-
             result = self._execute_task(
                 task,
             )
@@ -28,7 +27,6 @@ class SequentialProcess(Process):
             task.result = result
 
             if not result.success:
-
                 group.state = GroupState.FAILED
 
                 return GroupResult(
@@ -38,7 +36,6 @@ class SequentialProcess(Process):
                 )
 
             if result.output:
-
                 outputs.append(
                     str(
                         result.output,
@@ -76,58 +73,39 @@ class SequentialProcess(Process):
     ) -> str:
 
         sections = [
-
             "Task",
             "----------------",
             task.description,
         ]
 
         if task.expected_output:
-
             sections.extend(
-
                 [
-
                     "",
-
                     "Expected Output",
-
                     "----------------",
-
                     task.expected_output,
                 ]
             )
 
         if task.context:
-
             sections.extend(
-
                 [
-
                     "",
-
                     "Context",
-
                     "----------------",
                 ]
             )
 
             for previous in task.context:
-
                 if previous.result is None:
-
                     continue
 
                 sections.extend(
-
                     [
-
                         "",
-
                         previous.agent.name,
-
                         "",
-
                         str(
                             previous.result.output,
                         ),

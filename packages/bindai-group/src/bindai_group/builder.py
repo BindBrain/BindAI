@@ -5,7 +5,6 @@ from .processes.sequential import SequentialProcess
 
 
 class GroupBuilder:
-
     def __init__(self):
 
         self._name = "group"
@@ -99,38 +98,24 @@ class GroupBuilder:
     ):
 
         if not self._agents:
-
-            raise ValueError(
-                "Group must contain at least one agent."
-            )
+            raise ValueError("Group must contain at least one agent.")
 
         if not self._tasks:
-
-            raise ValueError(
-                "Group must contain at least one task."
-            )
+            raise ValueError("Group must contain at least one task.")
 
         group = Group(
-
             name=self._name,
-
             process=self._process,
         )
 
         for agent in self._agents:
-
             group.agent(
                 agent,
             )
 
         for task in self._tasks:
-
             if task.agent not in group.agents:
-
-                raise ValueError(
-
-                    f'Task references unknown agent "{task.agent.name}".'
-                )
+                raise ValueError(f'Task references unknown agent "{task.agent.name}".')
 
             group.task(
                 task,

@@ -10,7 +10,6 @@ from bindai_core import (
 
 
 class DummyProvider(ModelProvider):
-
     @property
     def name(self):
         return "dummy"
@@ -47,9 +46,7 @@ agent = AssistantAgent(
     provider=DummyProvider(),
 )
 
-agent.register_tool(
-    GreetingTool()
-)
+agent.register_tool(GreetingTool())
 
 result = agent.execute_tool(
     "greet",

@@ -40,9 +40,7 @@ class BindContainer:
         descriptor = self._services.get(service_type)
 
         if descriptor is None:
-            raise KeyError(
-                f"Service '{service_type.__name__}' is not registered."
-            )
+            raise KeyError(f"Service '{service_type.__name__}' is not registered.")
 
         return descriptor.implementation
 

@@ -1,11 +1,8 @@
 from bindai import YamlLoader
 
 
-group = (
-    YamlLoader()
-    .load(
-        "examples/marketing.yaml",
-    )
+group = YamlLoader().load(
+    "examples/marketing.yaml",
 )
 
 result = group.run()

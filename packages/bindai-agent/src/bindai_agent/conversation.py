@@ -95,8 +95,6 @@ class Conversation:
 
         request = ModelRequest()
 
-        request.messages.extend(
-            self._messages
-        )
+        request.messages.extend(self._messages)
 
         return request

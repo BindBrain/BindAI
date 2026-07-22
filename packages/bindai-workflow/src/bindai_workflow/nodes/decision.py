@@ -7,7 +7,6 @@ from ..node import WorkflowNode
 class DecisionNode(
     WorkflowNode,
 ):
-
     def __init__(
         self,
         node_id: str,
@@ -34,22 +33,11 @@ class DecisionNode(
     ):
 
         result = self.engine.evaluate(
-
             self.expression,
-
             context.variables,
-
         )
 
-        context.current_node = (
-
-            self.true_node
-
-            if result
-
-            else self.false_node
-
-        )
+        context.current_node = self.true_node if result else self.false_node
 
         return context
 
@@ -60,17 +48,11 @@ class DecisionNode(
         data = super().to_dict()
 
         data.update(
-
             {
-
                 "expression": self.expression,
-
                 "true_node": self.true_node,
-
                 "false_node": self.false_node,
-
             }
-
         )
 
         return data

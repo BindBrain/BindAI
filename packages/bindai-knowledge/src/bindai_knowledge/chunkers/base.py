@@ -16,5 +16,4 @@ class DocumentChunker(ABC):
     def chunk(
         self,
         document: KnowledgeDocument,
-    ) -> list[KnowledgeChunk]:
-        ...
+    ) -> list[KnowledgeChunk]: ...

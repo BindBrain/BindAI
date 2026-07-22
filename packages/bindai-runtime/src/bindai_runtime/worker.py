@@ -2,7 +2,6 @@ from __future__ import annotations
 
 
 class Worker:
-
     def execute(
         self,
         runtime,

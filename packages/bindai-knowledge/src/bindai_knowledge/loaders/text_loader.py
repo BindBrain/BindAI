@@ -6,7 +6,6 @@ from .base import DocumentLoader
 
 
 class TextLoader(DocumentLoader):
-
     def __init__(
         self,
         path: str,
@@ -19,13 +18,9 @@ class TextLoader(DocumentLoader):
     ) -> list[KnowledgeDocument]:
 
         return [
-
             KnowledgeDocument(
-
                 id=self.path.stem,
-
                 title=self.path.name,
-
                 content=self.path.read_text(
                     encoding="utf-8",
                 ),
@@ -33,7 +28,5 @@ class TextLoader(DocumentLoader):
                     "path": str(self.path),
                     "extension": self.path.suffix,
                 },
-
             )
-
         ]

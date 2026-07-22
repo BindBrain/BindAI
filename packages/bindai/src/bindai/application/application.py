@@ -18,16 +18,11 @@ class Application:
         configuration: ApplicationConfiguration | None = None,
     ):
 
-        self._configuration = (
-            configuration
-            or ApplicationConfiguration()
-        )
+        self._configuration = configuration or ApplicationConfiguration()
 
         self._registry = ApplicationRegistry()
 
-        self._state = (
-            ApplicationState.CREATED
-        )
+        self._state = ApplicationState.CREATED
 
     @property
     def configuration(
@@ -83,25 +78,19 @@ class Application:
         self,
     ) -> None:
 
-        self._state = (
-            ApplicationState.INITIALIZED
-        )
+        self._state = ApplicationState.INITIALIZED
 
     def run(
         self,
     ) -> None:
 
-        self._state = (
-            ApplicationState.RUNNING
-        )
+        self._state = ApplicationState.RUNNING
 
     def stop(
         self,
     ) -> None:
 
-        self._state = (
-            ApplicationState.STOPPED
-        )
+        self._state = ApplicationState.STOPPED
 
     def chat(
         self,
@@ -112,9 +101,7 @@ class Application:
         """
 
         if len(self.agents) == 0:
-            raise RuntimeError(
-                "No agents registered."
-            )
+            raise RuntimeError("No agents registered.")
 
         agent = self.agents.all()[0]
 

@@ -13,7 +13,6 @@ from .configuration import AgentConfiguration
 
 
 class AgentBuilder:
-
     def __init__(self):
 
         self._provider = None
@@ -46,21 +45,16 @@ class AgentBuilder:
         load_dotenv()
 
         self._provider = OpenAIProvider(
-
             ProviderConfiguration(
-
                 api_key=os.getenv(
                     "OPENAI_API_KEY",
                 ),
-
                 organization=os.getenv(
                     "OPENAI_ORGANIZATION",
                 ),
-
                 endpoint=os.getenv(
                     "OPENAI_BASE_URL",
                 ),
-
                 model=model,
             )
         )
@@ -191,20 +185,14 @@ class AgentBuilder:
     ):
 
         if self._provider is None:
-
             raise ValueError(
-                "No provider configured. "
-                "Use .provider(...) or .openai(...)."
+                "No provider configured. Use .provider(...) or .openai(...)."
             )
 
         agent = AssistantAgent(
-
             name=self._name,
-
             instructions=self._instructions,
-
             provider=self._provider,
-
         )
 
         #
@@ -218,7 +206,6 @@ class AgentBuilder:
         #
 
         for tool in self._tools:
-
             agent.tool(
                 tool,
             )
@@ -228,7 +215,6 @@ class AgentBuilder:
         #
 
         if self._memory is not None:
-
             agent.use_memory(
                 self._memory,
             )
@@ -238,7 +224,6 @@ class AgentBuilder:
         #
 
         if self._knowledge is not None:
-
             agent.use_knowledge(
                 self._knowledge,
             )
@@ -248,7 +233,6 @@ class AgentBuilder:
         #
 
         for middleware in self._middleware:
-
             agent.use_middleware(
                 middleware,
             )
@@ -258,7 +242,6 @@ class AgentBuilder:
         #
 
         for hook in self._hooks:
-
             agent.hook(
                 hook,
             )

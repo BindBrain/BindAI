@@ -16,18 +16,7 @@ settings = OpenAISettings(
 provider = OpenAIProvider(settings)
 
 response = provider.generate(
-
-    ModelRequest(
-
-        messages=[
-            Message(
-                role=MessageRole.USER,
-                content="What is BindAI?"
-            )
-        ]
-
-    )
-
+    ModelRequest(messages=[Message(role=MessageRole.USER, content="What is BindAI?")])
 )
 
 print(response.content)

@@ -41,9 +41,6 @@ class ParallelNode(
         #
 
         if self.branches:
-
-            context.current_node = (
-                self.branches[0]
-            )
+            context.current_node = self.branches[0]
 
         return context

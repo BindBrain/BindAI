@@ -4,12 +4,9 @@ from .history import WorkflowHistory
 
 
 class MemoryHistoryStore:
-
     def __init__(self):
 
-        self._history: list[
-            WorkflowHistory
-        ] = []
+        self._history: list[WorkflowHistory] = []
 
     def add(
         self,
@@ -24,21 +21,11 @@ class MemoryHistoryStore:
         self,
     ) -> list[WorkflowHistory]:
 
-        return list(
-            self._history
-        )
+        return list(self._history)
 
     def workflow(
         self,
         workflow_id: str,
     ):
 
-        return [
-
-            item
-
-            for item in self._history
-
-            if item.workflow_id == workflow_id
-
-        ]
+        return [item for item in self._history if item.workflow_id == workflow_id]

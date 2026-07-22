@@ -59,7 +59,6 @@ class Knowledge:
         """
 
         if options is None:
-
             options = KnowledgeSearchOptions(
                 limit=limit,
                 filters=filters,
@@ -128,16 +127,10 @@ class Knowledge:
             limit,
         )
 
-        if (
-            not result.success
-            or not result.value
-        ):
+        if not result.success or not result.value:
             return ""
 
-        return "\n\n".join(
-            document.content
-            for document in result.value
-        )
+        return "\n\n".join(document.content for document in result.value)
 
     def retrieve_with_sources(
         self,
@@ -150,10 +143,7 @@ class Knowledge:
             limit,
         )
 
-        if (
-            not result.success
-            or not result.value
-        ):
+        if not result.success or not result.value:
             return []
 
         return [
@@ -177,19 +167,15 @@ class Knowledge:
         count = 0
 
         for document in documents:
-
             if chunker is None:
-
                 self.add(document)
 
                 count += 1
 
             else:
-
                 chunks = chunker.chunk(document)
 
                 for chunk in chunks:
-
                     self.add(
                         KnowledgeDocument(
                             id=chunk.id,

@@ -1,15 +1,66 @@
 from __future__ import annotations
 
+from .step import ExecutionStep
+from .state import ExecutionState
 
-class ToolLoop:
+
+class ToolLoop(
+    ExecutionStep,
+):
     """
-    Executes tool requests produced by the LLM.
-
-    Placeholder implementation.
+    Executes tool calls until
+    the model stops requesting tools.
     """
 
     def execute(
         self,
-        response,
+        agent,
+        context,
     ):
-        return response
+
+        state: ExecutionState = context.data
+
+        while True:
+
+            response = state.response
+
+            #
+            # No tool calls
+            #
+
+            if (
+                response is None
+                or not getattr(
+                    response,
+                    "tool_calls",
+                    None,
+                )
+            ):
+                return
+
+            #
+            # Execute tools
+            #
+
+            for call in response.tool_calls:
+
+                result = (
+                    agent.tool_executor.execute(
+                        call,
+                    )
+                )
+
+                agent.conversation.add_tool(
+                    call.id,
+                    str(result),
+                )
+
+            #
+            # Ask model again
+            #
+
+            state.response = (
+                agent.provider.generate(
+                    state.request,
+                )
+            )

@@ -3,7 +3,6 @@ from bindai_model import ProviderRegistry
 
 
 class ApplicationRegistry:
-
     def __init__(self):
 
         self.providers = ProviderRegistry()

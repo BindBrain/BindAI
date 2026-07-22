@@ -41,6 +41,4 @@ class KnowledgeRegistry:
         self,
     ) -> list[str]:
 
-        return list(
-            self._knowledge.keys()
-        )
+        return list(self._knowledge.keys())

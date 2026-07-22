@@ -5,19 +5,16 @@ from .plan import ExecutionPlan
 
 
 class Planner(ABC):
-
     @abstractmethod
     def create_plan(
         self,
         agent,
         context,
-    ) -> ExecutionPlan:
-        ...
+    ) -> ExecutionPlan: ...
 
     @abstractmethod
     def revise_plan(
         self,
         plan,
         context,
-    ) -> ExecutionPlan:
-        ...
+    ) -> ExecutionPlan: ...

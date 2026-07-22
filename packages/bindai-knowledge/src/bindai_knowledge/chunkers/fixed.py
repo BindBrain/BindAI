@@ -7,7 +7,6 @@ from .base import DocumentChunker
 
 
 class FixedChunker(DocumentChunker):
-
     def __init__(
         self,
         chunk_size: int = 500,
@@ -28,25 +27,17 @@ class FixedChunker(DocumentChunker):
         index = 0
 
         while start < len(document.content):
-
             end = start + self.chunk_size
 
             text = document.content[start:end]
 
             chunks.append(
-
                 KnowledgeChunk(
-
                     id=f"{document.id}:{index}",
-
                     document_id=document.id,
-
                     content=text,
-
                     metadata=document.metadata,
-
                 )
-
             )
 
             start += self.chunk_size - self.overlap

@@ -49,7 +49,6 @@ def test_duplicate_registration():
     )
 
     try:
-
         registry.register(
             "value",
             2,
@@ -58,7 +57,6 @@ def test_duplicate_registration():
         assert False
 
     except ValueError:
-
         assert True
 
 

@@ -22,6 +22,7 @@ class WorkflowEvent:
 
     workflow_version: int | None = None
 
+
 @dataclass(slots=True)
 class HumanTaskCreatedEvent(
     WorkflowEvent,

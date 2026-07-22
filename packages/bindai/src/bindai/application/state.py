@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class ApplicationState(str, Enum):
-
     CREATED = "created"
 
     INITIALIZED = "initialized"

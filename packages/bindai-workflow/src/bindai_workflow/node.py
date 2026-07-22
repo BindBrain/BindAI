@@ -25,8 +25,7 @@ class WorkflowNode(ABC):
     def execute(
         self,
         context,
-    ):
-        ...
+    ): ...
 
     #
     # Serialization
@@ -37,17 +36,12 @@ class WorkflowNode(ABC):
     ) -> dict:
 
         return {
-
             "id": self.id,
-
             "name": self.name,
-
             "type": self.__class__.__name__,
-
             "next_nodes": list(
                 self.next_nodes,
             ),
-
         }
 
     def load_dict(
@@ -56,12 +50,10 @@ class WorkflowNode(ABC):
     ):
 
         self.next_nodes = list(
-
             data.get(
                 "next_nodes",
                 [],
             )
-
         )
 
     @property
@@ -70,7 +62,6 @@ class WorkflowNode(ABC):
     ):
 
         if not self.next_nodes:
-
             return None
 
         return self.next_nodes[0]

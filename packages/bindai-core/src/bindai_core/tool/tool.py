@@ -16,8 +16,7 @@ class Tool(ABC):
 
     @property
     @abstractmethod
-    def name(self) -> str:
-        ...
+    def name(self) -> str: ...
 
     @property
     def description(self) -> str:
@@ -35,7 +34,6 @@ class Tool(ABC):
         schema = {}
 
         for name, parameter in signature.parameters.items():
-
             if name == "self":
                 continue
 
@@ -59,14 +57,8 @@ class Tool(ABC):
                 parameter_type = "object"
 
             schema[name] = {
-
                 "type": parameter_type,
-
-                "required": (
-                    parameter.default
-                    is inspect.Parameter.empty
-                ),
-
+                "required": (parameter.default is inspect.Parameter.empty),
             }
 
         return schema
@@ -77,18 +69,13 @@ class Tool(ABC):
     ) -> ToolDefinition:
 
         return ToolDefinition(
-
             name=self.name,
-
             description=self.description,
-
             parameters=self.parameters,
-
         )
 
     @abstractmethod
     def execute(
         self,
         **kwargs,
-    ) -> ToolResult:
-        ...
+    ) -> ToolResult: ...

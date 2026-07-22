@@ -35,9 +35,7 @@ class BindHost:
         project: Project,
     ):
 
-        self.projects[
-            project.name
-        ] = project
+        self.projects[project.name] = project
 
         return self
 
@@ -61,15 +59,12 @@ class BindHost:
         message: str,
     ):
 
-        return (
-            self.project(
-                project,
-            )
-            .run(
-                application=application,
-                agent=agent,
-                message=message,
-            )
+        return self.project(
+            project,
+        ).run(
+            application=application,
+            agent=agent,
+            message=message,
         )
 
     def stream(
@@ -81,13 +76,10 @@ class BindHost:
         message: str,
     ):
 
-        return (
-            self.project(
-                project,
-            )
-            .stream(
-                application=application,
-                agent=agent,
-                message=message,
-            )
+        return self.project(
+            project,
+        ).stream(
+            application=application,
+            agent=agent,
+            message=message,
         )

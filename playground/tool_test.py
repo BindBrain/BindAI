@@ -6,7 +6,6 @@ from bindai_core import (
 
 
 class Calculator(Tool):
-
     @property
     def name(self):
         return "calculator"
@@ -16,20 +15,14 @@ class Calculator(Tool):
         a = kwargs["a"]
         b = kwargs["b"]
 
-        return ToolResult(
-            output=a + b
-        )
+        return ToolResult(output=a + b)
 
 
 registry = ToolRegistry()
 
-registry.register(
-    Calculator()
-)
+registry.register(Calculator())
 
-tool = registry.get(
-    "calculator"
-)
+tool = registry.get("calculator")
 
 result = tool.execute(
     a=10,

@@ -20,7 +20,6 @@ class ServiceLifetime(
 
 @dataclass(slots=True)
 class ServiceDescriptor:
-
     service_type: type
 
     implementation: Any
@@ -54,9 +53,7 @@ class Container:
         lifetime: ServiceLifetime = ServiceLifetime.SINGLETON,
     ):
 
-        self._services[
-            service_type
-        ] = ServiceDescriptor(
+        self._services[service_type] = ServiceDescriptor(
             service_type=service_type,
             implementation=implementation,
             lifetime=lifetime,
@@ -96,20 +93,11 @@ class Container:
     ) -> Any:
 
         if service_type not in self._services:
+            raise KeyError(f"Service '{service_type.__name__}' is not registered.")
 
-            raise KeyError(
-                f"Service '{service_type.__name__}' is not registered."
-            )
+        descriptor = self._services[service_type]
 
-        descriptor = self._services[
-            service_type
-        ]
-
-        if (
-            descriptor.lifetime
-            == ServiceLifetime.SINGLETON
-        ):
-
+        if descriptor.lifetime == ServiceLifetime.SINGLETON:
             return descriptor.implementation
 
         return descriptor.implementation()
@@ -123,10 +111,7 @@ class Container:
         service_type: type,
     ) -> bool:
 
-        return (
-            service_type
-            in self._services
-        )
+        return service_type in self._services
 
     def clear(
         self,

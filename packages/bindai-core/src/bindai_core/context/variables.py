@@ -47,13 +47,11 @@ class Variables:
             values,
             Variables,
         ):
-
             self._values.update(
                 values._values,
             )
 
         else:
-
             self._values.update(
                 values,
             )

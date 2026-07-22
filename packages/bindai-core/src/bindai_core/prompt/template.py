@@ -32,10 +32,7 @@ class PromptTemplate:
             self.template,
         )
 
-        return [
-            variable.strip()
-            for variable in matches
-        ]
+        return [variable.strip() for variable in matches]
 
     def render(
         self,
@@ -45,7 +42,6 @@ class PromptTemplate:
         result = self.template
 
         for key, value in variables.items():
-
             result = result.replace(
                 "{{" + key + "}}",
                 str(value),

@@ -64,9 +64,7 @@ class PromptBuilder:
         conversation: Conversation,
     ):
 
-        self._messages.extend(
-            conversation.to_messages()
-        )
+        self._messages.extend(conversation.to_messages())
 
         return self
 

@@ -8,7 +8,6 @@ from bindai_core import (
 
 
 class DummyProvider(ModelProvider):
-
     @property
     def name(self):
         return "dummy"
@@ -24,5 +23,4 @@ class DummyProvider(ModelProvider):
 provider = DummyProvider()
 
 for chunk in provider.stream(ModelRequest()):
-
     print(chunk.delta, chunk.finished)

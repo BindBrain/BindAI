@@ -7,7 +7,6 @@ from bindai_core import (
 
 
 class DummyProvider(ModelProvider):
-
     def __init__(self):
         pass
 

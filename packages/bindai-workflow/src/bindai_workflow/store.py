@@ -15,19 +15,16 @@ class WorkflowStore(ABC):
     def save(
         self,
         instance: WorkflowInstance,
-    ):
-        ...
+    ): ...
 
     @abstractmethod
     def load(
         self,
         instance_id: str,
-    ) -> WorkflowInstance | None:
-        ...
+    ) -> WorkflowInstance | None: ...
 
     @abstractmethod
     def delete(
         self,
         instance_id: str,
-    ):
-        ...
+    ): ...

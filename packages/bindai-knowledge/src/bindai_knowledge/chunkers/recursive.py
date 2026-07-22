@@ -7,7 +7,6 @@ from .base import DocumentChunker
 
 
 class RecursiveChunker(DocumentChunker):
-
     def __init__(
         self,
         chunk_size: int = 500,
@@ -32,33 +31,23 @@ class RecursiveChunker(DocumentChunker):
         index = 0
 
         for piece in pieces:
-
             separator = "\n\n" if current else ""
 
             candidate = current + separator + piece
 
             if len(candidate) <= self.chunk_size:
-
                 current = candidate
 
                 continue
 
             if current:
-
                 chunks.append(
-
                     KnowledgeChunk(
-
                         id=f"{document.id}:{index}",
-
                         document_id=document.id,
-
                         content=current,
-
                         metadata=document.metadata,
-
                     )
-
                 )
 
                 index += 1
@@ -66,21 +55,13 @@ class RecursiveChunker(DocumentChunker):
             current = piece
 
         if current:
-
             chunks.append(
-
                 KnowledgeChunk(
-
                     id=f"{document.id}:{index}",
-
                     document_id=document.id,
-
                     content=current,
-
                     metadata=document.metadata,
-
                 )
-
             )
 
         return chunks
@@ -94,14 +75,6 @@ class RecursiveChunker(DocumentChunker):
         # Prefer paragraphs.
         #
 
-        paragraphs = [
-
-            p.strip()
-
-            for p in text.split("\n\n")
-
-            if p.strip()
-
-        ]
+        paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
 
         return paragraphs

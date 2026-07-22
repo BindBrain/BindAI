@@ -29,11 +29,7 @@ class Group:
 
         self.tasks: list[Task] = []
 
-        self.process = (
-            process
-            if process is not None
-            else SequentialProcess()
-        )
+        self.process = process if process is not None else SequentialProcess()
 
         self.executor = GroupExecutor()
 

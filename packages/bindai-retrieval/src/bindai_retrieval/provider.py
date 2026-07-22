@@ -16,5 +16,4 @@ class RetrieverProvider(ABC):
     def retrieve(
         self,
         query: RetrievalQuery,
-    ) -> RetrievalResult:
-        ...
+    ) -> RetrievalResult: ...

@@ -34,7 +34,6 @@ class Task:
         self.state = TaskState.RUNNING
 
         try:
-
             output = self.agent.run(
                 self.description,
             )
@@ -49,7 +48,6 @@ class Task:
             return self.result
 
         except Exception as ex:
-
             self.result = TaskResult(
                 success=False,
                 error=ex,

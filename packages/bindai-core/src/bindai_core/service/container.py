@@ -5,7 +5,6 @@ from .lifetime import ServiceLifetime
 
 
 class ServiceContainer:
-
     def __init__(self):
 
         self._services: dict[type, ServiceDescriptor] = {}
@@ -30,10 +29,7 @@ class ServiceContainer:
         descriptor = self._services.get(service_type)
 
         if descriptor is None:
-
-            raise KeyError(
-                service_type
-            )
+            raise KeyError(service_type)
 
         return descriptor.implementation
 

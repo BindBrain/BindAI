@@ -1,42 +1,112 @@
 from __future__ import annotations
 
+from collections import defaultdict
+
 from .edge import GraphEdge
 
 
 class ExecutionGraph:
+    """
+    Directed execution graph.
 
-    def __init__(self):
+    Supports DAG execution,
+    conditional routing,
+    fan-out and fan-in.
+    """
 
-        self.nodes = {}
+    def __init__(
+        self,
+    ):
+        self.nodes: dict = {}
 
-        self.edges = []
+        self.edges: list[GraphEdge] = []
+
+        self._outgoing = defaultdict(
+            list,
+        )
+
+        self._incoming = defaultdict(
+            list,
+        )
 
     def add_node(
         self,
-        name,
+        name: str,
         node,
     ):
-
         self.nodes[name] = node
 
         return self
 
     def add_edge(
         self,
-        source,
-        target,
+        source: str,
+        target: str,
         *,
         condition=None,
     ):
+        edge = GraphEdge(
+            source,
+            target,
+            condition,
+        )
 
         self.edges.append(
+            edge,
+        )
 
-            GraphEdge(
-                source,
-                target,
-                condition,
-            )
+        self._outgoing[source].append(
+            edge,
+        )
 
+        self._incoming[target].append(
+            edge,
         )
 
         return self
+
+    #
+    # Graph API
+    #
+
+    def get_node(
+        self,
+        name: str,
+    ):
+        return self.nodes[name]
+
+    def outgoing(
+        self,
+        name: str,
+    ):
+        return self._outgoing.get(
+            name,
+            [],
+        )
+
+    def incoming(
+        self,
+        name: str,
+    ):
+        return self._incoming.get(
+            name,
+            [],
+        )
+
+    def roots(
+        self,
+    ):
+        """
+        Nodes without incoming edges.
+        """
+
+        return [
+            name
+            for name in self.nodes
+            if len(
+                self.incoming(
+                    name,
+                )
+            )
+            == 0
+        ]

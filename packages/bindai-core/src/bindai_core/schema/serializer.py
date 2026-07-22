@@ -6,29 +6,26 @@ from .schema import ResponseSchema
 
 
 class SchemaSerializer:
-	"""
-	Converts Python models into provider-independent schemas.
-	"""
+    """
+    Converts Python models into provider-independent schemas.
+    """
 
-	@staticmethod
-	def serialize(
-		model: type[Any],
-	) -> ResponseSchema:
+    @staticmethod
+    def serialize(
+        model: type[Any],
+    ) -> ResponseSchema:
 
-		#
-		# Pydantic v2
-		#
+        #
+        # Pydantic v2
+        #
 
-		if hasattr(
-			model,
-			"model_json_schema",
-		):
+        if hasattr(
+            model,
+            "model_json_schema",
+        ):
+            return ResponseSchema(
+                model=model,
+                json_schema=model.model_json_schema(),
+            )
 
-			return ResponseSchema(
-				model=model,
-				json_schema=model.model_json_schema(),
-			)
-
-		raise TypeError(
-			f"Unsupported schema type: {model}"
-		)
+        raise TypeError(f"Unsupported schema type: {model}")

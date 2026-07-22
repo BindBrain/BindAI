@@ -10,8 +10,8 @@ from .exceptions import (
 )
 from .registry import ProviderRegistry
 
-class ProviderManager:
 
+class ProviderManager:
     def __init__(self):
 
         self.registry = ProviderRegistry()
@@ -30,7 +30,6 @@ class ProviderManager:
         )
 
         if default or self._default is None:
-
             self._default = provider.name
 
     def get(
@@ -47,7 +46,6 @@ class ProviderManager:
     ):
 
         if self._default is None:
-
             raise DefaultProviderNotConfigured()
 
         return self.registry.get(

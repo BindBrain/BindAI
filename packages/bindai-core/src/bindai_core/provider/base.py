@@ -9,22 +9,18 @@ if TYPE_CHECKING:
 
 
 class BaseProvider(ABC):
-
     @abstractmethod
     def generate(
         self,
         request: ModelRequest,
-    ) -> ModelResponse:
-        ...
+    ) -> ModelResponse: ...
 
     @abstractmethod
     def stream(
         self,
         request: ModelRequest,
-    ):
-        ...
+    ): ...
 
     @property
     @abstractmethod
-    def capabilities(self):
-        ...
+    def capabilities(self): ...

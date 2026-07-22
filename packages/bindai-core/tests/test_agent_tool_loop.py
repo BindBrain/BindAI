@@ -15,7 +15,6 @@ def calculator() -> str:
 
 
 class FakeProvider(ModelProvider):
-
     def __init__(self):
 
         super().__init__(
@@ -51,19 +50,14 @@ class FakeProvider(ModelProvider):
         #
 
         if self.calls == 1:
-
             return ModelResponse(
-
                 tool_calls=[
-
                     ToolCall(
                         id="tool-1",
                         name="calculator",
                         arguments={},
                     )
-
                 ],
-
             )
 
         #
@@ -71,9 +65,7 @@ class FakeProvider(ModelProvider):
         #
 
         return ModelResponse(
-
             content="The answer is 42.",
-
         )
 
     def stream(
@@ -89,13 +81,9 @@ def test_recursive_tool_loop():
     provider = FakeProvider()
 
     agent = Agent(
-
         name="assistant",
-
         instructions="You are helpful.",
-
         provider=provider,
-
     )
 
     agent.add_tool(

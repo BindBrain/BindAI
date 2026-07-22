@@ -5,7 +5,6 @@ from bindai_core import (
 
 
 class MiddlewareOne:
-
     def before_execute(
         self,
         agent,
@@ -23,7 +22,6 @@ class MiddlewareOne:
 
 
 class MiddlewareTwo:
-
     def before_execute(
         self,
         agent,
@@ -41,7 +39,6 @@ class MiddlewareTwo:
 
 
 class DummyAgent:
-
     def execute(
         self,
         context,

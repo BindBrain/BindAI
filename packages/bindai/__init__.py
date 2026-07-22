@@ -52,49 +52,38 @@ from bindai_config import (
 __version__ = "0.1.0"
 
 __all__ = [
-
     #
     # Application
     #
-
     "Application",
     "ApplicationBuilder",
-
     #
     # Host
     #
-
     "BindHost",
     "BindHostBuilder",
     "HostConfiguration",
-
     #
     # Workflow
     #
-
     "Workflow",
     "WorkflowBuilder",
     "WorkflowConfiguration",
     "WorkflowRegistry",
-
     #
     # Agent
     #
-
     "Agent",
     "AssistantAgent",
     "AgentBuilder",
-
     #
     # Group
     #
-
     "Group",
     "GroupBuilder",
     "Task",
     "SequentialProcess",
     "GroupResult",
     "GroupState",
-
     "YamlLoader",
 ]

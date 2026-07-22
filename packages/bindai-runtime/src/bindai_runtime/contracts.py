@@ -7,9 +7,7 @@ from bindai_core import ExecutionContext
 
 
 class Executable(Protocol):
-
     def execute(
         self,
         context: ExecutionContext,
-    ) -> Any:
-        ...
+    ) -> Any: ...

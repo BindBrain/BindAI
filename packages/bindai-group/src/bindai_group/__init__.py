@@ -8,16 +8,10 @@ from .result import GroupResult
 from .state import GroupState
 
 __all__ = [
-
     "Group",
-
     "GroupBuilder",
-
     "Task",
-
     "SequentialProcess",
-
     "GroupResult",
-
     "GroupState",
 ]

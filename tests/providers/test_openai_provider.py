@@ -83,9 +83,7 @@ def test_streaming():
         ]
     )
 
-    chunks = list(
-        provider.stream(request)
-    )
+    chunks = list(provider.stream(request))
 
     assert len(chunks) > 0
     assert chunks[-1].finished

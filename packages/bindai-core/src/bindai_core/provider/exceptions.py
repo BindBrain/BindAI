@@ -10,34 +10,25 @@ class ProviderException(Exception):
 class ProviderNotFound(
     ProviderException,
 ):
-
     def __init__(
         self,
         name: str,
     ):
-        super().__init__(
-            f"Provider '{name}' is not registered."
-        )
+        super().__init__(f"Provider '{name}' is not registered.")
 
 
 class ProviderAlreadyRegistered(
     ProviderException,
 ):
-
     def __init__(
         self,
         name: str,
     ):
-        super().__init__(
-            f"Provider '{name}' is already registered."
-        )
+        super().__init__(f"Provider '{name}' is already registered.")
 
 
 class DefaultProviderNotConfigured(
     ProviderException,
 ):
-
     def __init__(self):
-        super().__init__(
-            "No default provider configured."
-        )
+        super().__init__("No default provider configured.")

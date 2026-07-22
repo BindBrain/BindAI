@@ -4,7 +4,6 @@ from bindai_core.runtime import BindRuntime
 
 
 class FakeExecutable(Executable):
-
     def execute(
         self,
         context,

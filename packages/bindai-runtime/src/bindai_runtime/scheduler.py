@@ -4,7 +4,6 @@ from collections import deque
 
 
 class Scheduler:
-
     def __init__(self):
 
         self._queue = deque()
@@ -21,7 +20,6 @@ class Scheduler:
     def next(self):
 
         if self._queue:
-
             return self._queue.popleft()
 
         return None

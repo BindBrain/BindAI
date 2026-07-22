@@ -6,10 +6,10 @@ from typing import Any
 
 @dataclass(slots=True)
 class ResponseSchema:
-	"""
-	Provider-independent structured output schema.
-	"""
+    """
+    Provider-independent structured output schema.
+    """
 
-	model: type[Any]
+    model: type[Any]
 
-	json_schema: dict
+    json_schema: dict

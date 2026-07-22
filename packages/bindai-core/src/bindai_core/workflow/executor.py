@@ -35,9 +35,7 @@ class WorkflowExecutor:
         #
 
         if context is not None:
-
             for key, value in context.variables.as_dict().items():
-
                 runtime.set(
                     key,
                     value,
@@ -48,7 +46,6 @@ class WorkflowExecutor:
         #
 
         if workflow.start_node is None:
-
             return WorkflowResult(
                 success=False,
                 error="Workflow has no start node.",
@@ -61,19 +58,16 @@ class WorkflowExecutor:
         #
 
         while not runtime.completed:
-
             node = workflow.get(
                 runtime.current_node,
             )
 
             try:
-
                 node.execute(
                     runtime,
                 )
 
             except Exception as ex:
-
                 runtime.completed = True
                 runtime.success = False
 
@@ -91,7 +85,6 @@ class WorkflowExecutor:
             #
 
             if runtime.completed:
-
                 break
 
             #
@@ -99,10 +92,7 @@ class WorkflowExecutor:
             #
 
             if runtime.parallel_nodes:
-
-                runtime.current_node = (
-                    runtime.parallel_nodes.pop(0)
-                )
+                runtime.current_node = runtime.parallel_nodes.pop(0)
 
                 continue
 
@@ -111,14 +101,11 @@ class WorkflowExecutor:
             #
 
             if not node.next_nodes:
-
                 runtime.completed = True
                 runtime.success = True
                 break
 
-            runtime.current_node = (
-                node.next_nodes[0]
-            )
+            runtime.current_node = node.next_nodes[0]
 
         return WorkflowResult(
             success=runtime.success,

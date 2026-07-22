@@ -12,9 +12,7 @@ class WorkflowScheduler:
 
     def __init__(self):
 
-        self._schedules: list[
-            WorkflowSchedule
-        ] = []
+        self._schedules: list[WorkflowSchedule] = []
 
     def add(
         self,
@@ -34,12 +32,7 @@ class WorkflowScheduler:
         due = []
 
         for schedule in self._schedules:
-
-            if (
-                schedule.enabled
-                and schedule.next_run <= now
-            ):
-
+            if schedule.enabled and schedule.next_run <= now:
                 due.append(
                     schedule,
                 )
@@ -52,7 +45,6 @@ class WorkflowScheduler:
     ):
 
         if schedule.interval_seconds:
-
             schedule.next_run += timedelta(
                 seconds=schedule.interval_seconds,
             )

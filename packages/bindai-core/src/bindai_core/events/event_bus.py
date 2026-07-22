@@ -33,7 +33,6 @@ class EventBus:
     ) -> None:
 
         if handler in self._handlers[event_name]:
-
             self._handlers[event_name].remove(
                 handler,
             )
@@ -43,21 +42,13 @@ class EventBus:
         event: Event,
     ) -> None:
 
-        handlers = (
-
-            self._handlers[event.name]
-            + self._handlers["*"]
-
-        )
+        handlers = self._handlers[event.name] + self._handlers["*"]
 
         for handler in handlers:
-
             try:
-
                 handler(event)
 
             except Exception:
-
                 #
                 # TODO:
                 # logging

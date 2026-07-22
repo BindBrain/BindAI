@@ -37,7 +37,6 @@ def tool(
     #
 
     if function is not None:
-
         return decorator(
             function,
         )

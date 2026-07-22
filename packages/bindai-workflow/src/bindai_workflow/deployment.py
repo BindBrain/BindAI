@@ -6,7 +6,6 @@ from datetime import datetime
 
 @dataclass(slots=True)
 class WorkflowDeployment:
-
     workflow_name: str
 
     version: int

@@ -8,11 +8,7 @@ def add(a: int, b: int):
     return a + b
 
 
-agent = (
-    AgentBuilder()
-    .tool(add)
-    .build()
-)
+agent = AgentBuilder().tool(add).build()
 
 result = agent.execute_tool(
     "add",

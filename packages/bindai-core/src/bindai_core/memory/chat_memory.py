@@ -34,15 +34,10 @@ class ChatMemory(Memory):
     ) -> None:
 
         self.add(
-
             Message(
-
                 role=MessageRole.USER,
-
                 content=text,
-
             )
-
         )
 
     def add_assistant(
@@ -51,15 +46,10 @@ class ChatMemory(Memory):
     ) -> None:
 
         self.add(
-
             Message(
-
                 role=MessageRole.ASSISTANT,
-
                 content=text,
-
             )
-
         )
 
     def add_system(
@@ -68,15 +58,10 @@ class ChatMemory(Memory):
     ) -> None:
 
         self.add(
-
             Message(
-
                 role=MessageRole.SYSTEM,
-
                 content=text,
-
             )
-
         )
 
     def messages(

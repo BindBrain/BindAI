@@ -5,7 +5,6 @@ from abc import abstractmethod
 
 
 class ConfigLoader(ABC):
-
     @abstractmethod
     def load(
         self,

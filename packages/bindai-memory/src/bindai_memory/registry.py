@@ -31,14 +31,10 @@ class MemoryRegistry:
     ) -> Type[MemoryProvider]:
 
         try:
-
             return cls._providers[name]
 
         except KeyError as exc:
-
-            raise ValueError(
-                f"Unknown memory provider '{name}'."
-            ) from exc
+            raise ValueError(f"Unknown memory provider '{name}'.") from exc
 
     @classmethod
     def providers(

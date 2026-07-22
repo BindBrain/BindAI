@@ -5,6 +5,7 @@ from .instance import WorkflowInstance
 
 import uuid
 
+
 class Workflow:
     """
     Represents an executable workflow.
@@ -15,10 +16,7 @@ class Workflow:
         name: str | None = None,
     ):
 
-        self.name = (
-            name
-            or self.id
-        )
+        self.name = name or self.id
 
         self.nodes: dict[
             str,
@@ -38,12 +36,9 @@ class Workflow:
         node: WorkflowNode,
     ):
 
-        self.nodes[
-            node.id
-        ] = node
+        self.nodes[node.id] = node
 
         if self.start_node is None:
-
             self.start_node = node.id
 
     def get(
@@ -51,9 +46,7 @@ class Workflow:
         node_id: str,
     ) -> WorkflowNode:
 
-        return self.nodes[
-            node_id
-        ]
+        return self.nodes[node_id]
 
     def create_instance(
         self,

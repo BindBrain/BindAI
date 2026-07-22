@@ -13,7 +13,6 @@ from .event_types import EventTypes
 
 @dataclass(slots=True)
 class ModelRequestEvent(Event):
-
     request: ModelRequest
 
     @property
@@ -23,7 +22,6 @@ class ModelRequestEvent(Event):
 
 @dataclass(slots=True)
 class ModelResponseEvent(Event):
-
     response: ModelResponse
 
     @property

@@ -15,17 +15,14 @@ class MemoryBackend(ABC):
     def save(
         self,
         messages: list[Message],
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @abstractmethod
     def load(
         self,
-    ) -> list[Message]:
-        ...
+    ) -> list[Message]: ...
 
     @abstractmethod
     def clear(
         self,
-    ) -> None:
-        ...
+    ) -> None: ...

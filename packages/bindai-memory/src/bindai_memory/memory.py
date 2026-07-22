@@ -6,6 +6,7 @@ from .result import MemoryResult
 
 from .registry import MemoryRegistry
 
+
 class Memory:
     """
     High-level memory facade.
@@ -17,18 +18,13 @@ class Memory:
     ):
 
         if provider is None:
-
             provider = "memory"
 
         if isinstance(
             provider,
             str,
         ):
-
-            provider = (
-                MemoryRegistry
-                .provider(provider)
-            )()
+            provider = (MemoryRegistry.provider(provider))()
 
         self.provider = provider
 

@@ -21,23 +21,11 @@ class WorkflowSerializer:
     ) -> dict:
 
         return {
-
             "id": workflow.id,
-
             "name": workflow.name,
-
             "version": workflow.version,
-
             "start_node": workflow.start_node,
-
-            "nodes": [
-
-                node.to_dict()
-
-                for node in workflow.nodes.values()
-
-            ],
-
+            "nodes": [node.to_dict() for node in workflow.nodes.values()],
         }
 
     def to_json(
@@ -46,13 +34,10 @@ class WorkflowSerializer:
     ) -> str:
 
         return json.dumps(
-
             self.to_dict(
                 workflow,
             ),
-
             indent=4,
-
         )
 
     def save(
@@ -62,11 +47,8 @@ class WorkflowSerializer:
     ):
 
         Path(path).write_text(
-
             self.to_json(
                 workflow,
             ),
-
             encoding="utf8",
-
         )

@@ -8,9 +8,7 @@ from bindai import (
 researcher = (
     AgentBuilder()
     .name("Researcher")
-    .instructions(
-        "Research companies."
-    )
+    .instructions("Research companies.")
     .openai(
         model="gpt-4.1-mini",
     )
@@ -20,9 +18,7 @@ researcher = (
 writer = (
     AgentBuilder()
     .name("Writer")
-    .instructions(
-        "Write executive reports."
-    )
+    .instructions("Write executive reports.")
     .openai(
         model="gpt-4.1-mini",
     )
@@ -35,14 +31,11 @@ research = Task(
     agent=researcher,
 )
 
-report = (
-    Task(
-        description="Write an executive summary.",
-        agent=writer,
-    )
-    .context_from(
-        research,
-    )
+report = Task(
+    description="Write an executive summary.",
+    agent=writer,
+).context_from(
+    research,
 )
 
 

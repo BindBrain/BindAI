@@ -16,8 +16,7 @@ class KnowledgeProvider(ABC):
     def add(
         self,
         document: KnowledgeDocument,
-    ) -> KnowledgeResult:
-        ...
+    ) -> KnowledgeResult: ...
 
     @abstractmethod
     def add_many(
@@ -28,9 +27,7 @@ class KnowledgeProvider(ABC):
         results = []
 
         for document in documents:
-            results.append(
-                self.add(document)
-            )
+            results.append(self.add(document))
 
         return KnowledgeResult(
             success=all(r.success for r in results),
@@ -41,8 +38,7 @@ class KnowledgeProvider(ABC):
     def get(
         self,
         document_id: str,
-    ) -> KnowledgeResult:
-        ...
+    ) -> KnowledgeResult: ...
 
     @abstractmethod
     def search(
@@ -50,8 +46,7 @@ class KnowledgeProvider(ABC):
         query: str,
         limit: int = 5,
         filters: dict[str, object] | None = None,
-    ) -> KnowledgeResult:
-        ...
+    ) -> KnowledgeResult: ...
 
     @abstractmethod
     def search_with_scores(
@@ -59,8 +54,7 @@ class KnowledgeProvider(ABC):
         query: str,
         limit: int = 5,
         filters: dict[str, object] | None = None,
-    ) -> KnowledgeResult:
-        ...
+    ) -> KnowledgeResult: ...
 
     @abstractmethod
     def hybrid_search(
@@ -68,18 +62,15 @@ class KnowledgeProvider(ABC):
         query: str,
         limit: int = 5,
         filters: dict[str, object] | None = None,
-    ) -> KnowledgeResult:
-        ...
+    ) -> KnowledgeResult: ...
 
     @abstractmethod
     def delete(
         self,
         document_id: str,
-    ) -> KnowledgeResult:
-        ...
+    ) -> KnowledgeResult: ...
 
     @abstractmethod
     def clear(
         self,
-    ) -> KnowledgeResult:
-        ...
+    ) -> KnowledgeResult: ...

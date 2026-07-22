@@ -1,5 +1,4 @@
 class RuntimeExecutor:
-
     def execute(
         self,
         executable,

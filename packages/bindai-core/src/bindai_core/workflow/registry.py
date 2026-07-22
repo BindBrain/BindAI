@@ -18,14 +18,9 @@ class WorkflowRegistry:
     ) -> None:
 
         if workflow.name in self._workflows:
+            raise ValueError(f"Workflow '{workflow.name}' already registered.")
 
-            raise ValueError(
-                f"Workflow '{workflow.name}' already registered."
-            )
-
-        self._workflows[
-            workflow.name
-        ] = workflow
+        self._workflows[workflow.name] = workflow
 
     def get(
         self,
@@ -33,14 +28,9 @@ class WorkflowRegistry:
     ) -> Workflow:
 
         if name not in self._workflows:
+            raise KeyError(f"Workflow '{name}' is not registered.")
 
-            raise KeyError(
-                f"Workflow '{name}' is not registered."
-            )
-
-        return self._workflows[
-            name
-        ]
+        return self._workflows[name]
 
     def contains(
         self,
@@ -69,22 +59,16 @@ class WorkflowRegistry:
         self,
     ) -> list[str]:
 
-        return sorted(
-            self._workflows.keys()
-        )
+        return sorted(self._workflows.keys())
 
     def all(
         self,
     ) -> list[Workflow]:
 
-        return list(
-            self._workflows.values()
-        )
+        return list(self._workflows.values())
 
     def __len__(
         self,
     ) -> int:
 
-        return len(
-            self._workflows
-        )
+        return len(self._workflows)

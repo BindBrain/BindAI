@@ -3,7 +3,6 @@ from .host import BindHost
 
 
 class BindHostBuilder:
-
     def __init__(self):
 
         self.host = BindHost(

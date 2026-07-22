@@ -4,7 +4,6 @@ from .workflow import Workflow
 
 
 class WorkflowBuilder:
-
     def __init__(self):
 
         self._workflow = Workflow()
@@ -20,11 +19,6 @@ class WorkflowBuilder:
     )
 
     if errors:
-
-        raise ValueError(
-
-            "\n".join(errors)
-
-        )
+        raise ValueError("\n".join(errors))
 
     return self._workflow

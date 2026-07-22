@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 @dataclass(slots=True)
 class ProviderCapabilities:
-
     supports_tools: bool = False
 
     supports_streaming: bool = True

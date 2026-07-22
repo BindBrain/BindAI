@@ -8,7 +8,6 @@ from .event_types import EventTypes
 
 @dataclass(slots=True)
 class AgentStartedEvent(Event):
-
     @property
     def name(self):
         return EventTypes.AGENT_STARTED
@@ -16,7 +15,6 @@ class AgentStartedEvent(Event):
 
 @dataclass(slots=True)
 class AgentFinishedEvent(Event):
-
     @property
     def name(self):
         return EventTypes.AGENT_FINISHED

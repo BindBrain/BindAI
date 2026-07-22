@@ -4,7 +4,7 @@ from bindai_core.context import ExecutionContext
 from bindai_core.tool import ToolRegistry
 
 from .conversation import Conversation
-from .executor import AgentExecutor
+from .execution.engine import AgentExecutionEngine
 
 from bindai_memory import (
     Memory,
@@ -15,6 +15,7 @@ from .configuration import AgentConfiguration
 from .execution.data import ExecutionData
 
 from bindai_core.executable import Executable
+
 
 class Agent(Executable):
     """
@@ -40,8 +41,10 @@ class Agent(Executable):
         self.tools = ToolRegistry()
         self.configuration = AgentConfiguration()
 
-        self.executor = AgentExecutor()
-        
+        self.executor = AgentExecutionEngine(
+            self,
+        )
+
         self.middleware = []
 
         self.knowledge = None

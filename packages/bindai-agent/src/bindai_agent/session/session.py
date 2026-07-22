@@ -8,13 +8,8 @@ from bindai_core.context import ExecutionContext
 
 @dataclass(slots=True)
 class AgentSession:
-
     agent: object
 
-    id: str = field(
-        default_factory=lambda: str(uuid4())
-    )
+    id: str = field(default_factory=lambda: str(uuid4()))
 
-    context: ExecutionContext = field(
-        default_factory=ExecutionContext
-    )
+    context: ExecutionContext = field(default_factory=ExecutionContext)

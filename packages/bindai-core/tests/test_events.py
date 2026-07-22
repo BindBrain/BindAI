@@ -19,9 +19,7 @@ def test_publish_event():
         handler,
     )
 
-    bus.publish(
-        Event("hello")
-    )
+    bus.publish(Event("hello"))
 
     assert received == ["hello"]
 
@@ -50,8 +48,6 @@ def test_multiple_handlers():
         b,
     )
 
-    bus.publish(
-        Event("go")
-    )
+    bus.publish(Event("go"))
 
     assert len(count) == 2

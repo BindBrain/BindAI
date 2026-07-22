@@ -41,13 +41,11 @@ class SQLiteMemoryProvider(MemoryProvider):
     ) -> MemoryResult:
 
         self._connection.execute(
-
             """
             INSERT OR REPLACE INTO memory
             (namespace,key,value,type)
             VALUES (?,?,?,?)
             """,
-
             (
                 record.namespace,
                 record.key,
@@ -70,36 +68,27 @@ class SQLiteMemoryProvider(MemoryProvider):
     ) -> MemoryResult:
 
         row = self._connection.execute(
-
             """
             SELECT key,value,type
             FROM memory
             WHERE namespace=? AND key=?
             """,
-
             (
                 namespace,
                 key,
             ),
-
         ).fetchone()
 
         if row is None:
-
             return MemoryResult(
                 success=False,
             )
 
         return MemoryResult(
-
             success=True,
-
             value=MemoryRecord(
-
                 key=row[0],
-
                 value=row[1],
-
                 namespace=namespace,
             ),
         )
@@ -111,12 +100,10 @@ class SQLiteMemoryProvider(MemoryProvider):
     ) -> MemoryResult:
 
         self._connection.execute(
-
             """
             DELETE FROM memory
             WHERE namespace=? AND key=?
             """,
-
             (
                 namespace,
                 key,
@@ -136,18 +123,15 @@ class SQLiteMemoryProvider(MemoryProvider):
     ) -> bool:
 
         row = self._connection.execute(
-
             """
             SELECT 1
             FROM memory
             WHERE namespace=? AND key=?
             """,
-
             (
                 namespace,
                 key,
             ),
-
         ).fetchone()
 
         return row is not None
@@ -158,15 +142,11 @@ class SQLiteMemoryProvider(MemoryProvider):
     ) -> MemoryResult:
 
         self._connection.execute(
-
             """
             DELETE FROM memory
             WHERE namespace=?
             """,
-
-            (
-                namespace,
-            ),
+            (namespace,),
         )
 
         self._connection.commit()

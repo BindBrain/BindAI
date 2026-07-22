@@ -17,7 +17,6 @@ from .models import (
 
 
 class YamlLoader(ConfigLoader):
-
     def load(
         self,
         path: str,
@@ -28,7 +27,6 @@ class YamlLoader(ConfigLoader):
             "r",
             encoding="utf-8",
         ) as file:
-
             data = yaml.safe_load(
                 file,
             )
@@ -53,17 +51,14 @@ class YamlLoader(ConfigLoader):
         group_data = data["group"]
 
         config = GroupConfig(
-
             name=group_data.get(
                 "name",
                 "group",
             ),
-
             description=group_data.get(
                 "description",
                 "",
             ),
-
             process=group_data.get(
                 "process",
                 "sequential",
@@ -78,9 +73,7 @@ class YamlLoader(ConfigLoader):
             "agents",
             [],
         ):
-
             config.agents.append(
-
                 AgentConfig(
                     id=item["id"],
                     name=item["name"],
@@ -111,9 +104,7 @@ class YamlLoader(ConfigLoader):
             "tasks",
             [],
         ):
-
             config.tasks.append(
-
                 TaskConfig(
                     id=item["id"],
                     description=item["description"],
@@ -139,11 +130,8 @@ class YamlLoader(ConfigLoader):
         config: GroupConfig,
     ):
 
-        builder = (
-            GroupBuilder()
-            .name(
-                config.name,
-            )
+        builder = GroupBuilder().name(
+            config.name,
         )
 
         agents = self._build_agents(
@@ -173,7 +161,6 @@ class YamlLoader(ConfigLoader):
         agents = {}
 
         for item in config.agents:
-
             agent = (
                 AgentBuilder()
                 .name(
@@ -211,22 +198,13 @@ class YamlLoader(ConfigLoader):
         tasks = {}
 
         for item in config.tasks:
-
             if item.agent not in agents:
-
-                raise ValueError(
-                    f'Unknown agent "{item.agent}".'
-                )
+                raise ValueError(f'Unknown agent "{item.agent}".')
 
             task = Task(
-
                 description=item.description,
-
                 expected_output=item.expected_output,
-
-                agent=agents[
-                    item.agent
-                ],
+                agent=agents[item.agent],
             )
 
             tasks[item.id] = task
@@ -241,24 +219,13 @@ class YamlLoader(ConfigLoader):
     ):
 
         for item in config.tasks:
-
-            task = tasks[
-                item.id
-            ]
+            task = tasks[item.id]
 
             for dependency in item.context:
-
                 if dependency not in tasks:
+                    raise ValueError(f'Unknown task "{dependency}".')
 
-                    raise ValueError(
-                        f'Unknown task "{dependency}".'
-                    )
-
-                task.context_from(
-                    tasks[
-                        dependency
-                    ]
-                )
+                task.context_from(tasks[dependency])
 
             builder.task(
                 task,

@@ -40,11 +40,7 @@ class InMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> MemoryResult:
 
-        record = (
-            self._storage
-            .get(namespace, {})
-            .get(key)
-        )
+        record = self._storage.get(namespace, {}).get(key)
 
         return MemoryResult(
             success=record is not None,
@@ -77,12 +73,9 @@ class InMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> bool:
 
-        return (
-            key
-            in self._storage.get(
-                namespace,
-                {},
-            )
+        return key in self._storage.get(
+            namespace,
+            {},
         )
 
     def clear(

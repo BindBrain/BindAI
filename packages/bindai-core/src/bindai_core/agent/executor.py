@@ -44,7 +44,6 @@ class AgentExecutor:
     ) -> AgentResult:
 
         try:
-
             self._prepare(agent)
 
             self._run_before_middleware(
@@ -59,7 +58,6 @@ class AgentExecutor:
             user = context.variables.get("message")
 
             if user is not None:
-
                 agent.conversation.add_user(
                     user,
                 )
@@ -90,7 +88,6 @@ class AgentExecutor:
             return result
 
         except Exception as ex:
-
             agent.state = AgentState.FAILED
 
             return AgentResult(
@@ -130,7 +127,6 @@ class AgentExecutor:
         iterations = 0
 
         while True:
-
             response = self._execute_turn(
                 agent,
                 context,
@@ -141,19 +137,12 @@ class AgentExecutor:
             #
 
             if not response.tool_calls:
-
                 return response
 
             iterations += 1
 
-            if (
-                iterations
-                >= agent.configuration.max_tool_iterations
-            ):
-
-                raise RuntimeError(
-                    "Maximum tool iterations exceeded."
-                )
+            if iterations >= agent.configuration.max_tool_iterations:
+                raise RuntimeError("Maximum tool iterations exceeded.")
 
     def _execute_turn(
         self,
@@ -215,7 +204,6 @@ class AgentExecutor:
     ):
 
         for middleware in agent.middleware:
-
             middleware.before(
                 agent,
                 context,
@@ -229,7 +217,6 @@ class AgentExecutor:
     ):
 
         for middleware in agent.middleware:
-
             middleware.after(
                 agent,
                 context,
@@ -253,11 +240,8 @@ class AgentExecutor:
     ):
 
         context.events.publish(
-
             Event(
-
                 name=EventTypes.AGENT_FINISHED,
-
                 payload={
                     "agent": agent.name,
                 },
@@ -277,7 +261,6 @@ class AgentExecutor:
         messages: list[Message] = []
 
         messages.append(
-
             Message(
                 role=MessageRole.SYSTEM,
                 content=agent.instructions,
@@ -285,23 +268,14 @@ class AgentExecutor:
         )
 
         if agent.memory is not None:
+            messages.extend(agent.memory.messages())
 
-            messages.extend(
-                agent.memory.messages()
-            )
-
-        messages.extend(
-            agent.conversation.messages
-        )
+        messages.extend(agent.conversation.messages)
 
         return ModelRequest(
-
             messages=messages,
-
             tools=agent.tools.all(),
-
             temperature=agent.configuration.temperature,
-
             max_tokens=agent.configuration.max_tokens,
         )
 
@@ -322,7 +296,6 @@ class AgentExecutor:
             return messages
 
         for call in response.tool_calls:
-
             tool = agent.tools.get(
                 call.name,
             )
@@ -347,31 +320,23 @@ class AgentExecutor:
             output = ""
 
             if result.output is not None:
-
                 output = str(
                     result.output,
                 )
 
             elif result.error is not None:
-
                 output = result.error
 
             messages.append(
-
                 Message(
-
                     role=MessageRole.TOOL,
-
                     content=output,
-
                     tool_call_id=getattr(
                         call,
                         "id",
                         None,
                     ),
-
                 )
-
             )
 
         return messages
@@ -383,29 +348,24 @@ class AgentExecutor:
     ):
 
         for message in messages:
-
             if message.role == MessageRole.ASSISTANT:
-
                 agent.conversation.add_assistant(
                     message.content,
                     tool_calls=message.tool_calls,
                 )
 
             elif message.role == MessageRole.TOOL:
-
                 agent.conversation.add_tool(
                     tool_call_id=message.tool_call_id,
                     text=message.content,
                 )
 
             elif message.role == MessageRole.USER:
-
                 agent.conversation.add_user(
                     message.content,
                 )
 
             elif message.role == MessageRole.SYSTEM:
-
                 agent.conversation.add_system(
                     message.content,
                 )
@@ -417,7 +377,7 @@ class AgentExecutor:
         response: ModelResponse,
     ):
 
-            agent.conversation.add_assistant(
-                response.content,
-                tool_calls=response.tool_calls,
-            )
+        agent.conversation.add_assistant(
+            response.content,
+            tool_calls=response.tool_calls,
+        )

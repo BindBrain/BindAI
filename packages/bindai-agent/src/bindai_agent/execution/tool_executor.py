@@ -1,18 +1,31 @@
 from __future__ import annotations
 
+from .step import ExecutionStep
+from .state import ExecutionState
 
-class ToolExecutor:
+
+class ToolExecutor(
+    ExecutionStep,
+):
     """
-    Executes tool calls and
-    appends results back into
-    the conversation.
+    Executes model tool calls.
     """
 
     def execute(
         self,
         agent,
-        response,
-    ) -> None:
+        context,
+    ):
+
+        state: ExecutionState = context.data
+
+        response = state.response
+
+        if (
+            response is None
+            or not response.tool_calls
+        ):
+            return
 
         agent.conversation.add_assistant_tool_call(
             response.tool_calls,
@@ -21,11 +34,10 @@ class ToolExecutor:
         for tool_call in response.tool_calls:
 
             #
-            # Hooks before execution
+            # Hooks
             #
 
             for hook in agent.hooks:
-
                 hook.on_tool_start(
                     tool_call,
                 )
@@ -35,12 +47,7 @@ class ToolExecutor:
                 **tool_call.arguments,
             )
 
-            #
-            # Hooks after execution
-            #
-
             for hook in agent.hooks:
-
                 hook.on_tool_end(
                     tool_call,
                     result,
@@ -54,3 +61,5 @@ class ToolExecutor:
                     else f"ERROR: {result.error}"
                 ),
             )
+
+        return response

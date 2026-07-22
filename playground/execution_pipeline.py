@@ -4,7 +4,6 @@ from bindai_core.context import ExecutionContext
 
 
 class ExecutionPipeline:
-
     def __init__(self):
 
         self._middleware = []
@@ -27,7 +26,6 @@ class ExecutionPipeline:
     ):
 
         for middleware in self._middleware:
-
             middleware.before_execute(
                 agent,
                 context,
@@ -40,7 +38,6 @@ class ExecutionPipeline:
         for middleware in reversed(
             self._middleware,
         ):
-
             middleware.after_execute(
                 agent,
                 context,

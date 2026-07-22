@@ -12,7 +12,6 @@ from .exceptions import (
 
 
 class ProviderRegistry:
-
     def __init__(self):
 
         self._providers: dict[
@@ -26,14 +25,11 @@ class ProviderRegistry:
     ):
 
         if provider.name in self._providers:
-
             raise ProviderAlreadyRegistered(
                 provider.name,
             )
 
-        self._providers[
-            provider.name
-        ] = provider
+        self._providers[provider.name] = provider
 
     def get(
         self,
@@ -41,14 +37,11 @@ class ProviderRegistry:
     ) -> "ModelProvider":
 
         if name not in self._providers:
-
             raise ProviderNotFound(
                 name,
             )
 
-        return self._providers[
-            name
-        ]
+        return self._providers[name]
 
     def contains(
         self,

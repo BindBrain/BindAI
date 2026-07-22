@@ -52,9 +52,7 @@ class Application:
         agent: Agent,
     ):
 
-        self.agents[
-            agent.name
-        ] = agent
+        self.agents[agent.name] = agent
 
         return self
 
@@ -76,13 +74,10 @@ class Application:
         message: str,
     ):
 
-        return (
-            self.agent(
-                agent,
-            )
-            .chat(
-                message,
-            )
+        return self.agent(
+            agent,
+        ).chat(
+            message,
         )
 
     def stream(
@@ -92,13 +87,10 @@ class Application:
         message: str,
     ):
 
-        return (
-            self.agent(
-                agent,
-            )
-            .stream(
-                message,
-            )
+        return self.agent(
+            agent,
+        ).stream(
+            message,
         )
 
     #
@@ -110,23 +102,16 @@ class Application:
         name: str,
     ):
 
-        return (
-            name
-            in self.agents
-        )
+        return name in self.agents
 
     def __len__(
         self,
     ):
 
-        return len(
-            self.agents
-        )
+        return len(self.agents)
 
     def __iter__(
         self,
     ):
 
-        return iter(
-            self.agents.values()
-        )
+        return iter(self.agents.values())

@@ -4,7 +4,6 @@ from typing import Any
 
 @dataclass(slots=True)
 class AgentResult:
-
     success: bool
 
     output: Any = None

@@ -15,6 +15,7 @@ from bindai_core import (
 from .client import OpenAIClient
 from .mapper import OpenAIMapper
 
+
 class OpenAIProvider(ModelProvider):
     """
     OpenAI implementation of ModelProvider.
@@ -45,19 +46,11 @@ class OpenAIProvider(ModelProvider):
         }
 
         if request.response_schema is not None:
-
             kwargs["response_format"] = {
                 "type": "json_schema",
                 "json_schema": {
-                    "name": (
-                        request.response_schema
-                        .model
-                        .__name__
-                    ),
-                    "schema": (
-                        request.response_schema
-                        .json_schema
-                    ),
+                    "name": (request.response_schema.model.__name__),
+                    "schema": (request.response_schema.json_schema),
                 },
             }
 
@@ -106,15 +99,10 @@ class OpenAIProvider(ModelProvider):
         structured_output = None
 
         if request.response_schema is not None:
+            data = json.loads(response.choices[0].message.content)
 
-            data = json.loads(
-                response.choices[0].message.content
-            )
-
-            structured_output = (
-                request.response_schema.model(
-                    **data,
-                )
+            structured_output = request.response_schema.model(
+                **data,
             )
 
         return ModelResponse(
@@ -139,18 +127,12 @@ class OpenAIProvider(ModelProvider):
         )
 
         for chunk in response:
-
             if not chunk.choices:
                 continue
 
-            delta = (
-                chunk.choices[0]
-                .delta
-                .content
-            )
+            delta = chunk.choices[0].delta.content
 
             if delta:
-
                 yield StreamChunk(
                     delta=delta,
                 )
@@ -166,12 +148,8 @@ class OpenAIProvider(ModelProvider):
     ):
 
         return ProviderCapabilities(
-
             supports_tools=True,
-
             supports_streaming=True,
-
             supports_structured_output=True,
-
             supports_vision=True,
         )

@@ -31,7 +31,6 @@ class Tool:
             )
 
         except Exception as e:
-
             return ToolResult(
                 success=False,
                 error=str(e),

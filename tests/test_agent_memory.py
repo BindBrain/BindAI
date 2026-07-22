@@ -46,19 +46,14 @@ def test_agent_memory():
     )
 
     memory.set(
-
         MemoryRecord(
-
             key="__context__",
-
             value="User name is John.",
         )
     )
 
     agent = AssistantAgent(
-
         name="assistant",
-
         provider=None,
     )
 
@@ -83,23 +78,15 @@ def test_memory_is_saved():
 
     agent = (
         AssistantAgent.builder()
-        .instructions(
-            "You are helpful."
-        )
+        .instructions("You are helpful.")
         .memory(
             memory,
         )
-        .provider(
-            DummyProvider(
-                "Hello!"
-            )
-        )
+        .provider(DummyProvider("Hello!"))
         .build()
     )
 
-    agent.chat(
-        "Hi"
-    )
+    agent.chat("Hi")
 
     result = memory.get(
         "__context__",

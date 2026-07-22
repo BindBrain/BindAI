@@ -11,9 +11,7 @@ agent = (
         api_key=os.environ["OPENAI_API_KEY"],
         model="gpt-5",
     )
-    .instructions(
-        "You are a helpful assistant."
-    )
+    .instructions("You are a helpful assistant.")
     .build()
 )
 

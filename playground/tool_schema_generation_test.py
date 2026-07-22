@@ -2,7 +2,6 @@ from bindai_core import Tool, ToolResult
 
 
 class GreetingTool(Tool):
-
     @property
     def name(self):
         return "greet"

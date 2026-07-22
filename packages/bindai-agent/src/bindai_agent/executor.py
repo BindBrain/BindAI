@@ -10,6 +10,10 @@ from .execution.prompt_builder import PromptBuilder
 from .execution.tool_executor import ToolExecutor
 from .execution.finish_step import FinishStep
 
+from .execution.pipeline import ExecutionPipeline
+from .execution.initialization_step import InitializationStep
+from .execution.model_generation_step import ModelGenerationStep
+
 from bindai_core.model import (
     ModelRequest,
     ModelResponse,
@@ -27,7 +31,7 @@ class AgentExecutor:
     """
 
     memory = MemoryStep()
-    
+
     knowledge = KnowledgeStep()
 
     prompt_builder = PromptBuilder()
@@ -36,40 +40,41 @@ class AgentExecutor:
 
     finish_step = FinishStep()
 
+    pipeline = ExecutionPipeline(
+        InitializationStep(),
+        ModelGenerationStep(),
+    )
+
     def execute(
         self,
         agent: Agent,
         context: ExecutionContext,
     ) -> AgentResult:
 
-        self._initialize(
+        self.pipeline.execute(
             agent,
             context,
         )
 
         for middleware in agent.middleware:
-
             middleware.before_execute(
                 agent,
                 context,
             )
 
         for hook in agent.hooks:
-
             hook.on_start(
                 agent,
                 context,
             )
 
         while True:
-
             request = self.prompt_builder.build(
                 agent,
                 context,
             )
 
             for hook in agent.hooks:
-
                 hook.on_model_request(
                     request,
                 )
@@ -80,13 +85,11 @@ class AgentExecutor:
             )
 
             for hook in agent.hooks:
-
                 hook.on_model_response(
                     response,
                 )
 
             if not response.tool_calls:
-
                 result = self.finish_step.finish(
                     agent,
                     context,
@@ -97,7 +100,6 @@ class AgentExecutor:
                 for middleware in reversed(
                     agent.middleware,
                 ):
-
                     middleware.after_execute(
                         agent,
                         context,
@@ -117,7 +119,7 @@ class AgentExecutor:
         context: ExecutionContext,
     ):
 
-        self._initialize(
+        self.pipeline.execute(
             agent,
             context,
         )
@@ -132,7 +134,6 @@ class AgentExecutor:
         for chunk in agent.provider.stream(
             request,
         ):
-
             content += chunk.delta
 
             yield chunk
@@ -167,7 +168,6 @@ class AgentExecutor:
         )
 
         if len(agent.conversation) == 0:
-
             agent.conversation.add_system(
                 agent.instructions,
             )

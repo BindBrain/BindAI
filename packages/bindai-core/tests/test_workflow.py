@@ -6,7 +6,6 @@ from bindai_core.workflow import (
 
 
 class HelloNode(WorkflowNode):
-
     def execute(self, context):
 
         context.set(
@@ -22,9 +21,7 @@ def test_workflow_runs():
 
     workflow = Workflow("demo")
 
-    workflow.add_node(
-        HelloNode("start")
-    )
+    workflow.add_node(HelloNode("start"))
 
     executor = WorkflowExecutor()
 

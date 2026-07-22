@@ -2,7 +2,6 @@ from __future__ import annotations
 
 
 class RequestPipeline:
-
     def __init__(self):
 
         self._steps = []
@@ -24,7 +23,6 @@ class RequestPipeline:
     ):
 
         for step in self._steps:
-
             request = step.process(
                 agent,
                 context,

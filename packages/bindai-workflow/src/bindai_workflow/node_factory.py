@@ -21,27 +21,20 @@ class WorkflowNodeFactory:
         node_type: type[WorkflowNode],
     ):
 
-        self._types[
-            node_type.__name__
-        ] = node_type
+        self._types[node_type.__name__] = node_type
 
     def create(
         self,
         data: dict,
     ):
 
-        node_class = self._types[
-            data["type"]
-        ]
+        node_class = self._types[data["type"]]
 
         node = node_class(
-
             node_id=data["id"],
-
             name=data.get(
                 "name",
             ),
-
         )
 
         node.load_dict(

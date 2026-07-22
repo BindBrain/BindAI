@@ -5,7 +5,6 @@ from .result import ExecutionResult
 
 
 class Executor:
-
     def execute(
         self,
         executable,
@@ -13,7 +12,6 @@ class Executor:
     ) -> ExecutionResult:
 
         try:
-
             context.state = ExecutionState.RUNNING
 
             value = executable.execute(context)
@@ -26,7 +24,6 @@ class Executor:
             )
 
         except Exception as ex:
-
             context.state = ExecutionState.FAILED
 
             return ExecutionResult(

@@ -9,11 +9,7 @@ def test_recursive_chunker_prefers_paragraphs():
     document = KnowledgeDocument(
         id="1",
         title="Test",
-        content=(
-            "Paragraph one.\n\n"
-            "Paragraph two.\n\n"
-            "Paragraph three."
-        ),
+        content=("Paragraph one.\n\nParagraph two.\n\nParagraph three."),
     )
 
     chunker = RecursiveChunker(

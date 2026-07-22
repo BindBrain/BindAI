@@ -25,7 +25,6 @@ class OpenAIMapper:
         result = []
 
         for message in messages:
-
             item = {
                 "role": message.role.value,
                 "content": message.content,
@@ -35,11 +34,7 @@ class OpenAIMapper:
             # Assistant tool calls
             #
 
-            if (
-                message.role == MessageRole.ASSISTANT
-                and message.tool_calls
-            ):
-
+            if message.role == MessageRole.ASSISTANT and message.tool_calls:
                 item["tool_calls"] = [
                     {
                         "id": tool.id,
@@ -58,14 +53,8 @@ class OpenAIMapper:
             # Tool response
             #
 
-            if (
-                message.role == MessageRole.TOOL
-                and message.tool_call_id
-            ):
-
-                item["tool_call_id"] = (
-                    message.tool_call_id
-                )
+            if message.role == MessageRole.TOOL and message.tool_call_id:
+                item["tool_call_id"] = message.tool_call_id
 
             result.append(item)
 
@@ -119,14 +108,11 @@ class OpenAIMapper:
         result = []
 
         for call in message.tool_calls:
-
             result.append(
                 ToolCall(
                     id=call.id,
                     name=call.function.name,
-                    arguments=json.loads(
-                        call.function.arguments or "{}"
-                    ),
+                    arguments=json.loads(call.function.arguments or "{}"),
                 )
             )
 

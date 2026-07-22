@@ -6,7 +6,6 @@ from datetime import datetime
 
 @dataclass(slots=True)
 class WorkflowHistory:
-
     instance_id: str
 
     workflow_id: str

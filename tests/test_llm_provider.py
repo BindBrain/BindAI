@@ -3,7 +3,6 @@ from bindai import LLMResult
 
 
 class DummyProvider(LLMProvider):
-
     def generate(
         self,
         prompt: str,

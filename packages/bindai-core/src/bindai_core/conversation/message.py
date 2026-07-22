@@ -16,6 +16,4 @@ class ConversationMessage:
 
     content: str
 
-    timestamp: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
-    )
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))

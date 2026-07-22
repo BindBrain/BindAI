@@ -16,7 +16,6 @@ class Message:
 
 
 class SystemMessage(Message):
-
     def __init__(
         self,
         content: str,
@@ -28,7 +27,6 @@ class SystemMessage(Message):
 
 
 class UserMessage(Message):
-
     def __init__(
         self,
         content: str,
@@ -40,7 +38,6 @@ class UserMessage(Message):
 
 
 class AssistantMessage(Message):
-
     def __init__(
         self,
         content: str,
@@ -52,7 +49,6 @@ class AssistantMessage(Message):
 
 
 class ToolMessage(Message):
-
     def __init__(
         self,
         content: str,

@@ -9,7 +9,7 @@ __all__ = [
     "DocumentLoader",
     "TextLoader",
     "DirectoryLoader",
-	"MarkdownLoader",
-	"PDFLoader",
-	"HTMLLoader",
+    "MarkdownLoader",
+    "PDFLoader",
+    "HTMLLoader",
 ]

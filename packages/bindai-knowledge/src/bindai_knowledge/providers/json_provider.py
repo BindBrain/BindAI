@@ -32,7 +32,6 @@ class JsonKnowledgeProvider(InMemoryKnowledgeProvider):
     def _load(self) -> None:
 
         try:
-
             data = json.loads(
                 self.path.read_text(
                     encoding="utf-8",
@@ -45,7 +44,6 @@ class JsonKnowledgeProvider(InMemoryKnowledgeProvider):
         self._documents.clear()
 
         for item in data:
-
             document = KnowledgeDocument(
                 id=item["id"],
                 title=item["title"],
@@ -65,7 +63,6 @@ class JsonKnowledgeProvider(InMemoryKnowledgeProvider):
         data = []
 
         for document in self._documents.values():
-
             data.append(
                 {
                     "id": document.id,

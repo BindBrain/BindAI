@@ -8,7 +8,6 @@ from .event_types import EventTypes
 
 @dataclass(slots=True)
 class ToolExecutedEvent(Event):
-
     tool_name: str
 
     @property

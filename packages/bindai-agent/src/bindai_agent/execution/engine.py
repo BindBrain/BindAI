@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+from bindai_core.context import ExecutionContext
+
+from .pipeline import ExecutionPipeline
+from .state import ExecutionState
+
+from .initialization_step import InitializationStep
 from .knowledge_step import KnowledgeStep
 from .memory_step import MemoryStep
-from .prompt_builder import PromptBuilder
-from .result import ExecutionResult
-from .tool_loop import ToolLoop
+from .model_generation_step import ModelGenerationStep
+from .finish_step import FinishStep
 
 
 class AgentExecutionEngine:
     """
-    Central runtime responsible for
-    coordinating agent execution.
+    Pipeline execution engine.
     """
 
     def __init__(
@@ -19,32 +23,64 @@ class AgentExecutionEngine:
     ):
         self.agent = agent
 
-        self.prompt_builder = PromptBuilder()
+        self.pipeline = ExecutionPipeline()
 
-        self.knowledge = KnowledgeStep()
+        self.pipeline.add(
+            InitializationStep(),
+        )
 
-        self.memory = MemoryStep()
+        self.pipeline.add(
+            KnowledgeStep(),
+        )
 
-        self.tools = ToolLoop()
+        self.pipeline.add(
+            MemoryStep(),
+        )
 
-    def run(
+        self.pipeline.add(
+            ModelGenerationStep(),
+        )
+
+        self.pipeline.add(
+            FinishStep(),
+        )
+
+    def execute(
         self,
-        user_input: str,
-    ) -> ExecutionResult:
-        """
-        Placeholder implementation.
+        agent,
+        context: ExecutionContext,
+    ):
 
-        The full execution loop
-        will be implemented in
-        the next steps.
-        """
+        context.data = ExecutionState()
 
-        prompt = self.prompt_builder.build(
-            user_input,
+        #
+        # before middleware
+        #
+
+        for middleware in agent.middleware:
+            middleware.before_execute(
+                agent,
+                context,
+            )
+
+        #
+        # run pipeline
+        #
+
+        result = self.pipeline.execute(
+            agent,
+            context,
         )
 
-        return ExecutionResult(
-            success=True,
-            response=prompt,
-            iterations=1,
-        )
+        #
+        # after middleware
+        #
+
+        for middleware in reversed(agent.middleware):
+            middleware.after_execute(
+                agent,
+                context,
+                result,
+            )
+
+        return result

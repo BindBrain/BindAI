@@ -7,7 +7,6 @@ from .document import KnowledgeDocument
 
 @dataclass(slots=True)
 class VectorRecord:
-
     document: KnowledgeDocument
 
     embedding: list[float]

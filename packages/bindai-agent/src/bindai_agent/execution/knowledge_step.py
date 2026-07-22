@@ -1,28 +1,46 @@
 from __future__ import annotations
 
+from .step import ExecutionStep
 
-class KnowledgeStep:
+
+class KnowledgeStep(
+    ExecutionStep,
+):
     """
-    Handles retrieval of relevant
-    knowledge before model inference.
+    Inject retrieved knowledge into the conversation.
     """
 
-    def inject(
+    def execute(
         self,
         agent,
-        query: str,
-    ) -> None:
+        context,
+    ):
 
         if agent.knowledge is None:
             return
 
-        context = agent.knowledge.retrieve(
-            query,
+        user_input = context.variables.get(
+            "input",
+            "",
         )
 
-        if not context:
+        result = agent.knowledge.search(
+            user_input,
+        )
+
+        if not result.success:
             return
 
+        documents = result.value or []
+
+        if not documents:
+            return
+
+        content = "\n\n".join(
+            doc.content
+            for doc in documents
+        )
+
         agent.conversation.add_system(
-            f"Relevant knowledge:\n{context}"
+            f"Relevant knowledge:\n{content}",
         )

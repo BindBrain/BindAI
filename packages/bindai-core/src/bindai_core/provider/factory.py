@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 
 class ProviderFactory:
-
     _providers: dict[
         str,
         type["ModelProvider"],
@@ -20,9 +19,7 @@ class ProviderFactory:
         provider: type["ModelProvider"],
     ):
 
-        cls._providers[
-            name.lower()
-        ] = provider
+        cls._providers[name.lower()] = provider
 
     @classmethod
     def create(
@@ -36,10 +33,7 @@ class ProviderFactory:
         )
 
         if provider is None:
-
-            raise ValueError(
-                f"Unknown provider '{name}'."
-            )
+            raise ValueError(f"Unknown provider '{name}'.")
 
         return provider(
             configuration,

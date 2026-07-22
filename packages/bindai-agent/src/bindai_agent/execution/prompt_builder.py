@@ -3,11 +3,12 @@ from __future__ import annotations
 from bindai_core.model import ModelRequest
 from bindai_core.schema import SchemaSerializer
 
+from .state import ExecutionState
+
 
 class PromptBuilder:
     """
-    Responsible for constructing the
-    ModelRequest sent to the provider.
+    Builds the ModelRequest for the provider.
     """
 
     def build(
@@ -15,6 +16,8 @@ class PromptBuilder:
         agent,
         context,
     ) -> ModelRequest:
+
+        state: ExecutionState = context.data
 
         request = agent.conversation.to_request()
 
@@ -25,20 +28,12 @@ class PromptBuilder:
         )
 
         if output_type is not None:
-
             request.response_schema = (
                 SchemaSerializer.serialize(
                     output_type,
                 )
             )
 
-        #
-        # Store the generated request
-        # inside the execution context.
-        #
-
-        if context.data is not None:
-
-            context.data.request = request
+        state.request = request
 
         return request

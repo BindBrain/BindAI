@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True)
 class GroupResult:
-
     success: bool
 
     output: str | None = None

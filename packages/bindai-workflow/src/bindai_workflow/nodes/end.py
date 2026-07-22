@@ -6,7 +6,6 @@ from ..node import WorkflowNode
 class EndNode(
     WorkflowNode,
 ):
-
     def execute(
         self,
         context,

@@ -2,17 +2,22 @@ from __future__ import annotations
 
 from bindai_memory import MemoryRecord
 
+from .step import ExecutionStep
 
-class MemoryStep:
+
+class MemoryStep(
+    ExecutionStep,
+):
     """
-    Handles loading and saving
-    long-term memory.
+    Loads long-term memory before execution
+    and saves it after execution.
     """
 
-    def load(
+    def execute(
         self,
         agent,
-    ) -> None:
+        context,
+    ):
 
         result = agent.memory.get(
             "__context__",
@@ -33,12 +38,11 @@ class MemoryStep:
     def save(
         self,
         agent,
-    ) -> None:
+    ):
 
         transcript = []
 
         for message in agent.conversation.messages:
-
             transcript.append(
                 f"{message.role.value}: {message.content}"
             )

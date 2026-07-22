@@ -17,9 +17,7 @@ group = loader.load(
 #
 
 for agent in group.agents:
-
     if hasattr(agent.provider.configuration, "api_key"):
-
         agent.provider.configuration.api_key = os.getenv(
             "OPENAI_API_KEY",
         )

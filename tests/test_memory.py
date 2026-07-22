@@ -40,11 +40,8 @@ def test_set_get():
     memory = Memory()
 
     memory.set(
-
         MemoryRecord(
-
             key="name",
-
             value="BindAI",
         )
     )
@@ -63,11 +60,8 @@ def test_exists():
     memory = Memory()
 
     memory.set(
-
         MemoryRecord(
-
             key="language",
-
             value="Python",
         )
     )
@@ -82,11 +76,8 @@ def test_delete():
     memory = Memory()
 
     memory.set(
-
         MemoryRecord(
-
             key="temp",
-
             value="123",
         )
     )
@@ -133,11 +124,8 @@ def test_sqlite_provider():
     )
 
     memory.set(
-
         MemoryRecord(
-
             key="framework",
-
             value="BindAI",
         )
     )

@@ -10,7 +10,6 @@ from bindai_core.model import (
 
 
 class DemoProvider(ModelProvider):
-
     @property
     def name(self):
         return "demo"
@@ -27,7 +26,6 @@ class DemoProvider(ModelProvider):
 
 
 class HelloAgent(Agent):
-
     def execute(self, context):
 
         print(f"Running {self.name}")

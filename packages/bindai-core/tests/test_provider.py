@@ -12,7 +12,6 @@ from bindai_core.provider import (
 
 
 class FakeProvider(ModelProvider):
-
     @property
     def name(self):
 
@@ -33,9 +32,7 @@ def test_provider_registry():
 
     registry = ProviderRegistry()
 
-    provider = FakeProvider(
-        ProviderConfiguration()
-    )
+    provider = FakeProvider(ProviderConfiguration())
 
     registry.register(provider)
 
@@ -46,12 +43,8 @@ def test_provider_registry():
 
 def test_provider_generate():
 
-    provider = FakeProvider(
-        ProviderConfiguration()
-    )
+    provider = FakeProvider(ProviderConfiguration())
 
-    response = provider.generate(
-        ModelRequest()
-    )
+    response = provider.generate(ModelRequest())
 
     assert response.content == "ok"

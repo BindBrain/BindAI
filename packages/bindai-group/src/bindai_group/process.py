@@ -13,5 +13,4 @@ class Process(ABC):
     def execute(
         self,
         group,
-    ):
-        ...
+    ): ...

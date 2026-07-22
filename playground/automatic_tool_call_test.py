@@ -11,7 +11,6 @@ from bindai_core import (
 
 
 class DummyProvider(ModelProvider):
-
     @property
     def name(self):
         return "dummy"
@@ -31,7 +30,6 @@ class DummyProvider(ModelProvider):
 
 
 class GreetingTool(Tool):
-
     @property
     def name(self):
         return "greet"

@@ -33,7 +33,6 @@ class HumanTask:
 
         self.result = "approved"
 
-
     def reject(self):
 
         self.completed = True

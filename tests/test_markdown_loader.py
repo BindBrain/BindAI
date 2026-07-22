@@ -20,9 +20,7 @@ def test_markdown_loader(tmp_path: Path):
         InMemoryKnowledgeProvider(),
     )
 
-    count = knowledge.load(
-        MarkdownLoader(str(file))
-    )
+    count = knowledge.load(MarkdownLoader(str(file)))
 
     assert count == 1
 

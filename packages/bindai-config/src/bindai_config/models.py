@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 
 @dataclass(slots=True)
 class AgentConfig:
-
     id: str
 
     name: str
@@ -23,7 +22,6 @@ class AgentConfig:
 
 @dataclass(slots=True)
 class TaskConfig:
-
     id: str
 
     description: str
@@ -39,7 +37,6 @@ class TaskConfig:
 
 @dataclass(slots=True)
 class GroupConfig:
-
     name: str
 
     process: str = "sequential"

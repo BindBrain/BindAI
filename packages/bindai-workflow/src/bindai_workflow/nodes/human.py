@@ -11,7 +11,6 @@ from ..task import HumanTask
 class HumanTaskNode(
     WorkflowNode,
 ):
-
     def __init__(
         self,
         node_id: str,
@@ -35,17 +34,12 @@ class HumanTaskNode(
     ):
 
         task = HumanTask(
-
             id=str(
                 uuid.uuid4(),
             ),
-
             workflow_instance=context.instance.id,
-
             node_id=self.id,
-
             created_at=datetime.utcnow(),
-
         )
 
         context.task = task
@@ -61,15 +55,10 @@ class HumanTaskNode(
         data = super().to_dict()
 
         data.update(
-
             {
-
                 "assignee": self.assignee,
-
                 "form": self.form,
-
             }
-
         )
 
         return data

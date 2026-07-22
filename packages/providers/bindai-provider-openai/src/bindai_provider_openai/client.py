@@ -28,13 +28,9 @@ class OpenAIClient:
     ) -> OpenAI:
 
         if self._client is None:
-
             self._client = OpenAI(
-
                 api_key=self._configuration.api_key,
-
                 base_url=self._configuration.endpoint,
-
                 organization=self._configuration.organization,
             )
 

@@ -29,9 +29,7 @@ def test_execute():
 
 def test_unknown_tool():
 
-    executor = ToolExecutor(
-        ToolRegistry()
-    )
+    executor = ToolExecutor(ToolRegistry())
 
     result = executor.execute("missing")
 

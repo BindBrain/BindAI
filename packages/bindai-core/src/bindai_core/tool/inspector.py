@@ -24,7 +24,6 @@ class ToolInspector:
         schema = {}
 
         for name, parameter in signature.parameters.items():
-
             if name == "self":
                 continue
 
@@ -35,14 +34,8 @@ class ToolInspector:
             )
 
             schema[name] = {
-
                 "type": parameter_type,
-
-                "required": (
-                    parameter.default
-                    is inspect.Parameter.empty
-                ),
-
+                "required": (parameter.default is inspect.Parameter.empty),
             }
 
         return schema

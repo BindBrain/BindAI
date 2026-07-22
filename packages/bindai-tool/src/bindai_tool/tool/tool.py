@@ -22,5 +22,4 @@ class Tool(ABC):
         self,
         context: ExecutionContext,
         **kwargs,
-    ) -> ToolResult:
-        ...
+    ) -> ToolResult: ...

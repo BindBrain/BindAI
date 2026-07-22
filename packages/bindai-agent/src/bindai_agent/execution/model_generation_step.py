@@ -7,6 +7,9 @@ from .state import ExecutionState
 class ModelGenerationStep(
     ExecutionStep,
 ):
+    """
+    Calls the provider and stores the response.
+    """
 
     def execute(
         self,
@@ -19,3 +22,9 @@ class ModelGenerationStep(
         state.response = agent.provider.generate(
             state.request,
         )
+
+        #
+        # Continue pipeline.
+        #
+
+        return None

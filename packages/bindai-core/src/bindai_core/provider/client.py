@@ -22,8 +22,7 @@ class ProviderClient(ABC):
     def generate(
         self,
         request: ModelRequest,
-    ) -> ModelResponse:
-        ...
+    ) -> ModelResponse: ...
 
     @abstractmethod
     def stream(

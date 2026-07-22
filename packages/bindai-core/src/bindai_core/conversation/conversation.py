@@ -40,15 +40,10 @@ class Conversation:
     ) -> None:
 
         self.add(
-
             Message(
-
                 role=MessageRole.USER,
-
                 content=text,
-
             )
-
         )
 
     def add_assistant(
@@ -70,15 +65,10 @@ class Conversation:
     ) -> None:
 
         self.add(
-
             Message(
-
                 role=MessageRole.SYSTEM,
-
                 content=text,
-
             )
-
         )
 
     def add_tool(
@@ -88,17 +78,11 @@ class Conversation:
     ) -> None:
 
         self.add(
-
             Message(
-
                 role=MessageRole.TOOL,
-
                 content=text,
-
                 tool_call_id=tool_call_id,
-
             )
-
         )
 
     #
@@ -125,7 +109,6 @@ class Conversation:
     ) -> Message | None:
 
         if not self._messages:
-
             return None
 
         return self._messages[-1]

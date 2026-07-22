@@ -3,25 +3,20 @@ from __future__ import annotations
 
 class ExecutionPipeline:
     """
-    Executes a sequence of steps.
+    Executes execution steps sequentially.
     """
 
     def __init__(
         self,
-        *steps,
+        steps=None,
     ):
-        self.steps = list(
-            steps,
-        )
+        self.steps = list(steps or [])
 
     def add(
         self,
         step,
     ):
-
-        self.steps.append(
-            step,
-        )
+        self.steps.append(step)
 
     def execute(
         self,
@@ -29,15 +24,14 @@ class ExecutionPipeline:
         context,
     ):
 
-        for step in self.steps:
+        while True:
 
-            result = step.execute(
-                agent,
-                context,
-            )
+            for step in self.steps:
 
-            if result is not None:
+                result = step.execute(
+                    agent,
+                    context,
+                )
 
-                return result
-
-        return None
+                if result is not None:
+                    return result

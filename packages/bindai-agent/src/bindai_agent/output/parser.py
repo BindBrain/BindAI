@@ -4,7 +4,6 @@ import json
 
 
 class OutputParser:
-
     @staticmethod
     def parse(
         text: str,
