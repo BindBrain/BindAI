@@ -5,7 +5,7 @@ from bindai_memory import MemoryRecord
 from .result import ExecutionResult
 from .state import ExecutionState
 from .step import ExecutionStep
-
+from typing import cast
 
 class FinishStep(
     ExecutionStep,
@@ -20,16 +20,16 @@ class FinishStep(
         context,
     ):
 
-        state: ExecutionState = context.data
+        state = cast(ExecutionState, context.data)
 
-        response = None
+        response = ""
 
         #
         # Store assistant message
         #
 
         if state.response is not None:
-            response = state.response.content
+            response = state.response.content or ""
 
             agent.conversation.add_assistant(
                 response,

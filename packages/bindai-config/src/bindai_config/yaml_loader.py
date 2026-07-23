@@ -161,7 +161,8 @@ class YamlLoader(ConfigLoader):
         agents = {}
 
         for item in config.agents:
-            agent = (
+
+            agent_builder = (
                 AgentBuilder()
                 .name(
                     item.name,
@@ -175,11 +176,14 @@ class YamlLoader(ConfigLoader):
                 .temperature(
                     item.temperature,
                 )
-                .max_tokens(
+            )
+
+            if item.max_tokens is not None:
+                agent_builder.max_tokens(
                     item.max_tokens,
                 )
-                .build()
-            )
+
+            agent = agent_builder.build()
 
             agents[item.id] = agent
 

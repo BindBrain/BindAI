@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from bindai_project import Project
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bindai_project import Project
 
 from .configuration import HostConfiguration
 
@@ -17,7 +20,7 @@ class BindHost:
 
         self.configuration = configuration
 
-        self.projects = {}
+        self.projects: dict[str, Project] = {}
 
     @property
     def name(

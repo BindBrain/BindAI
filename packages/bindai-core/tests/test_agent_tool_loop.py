@@ -1,20 +1,21 @@
 from bindai_core.agent import Agent
 from bindai_core.model import (
+    ModelProvider,
     ModelResponse,
     ToolCall,
 )
-from bindai_core.model import ModelProvider
+from bindai_core.model.provider_capabilities import ProviderCapabilities
 from bindai_core.provider.configuration import ProviderConfiguration
 from bindai_core.tool import tool
-from bindai_core.provider import ProviderCapabilities
 
 
-@tool
+@tool()
 def calculator() -> str:
     return "42"
 
 
 class FakeProvider(ModelProvider):
+
     def __init__(self):
 
         super().__init__(
@@ -25,16 +26,13 @@ class FakeProvider(ModelProvider):
 
     @property
     def name(self):
-
         return "fake"
 
     @property
-    def capabilities(
-        self,
-    ):
+    def capabilities(self):
 
         return ProviderCapabilities(
-            supports_tools=True,
+            tool_calling=True,
         )
 
     def generate(
@@ -43,11 +41,6 @@ class FakeProvider(ModelProvider):
     ):
 
         self.calls += 1
-
-        #
-        # First response:
-        # request tool execution.
-        #
 
         if self.calls == 1:
             return ModelResponse(
@@ -60,10 +53,6 @@ class FakeProvider(ModelProvider):
                 ],
             )
 
-        #
-        # Second response:
-        #
-
         return ModelResponse(
             content="The answer is 42.",
         )
@@ -72,7 +61,6 @@ class FakeProvider(ModelProvider):
         self,
         request,
     ):
-
         raise NotImplementedError()
 
 

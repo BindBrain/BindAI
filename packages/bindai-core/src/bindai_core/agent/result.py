@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any
+
+from bindai_core.executable import ExecutionResult
 
 
 @dataclass(slots=True)
-class AgentResult:
-    success: bool
+class AgentResult(ExecutionResult):
+    """
+    Execution result returned by an Agent.
 
-    output: Any = None
+    Exists as a semantic subtype of ExecutionResult so future
+    agent-specific metadata can be added without changing the
+    executable contract.
+    """
 
-    error: str | None = None
+    pass

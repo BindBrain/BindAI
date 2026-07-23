@@ -1,19 +1,27 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import Any, Callable, overload
 
 from .function_tool import FunctionTool
 
 
+@overload
+def tool(func: Callable[..., Any]) -> FunctionTool: ...
+
+
+@overload
 def tool(
-    function: Callable | None = None,
     *,
     name: str | None = None,
-):
-    """
-    Decorator that converts a Python function
-    into a BindAI Tool.
+) -> Callable[[Callable[..., Any]], FunctionTool]: ...
 
+
+def tool(
+    func: Callable[..., Any] | None = None,
+    *,
+    name: str | None = None,
+) -> FunctionTool | Callable[[Callable[..., Any]], FunctionTool]:
+    """
     Supports:
 
         @tool
@@ -24,25 +32,14 @@ def tool(
     """
 
     def decorator(
-        func: Callable,
-    ):
-
+        func: Callable[..., Any],
+    ) -> FunctionTool:
         return FunctionTool(
             function=func,
             name=name,
         )
 
-    #
-    # @tool
-    #
-
-    if function is not None:
-        return decorator(
-            function,
-        )
-
-    #
-    # @tool(...)
-    #
+    if func is not None:
+        return decorator(func)
 
     return decorator

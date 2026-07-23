@@ -4,8 +4,8 @@ from .application import Application
 
 from dotenv import load_dotenv
 
-class ApplicationBuilder:
 
+class ApplicationBuilder:
     def __init__(self):
 
         self._application = Application()

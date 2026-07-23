@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
+from .result import GroupResult
+
 
 class Process(ABC):
     """
@@ -13,4 +15,5 @@ class Process(ABC):
     def execute(
         self,
         group,
-    ): ...
+    ) -> GroupResult:
+        ...

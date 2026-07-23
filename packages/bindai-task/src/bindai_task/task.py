@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from bindai_agent import Agent
 
-from .state import TaskState
 from .result import TaskResult
+from .state import TaskState
 
 
 class Task:
@@ -25,16 +25,19 @@ class Task:
 
         self.expected_output = expected_output
 
-        self.state = TaskState.CREATED
+        self.state = TaskState.PENDING
 
         self.result: TaskResult | None = None
 
-    def execute(self, context):
+    def execute(
+        self,
+        context,
+    ):
 
         self.state = TaskState.RUNNING
 
         try:
-            output = self.agent.run(
+            output = self.agent.chat(
                 self.description,
             )
 
@@ -50,7 +53,7 @@ class Task:
         except Exception as ex:
             self.result = TaskResult(
                 success=False,
-                error=ex,
+                error=str(ex),
             )
 
             self.state = TaskState.FAILED

@@ -30,11 +30,11 @@ class Application:
         # Future
         #
 
-        self.workflows = {}
+        self.workflows: dict[str, object] = {}
 
-        self.knowledge = {}
+        self.knowledge: dict[str, object] = {}
 
-        self.memories = {}
+        self.memories: dict[str, object] = {}
 
     @property
     def name(

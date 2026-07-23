@@ -17,6 +17,18 @@ class ModelProvider(ABC):
     Base class for every model provider.
     """
 
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """
+        Unique provider name.
+        Example:
+            "openai"
+            "anthropic"
+            "ollama"
+        """
+        ...
+
     def __init__(
         self,
         configuration: ProviderConfiguration | None = None,

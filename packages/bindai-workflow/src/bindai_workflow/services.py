@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bindai_core.container import Container
+from bindai_core.container import BindContainer
 
 
 class WorkflowServices:
@@ -11,7 +11,7 @@ class WorkflowServices:
 
     def __init__(
         self,
-        container: Container,
+        container: BindContainer,
     ):
 
         self.container = container

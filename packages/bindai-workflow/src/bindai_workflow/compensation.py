@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Callable
+from typing import Any
 
 
 @dataclass(slots=True)
@@ -12,4 +14,4 @@ class CompensationAction:
 
     node_id: str
 
-    action: callable
+    action: Callable[..., Any]

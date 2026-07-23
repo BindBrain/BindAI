@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .workflow import Workflow
-from .validator import WorkflowValidator
+from .validation import WorkflowValidator
 
 
 class WorkflowBuilder:

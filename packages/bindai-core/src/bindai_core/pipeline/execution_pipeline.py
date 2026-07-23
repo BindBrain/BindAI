@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from bindai_core.context import ExecutionContext
 from bindai_core.execution import (
     ExecutionRequest,
     ExecutionResponse,
 )
+
+if TYPE_CHECKING:
+    from bindai_core.executable import Executable
+    from bindai_core.middleware import Middleware
 
 
 class ExecutionPipeline:
@@ -12,10 +18,13 @@ class ExecutionPipeline:
     Coordinates the execution of an agent through middleware.
     """
 
-    def __init__(self):
-        self._middleware = []
+    def __init__(self) -> None:
+        self._middleware: list[Middleware] = []
 
-    def use(self, middleware):
+    def use(
+        self,
+        middleware: Middleware,
+    ) -> ExecutionPipeline:
         """
         Register middleware.
         """
@@ -24,9 +33,11 @@ class ExecutionPipeline:
 
     def execute(
         self,
-        request_or_agent,
+        request_or_agent: ExecutionRequest | Executable,
         context: ExecutionContext | None = None,
-    ):
+    ) -> ExecutionResponse:
+
+        agent: Executable
 
         # New API
         if isinstance(request_or_agent, ExecutionRequest):

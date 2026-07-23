@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from bindai_core.tool import Tool
 from bindai_core.tool import ToolDefinition
-
 
 class ToolRegistry:
     """
@@ -10,7 +10,7 @@ class ToolRegistry:
 
     def __init__(self):
 
-        self._tools: dict[str, object] = {}
+        self._tools: dict[str, Tool] = {}
 
     def register(
         self,

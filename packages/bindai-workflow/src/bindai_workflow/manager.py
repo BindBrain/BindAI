@@ -60,6 +60,11 @@ class WorkflowManager:
             workflow_name,
         )
 
+        if workflow is None:
+            raise ValueError(
+                f'Workflow "{workflow_name}" not found.'
+            )
+
         instance = workflow.create_instance()
 
         return self.executor.execute(

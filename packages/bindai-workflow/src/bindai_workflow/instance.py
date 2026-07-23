@@ -5,6 +5,10 @@ import uuid
 from .context import WorkflowContext
 from .workflow import Workflow
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bindai_project import Project
 
 class WorkflowInstance:
     """
@@ -33,4 +37,4 @@ class WorkflowInstance:
 
         self.retry_policy = None
 
-        self.project = None
+        self.project: Project | None = None

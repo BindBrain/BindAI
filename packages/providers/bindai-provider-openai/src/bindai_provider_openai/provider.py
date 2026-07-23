@@ -38,7 +38,7 @@ class OpenAIProvider(ModelProvider):
         request: ModelRequest,
     ) -> dict:
 
-        kwargs = {
+        kwargs: dict[str, object] = {
             "model": self.configuration.model,
             "messages": OpenAIMapper.messages(
                 request.messages,
@@ -143,13 +143,5 @@ class OpenAIProvider(ModelProvider):
         )
 
     @property
-    def capabilities(
-        self,
-    ):
-
-        return ProviderCapabilities(
-            supports_tools=True,
-            supports_streaming=True,
-            supports_structured_output=True,
-            supports_vision=True,
-        )
+    def capabilities(self) -> ProviderCapabilities:
+        return ProviderCapabilities()

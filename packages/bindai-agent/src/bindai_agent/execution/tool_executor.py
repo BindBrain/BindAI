@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, cast
+
 from .step import ExecutionStep
 from .state import ExecutionState
 
@@ -17,7 +19,7 @@ class ToolExecutor(
         context,
     ):
 
-        state: ExecutionState = context.data
+        state = cast(ExecutionState, context.data)
 
         response = state.response
 
@@ -29,11 +31,8 @@ class ToolExecutor(
         )
 
         for tool_call in response.tool_calls:
-            #
-            # Hooks
-            #
 
-            for hook in agent.hooks:
+            for hook in cast(list[Any], agent.hooks):
                 hook.on_tool_start(
                     tool_call,
                 )
@@ -43,7 +42,7 @@ class ToolExecutor(
                 **tool_call.arguments,
             )
 
-            for hook in agent.hooks:
+            for hook in cast(list[Any], agent.hooks):
                 hook.on_tool_end(
                     tool_call,
                     result,
@@ -52,7 +51,9 @@ class ToolExecutor(
             agent.conversation.add_tool(
                 tool_call_id=tool_call.id,
                 content=(
-                    str(result.output) if result.success else f"ERROR: {result.error}"
+                    str(result.output)
+                    if result.success
+                    else f"ERROR: {result.error}"
                 ),
             )
 

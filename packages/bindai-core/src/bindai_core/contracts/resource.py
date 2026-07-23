@@ -8,14 +8,10 @@ class ResourceContract(ABC):
     Base contract implemented by every BindAI resource.
     """
 
+    name: str
+
     @property
     @abstractmethod
     def id(self) -> str:
         """Unique identifier."""
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Human-readable name."""
-        raise NotImplementedError
+        ...

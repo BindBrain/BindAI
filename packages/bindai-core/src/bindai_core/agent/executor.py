@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bindai_core.context import ExecutionContext
-from bindai_core.events import Event, EventTypes
+from bindai_core.events.agent_events import AgentFinishedEvent
 from bindai_core.model import (
     Message,
     MessageRole,
@@ -204,7 +204,7 @@ class AgentExecutor:
     ):
 
         for middleware in agent.middleware:
-            middleware.before(
+            middleware.before_execute(
                 agent,
                 context,
             )
@@ -217,7 +217,7 @@ class AgentExecutor:
     ):
 
         for middleware in agent.middleware:
-            middleware.after(
+            middleware.after_execute(
                 agent,
                 context,
                 result,
@@ -240,8 +240,7 @@ class AgentExecutor:
     ):
 
         context.events.publish(
-            Event(
-                name=EventTypes.AGENT_FINISHED,
+            AgentFinishedEvent(
                 payload={
                     "agent": agent.name,
                 },
@@ -274,7 +273,7 @@ class AgentExecutor:
 
         return ModelRequest(
             messages=messages,
-            tools=agent.tools.all(),
+            tools=agent.tools.definitions(),
             temperature=agent.configuration.temperature,
             max_tokens=agent.configuration.max_tokens,
         )

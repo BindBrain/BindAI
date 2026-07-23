@@ -4,6 +4,11 @@ from datetime import UTC, datetime
 
 from bindai_core.context import Variables
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .instance import WorkflowInstance
+
 
 class WorkflowContext:
     """
@@ -82,7 +87,7 @@ class WorkflowContext:
         # Runtime ownership
         #
 
-        self.instance = None
+        self.instance: WorkflowInstance | None = None
 
         self.task = None
 

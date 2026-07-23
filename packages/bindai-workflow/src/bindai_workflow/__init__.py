@@ -6,7 +6,7 @@ from .instance import WorkflowInstance
 from .store import WorkflowStore
 from .memory_store import MemoryWorkflowStore
 from .task import HumanTask
-from .expression import ExpressionEvaluator
+from .expression import WorkflowExpression
 from .schedule import WorkflowSchedule
 from .scheduler import WorkflowScheduler
 from .retry import RetryPolicy
@@ -37,7 +37,6 @@ __all__ = [
     "WorkflowStore",
     "MemoryWorkflowStore",
     "HumanTask",
-    "ExpressionEvaluator",
     "WorkflowSchedule",
     "WorkflowScheduler",
     "RetryPolicy",

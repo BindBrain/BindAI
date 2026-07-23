@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bindai_core.model.request import ModelRequest
     from bindai_core.model.response import ModelResponse
-	
+
 from .event import Event
 from .event_types import EventTypes
 

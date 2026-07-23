@@ -25,7 +25,7 @@ class OpenAIMapper:
         result = []
 
         for message in messages:
-            item = {
+            item: dict[str, object] = {
                 "role": message.role.value,
                 "content": message.content,
             }
@@ -105,14 +105,21 @@ class OpenAIMapper:
         if not message.tool_calls:
             return []
 
-        result = []
+        result: list[ToolCall] = []
 
         for call in message.tool_calls:
+            if getattr(call, "type", None) != "function":
+                continue
+
+            function = getattr(call, "function", None)
+            if function is None:
+                continue
+
             result.append(
                 ToolCall(
                     id=call.id,
-                    name=call.function.name,
-                    arguments=json.loads(call.function.arguments or "{}"),
+                    name=function.name,
+                    arguments=json.loads(function.arguments or "{}"),
                 )
             )
 

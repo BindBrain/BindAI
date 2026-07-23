@@ -40,7 +40,7 @@ class Variables:
 
     def update(
         self,
-        values: dict | "Variables",
+        values: dict[str, Any] | Variables,
     ) -> None:
 
         if isinstance(

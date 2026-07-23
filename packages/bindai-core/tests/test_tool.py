@@ -1,3 +1,4 @@
+from bindai_core.context import ExecutionContext
 from bindai_core.tool import tool
 
 
@@ -9,7 +10,10 @@ def add(a: int, b: int):
 
 def test_tool_execution():
 
+    context = ExecutionContext()
+
     result = add.execute(
+        context,
         a=2,
         b=3,
     )

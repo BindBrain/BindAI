@@ -49,11 +49,11 @@ class Project:
         # Future
         #
 
-        self.knowledge = {}
+        self.knowledge: dict[str, object] = {}
 
-        self.memories = {}
+        self.memories: dict[str, object] = {}
 
-        self.secrets = {}
+        self.secrets: dict[str, object] = {}
 
     @property
     def name(

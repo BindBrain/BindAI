@@ -20,9 +20,38 @@ authors = [
 
 [dependency-groups]
 dev = [
+    "mypy>=2.3.0",
     "pytest>=8.4",
+    "pytest-cov>=7.1.0",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "packages/bindai-core/src/bindai_core/events/__init__.py" = ["F403"]
 "packages/bindai-core/src/bindai_core/exceptions/__init__.py" = ["F403"]
+
+[tool.mypy]
+python_version = "3.12"
+explicit_package_bases = true
+
+mypy_path = [
+    "packages/bindai/src",
+    "packages/bindai-core/src",
+    "packages/bindai-agent/src",
+    "packages/bindai-model/src",
+    "packages/bindai-tool/src",
+    "packages/bindai-memory/src",
+    "packages/bindai-config/src",
+    "packages/bindai-group/src",
+    "packages/bindai-project/src",
+    "packages/bindai-workflow/src",
+    "packages/bindai-host/src",
+    "packages/bindai-application/src",
+    "packages/bindai-knowledge/src",
+    "packages/bindai-retrieval/src",
+    "packages/bindai-runtime/src",
+    "packages/bindai-task/src",
+]
+
+[[tool.mypy.overrides]]
+module = ["bindai_provider_openai.*"]
+ignore_missing_imports = true

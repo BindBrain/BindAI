@@ -14,13 +14,13 @@ class ProjectBuilder:
             )
         )
 
-    def agent(
+    def application(
         self,
-        agent,
+        application,
     ):
 
-        self.project.add_agent(
-            agent,
+        self.project.add_application(
+            application,
         )
 
         return self

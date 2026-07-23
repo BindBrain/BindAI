@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from abc import ABC
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bindai_core.middleware import Middleware
+
 from bindai_core.context import ExecutionContext
 from bindai_core.conversation import Conversation
 from bindai_core.executable import Executable
@@ -65,7 +70,7 @@ class Agent(Executable, ABC):
 
         self.knowledge = None
 
-        self.middleware = []
+        self.middleware: list[Middleware] = []
 
     #
     # Properties

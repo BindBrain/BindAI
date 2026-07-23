@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .step import ExecutionStep
 from .state import ExecutionState
-
+from typing import cast
 
 class ModelGenerationStep(
     ExecutionStep,
@@ -17,7 +17,7 @@ class ModelGenerationStep(
         context,
     ):
 
-        state: ExecutionState = context.data
+        state = cast(ExecutionState, context.data)
 
         state.response = agent.provider.generate(
             state.request,

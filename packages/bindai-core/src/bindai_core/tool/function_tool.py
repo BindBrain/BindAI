@@ -2,10 +2,17 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from .definition import ToolDefinition
+
 from .result import ToolResult
-from .tool import Tool
+from .base import Tool
 
 from .inspector import ToolInspector
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from bindai_core.context import ExecutionContext
 
 
 class FunctionTool(Tool):
@@ -34,6 +41,14 @@ class FunctionTool(Tool):
         return (self.function.__doc__ or "").strip()
 
     @property
+    def definition(self) -> ToolDefinition:
+        return ToolDefinition(
+            name=self.name,
+            description=self.description,
+            parameters=self.parameters,
+        )
+
+    @property
     def parameters(
         self,
     ) -> dict[str, Any]:
@@ -44,6 +59,7 @@ class FunctionTool(Tool):
 
     def execute(
         self,
+        context: ExecutionContext | None = None,
         **kwargs,
     ) -> ToolResult:
 

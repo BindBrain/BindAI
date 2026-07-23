@@ -45,11 +45,11 @@ class Agent(Executable):
             self,
         )
 
-        self.middleware = []
+        self.middleware: list[object] = []
 
         self.knowledge = None
 
-        self.hooks = []
+        self.hooks: list[object] = []
 
     def chat(
         self,

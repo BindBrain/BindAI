@@ -135,6 +135,12 @@ class WorkflowExecutor:
             # Current node
             #
 
+            if context.current_node is None:
+                return self._failure(
+                    instance,
+                    "Current node is missing.",
+                )
+
             node = workflow.get(
                 context.current_node,
             )
@@ -177,9 +183,22 @@ class WorkflowExecutor:
             #
 
             if context.subworkflow is not None:
+
+                if instance.project is None:
+                    return self._failure(
+                        instance,
+                        "Workflow has no project.",
+                    )
+
                 child_workflow = instance.project.workflow(
                     context.subworkflow,
                 )
+
+                if child_workflow is None:
+                    return self._failure(
+                        instance,
+                        f"Subworkflow '{context.subworkflow}' not found.",
+                    )
 
                 child = child_workflow.create_instance()
 

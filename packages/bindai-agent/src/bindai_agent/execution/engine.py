@@ -84,3 +84,10 @@ class AgentExecutionEngine:
             )
 
         return result
+
+    def stream(
+        self,
+        agent,
+        context: ExecutionContext,
+    ):
+        raise NotImplementedError("Streaming not implemented.")

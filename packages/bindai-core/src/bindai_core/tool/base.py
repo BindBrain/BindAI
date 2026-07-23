@@ -8,6 +8,7 @@ from .result import ToolResult
 
 if TYPE_CHECKING:
     from bindai_core.context import ExecutionContext
+    from .definition import ToolDefinition
 
 
 class Tool(ABC):
@@ -15,9 +16,20 @@ class Tool(ABC):
     Base class for every BindAI tool.
     """
 
-    name: str = ""
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        ...
 
-    description: str = ""
+    @property
+    @abstractmethod
+    def description(self) -> str:
+        ...
+
+    @property
+    @abstractmethod
+    def definition(self) -> ToolDefinition:
+        ...
 
     @abstractmethod
     def execute(

@@ -98,6 +98,11 @@ class Conversation:
             self._messages,
         )
 
+    def to_messages(
+        self,
+    ) -> list[Message]:
+        return self.messages
+
     def clear(
         self,
     ) -> None:

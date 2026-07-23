@@ -19,9 +19,11 @@ class InitializationStep(
         context,
     ):
 
-        user_input = context.variables.get(
-            "input",
-            "",
+        user_input = str(
+            context.variables.get(
+                "input",
+                "",
+            )
         )
 
         if len(agent.conversation) == 0:

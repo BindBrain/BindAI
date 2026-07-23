@@ -1,7 +1,25 @@
+from dataclasses import dataclass
+
 from bindai_core.events import (
     Event,
     EventBus,
 )
+
+
+@dataclass(slots=True, kw_only=True)
+class HelloEvent(Event):
+
+    @property
+    def name(self) -> str:
+        return "hello"
+
+
+@dataclass(slots=True, kw_only=True)
+class GoEvent(Event):
+
+    @property
+    def name(self) -> str:
+        return "go"
 
 
 def test_publish_event():
@@ -11,7 +29,6 @@ def test_publish_event():
     received = []
 
     def handler(event):
-
         received.append(event.name)
 
     bus.subscribe(
@@ -19,7 +36,9 @@ def test_publish_event():
         handler,
     )
 
-    bus.publish(Event("hello"))
+    bus.publish(
+        HelloEvent(),
+    )
 
     assert received == ["hello"]
 
@@ -31,11 +50,9 @@ def test_multiple_handlers():
     count = []
 
     def a(event):
-
         count.append(1)
 
     def b(event):
-
         count.append(2)
 
     bus.subscribe(
@@ -48,6 +65,8 @@ def test_multiple_handlers():
         b,
     )
 
-    bus.publish(Event("go"))
+    bus.publish(
+        GoEvent(),
+    )
 
     assert len(count) == 2

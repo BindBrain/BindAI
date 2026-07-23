@@ -1,8 +1,17 @@
 from __future__ import annotations
 
+from typing import Protocol, cast
+
 from bindai_core.context import ExecutionContext
 
 from .executor_registry import ExecutorRegistry
+
+
+class RuntimeExecutor(Protocol):
+    def execute(
+        self,
+        context,
+    ) -> None: ...
 
 
 class ExecutionEngine:
@@ -29,7 +38,9 @@ class ExecutionEngine:
             executable,
         )
 
-        return executor.execute(
-            executable,
+        cast(
+            RuntimeExecutor,
+            executor,
+        ).execute(
             context,
         )

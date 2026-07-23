@@ -3,7 +3,7 @@ from __future__ import annotations
 from .exceptions import ToolAlreadyRegistered
 from .exceptions import ToolNotFound
 
-from .tool import Tool
+from .base import Tool
 
 
 class ToolRegistry:
