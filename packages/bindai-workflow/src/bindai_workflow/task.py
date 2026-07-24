@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 
 
 @dataclass(slots=True)
@@ -21,7 +21,7 @@ class HumanTask:
 
     role: str | None = None
 
-    created_at: datetime = datetime.utcnow()
+    created_at: datetime = datetime.now(UTC)
 
     completed: bool = False
 

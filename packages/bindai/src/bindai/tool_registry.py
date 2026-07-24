@@ -32,8 +32,12 @@ class ToolRegistry:
 
         return self._tools.get(name)
 
-    def all(self) -> list[Tool]:
+    def list(self) -> list[Tool]:
         return list(self._tools.values())
+
+    # Backward compatibility
+    def all(self) -> list[Tool]:
+        return self.list()
 
     def names(self) -> list[str]:
 

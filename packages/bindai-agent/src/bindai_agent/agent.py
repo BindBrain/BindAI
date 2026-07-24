@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from bindai_core.context import ExecutionContext
 from bindai_core.tool import ToolRegistry
 
 from .conversation import Conversation
@@ -14,8 +13,10 @@ from bindai_memory import (
 from .configuration import AgentConfiguration
 from .execution.data import ExecutionData
 
+from bindai_core.context import ExecutionContext
 from bindai_core.executable import Executable
 
+from .result import AgentResult
 
 class Agent(Executable):
     """
@@ -117,12 +118,23 @@ class Agent(Executable):
 
     def execute(
         self,
-        context,
-    ):
+        context: ExecutionContext,
+    ) -> AgentResult:
 
-        return self.executor.execute(
+        result = self.executor.execute(
             self,
             context,
+        )
+
+        if isinstance(
+            result,
+            AgentResult,
+        ):
+            return result
+
+        return AgentResult(
+            success=True,
+            output=result,
         )
 
     def execute_tool(

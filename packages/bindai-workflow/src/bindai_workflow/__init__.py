@@ -27,6 +27,7 @@ from .node_factory import WorkflowNodeFactory
 from .expression import WorkflowExpression
 from .services import WorkflowServices
 from .manager import WorkflowManager
+from .nodes.condition import ConditionNode
 
 __all__ = [
     "Workflow",
@@ -57,4 +58,5 @@ __all__ = [
     "WorkflowExpression",
     "WorkflowServices",
     "WorkflowManager",
+	"ConditionNode",
 ]

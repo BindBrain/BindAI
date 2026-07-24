@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from .events import WorkflowEvent
 from .history import WorkflowHistory
@@ -52,7 +52,7 @@ class WorkflowExecutor:
         context.events.append(
             WorkflowEvent(
                 type="workflow.started",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(UTC),
                 workflow_id=workflow.id,
                 workflow_version=workflow.version,
                 instance_id=instance.id,
@@ -73,7 +73,9 @@ class WorkflowExecutor:
         # Start execution
         #
 
-        context.current_node = workflow.start_node
+        context.execution_queue.append(
+            workflow.start_node,
+        )
 
         return self._run(
             instance,
@@ -121,7 +123,7 @@ class WorkflowExecutor:
             policy = context.timeout_policy
 
             if policy is not None:
-                elapsed = datetime.utcnow() - context.started_at
+                elapsed = datetime.now(UTC) - context.started_at
 
                 if elapsed > timedelta(
                     seconds=policy.seconds,
@@ -135,14 +137,13 @@ class WorkflowExecutor:
             # Current node
             #
 
-            if context.current_node is None:
-                return self._failure(
-                    instance,
-                    "Current node is missing.",
-                )
+            if not context.execution_queue:
+
+                context.completed = True
+                break
 
             node = workflow.get(
-                context.current_node,
+                context.execution_queue.pop(0),
             )
 
             #
@@ -158,7 +159,7 @@ class WorkflowExecutor:
             context.events.append(
                 WorkflowEvent(
                     type="node.started",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(UTC),
                     workflow_id=workflow.id,
                     workflow_version=workflow.version,
                     instance_id=instance.id,
@@ -246,7 +247,7 @@ class WorkflowExecutor:
             context.events.append(
                 WorkflowEvent(
                     type="node.completed",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(UTC),
                     workflow_id=workflow.id,
                     workflow_version=workflow.version,
                     instance_id=instance.id,
@@ -255,39 +256,18 @@ class WorkflowExecutor:
             )
 
             #
-            # Workflow completed?
+            # Schedule next nodes
             #
 
-            if context.completed:
-                break
-
-            #
-            # Parallel queue
-            #
-
-            if context.parallel_nodes:
-                context.current_node = context.parallel_nodes.pop(0)
-
-                continue
-
-            #
-            # Sequential execution
-            #
-
-            if context.current_node == node.id:
-                if not node.next_nodes:
-                    return self._failure(
-                        instance,
-                        (f"Node '{node.id}' has no outgoing connection."),
-                    )
-
-                context.current_node = node.next_nodes[0]
+            context.execution_queue.extend(
+                node.next_nodes,
+            )
 
         #
         # Workflow completed
         #
 
-        context.finished_at = datetime.utcnow()
+        context.finished_at = datetime.now(UTC)
 
         context.events.append(
             WorkflowEvent(
@@ -441,7 +421,7 @@ class WorkflowExecutor:
 
         context.completed = True
 
-        context.finished_at = datetime.utcnow()
+        context.finished_at = datetime.now(UTC)
 
         #
         # Workflow failed event

@@ -7,6 +7,16 @@ requires-python = ">=3.11"
 dependencies = [
     "bindai-core",
     "bindai-agent",
+    "bindai-application",
+    "bindai-config",
+    "bindai-group",
+    "bindai-knowledge",
+    "bindai-memory",
+    "bindai-model",
+    "bindai-project",
+    "bindai-runtime",
+    "bindai-task",
+    "bindai-workflow",
 ]
 
 [build-system]

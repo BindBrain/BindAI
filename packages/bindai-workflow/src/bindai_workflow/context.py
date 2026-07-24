@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from bindai_core.context import Variables
 
@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .instance import WorkflowInstance
-	
+    
 class WorkflowContext:
     """
     Shared execution context
@@ -24,18 +24,12 @@ class WorkflowContext:
         self.variables = Variables()
 
         #
-        # Execution
+        # Execution queue
         #
 
-        self.current_node: str | None = None
+        self.execution_queue: list[str] = []
 
         self.completed = False
-
-        #
-        # Parallel execution
-        #
-
-        self.parallel_nodes: list[str] = []
 
         #
         # Sub workflow
@@ -47,7 +41,7 @@ class WorkflowContext:
         # Lifecycle
         #
 
-        self.started_at = datetime.utcnow()
+        self.started_at = datetime.now(UTC)
 
         self.finished_at: datetime | None = None
 

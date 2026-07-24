@@ -1,0 +1,31 @@
+{
+	"include": [
+	  "packages"
+	],
+  
+	"venvPath": ".",
+	"venv": ".venv",
+  
+	"extraPaths": [
+	  "packages/bindai/src",
+  
+	  "packages/bindai-core/src",
+	  "packages/bindai-agent/src",
+	  "packages/bindai-task/src",
+	  "packages/bindai-runtime/src",
+	  "packages/bindai-workflow/src",
+	  "packages/bindai-memory/src",
+	  "packages/bindai-model/src",
+	  "packages/bindai-tool/src",
+	  "packages/bindai-project/src",
+	  "packages/bindai-group/src",
+	  "packages/bindai-config/src",
+	  "packages/bindai-knowledge/src",
+	  "packages/bindai-application/src",
+	  "packages/bindai-host/src",
+	  "packages/bindai-retrieval/src",
+	  "packages/providers/bindai-provider-openai/src"
+	],
+  
+	"typeCheckingMode": "standard"
+  }

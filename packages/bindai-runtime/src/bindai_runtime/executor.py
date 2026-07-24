@@ -1,32 +1,19 @@
+from __future__ import annotations
+
+from typing import Any, Protocol
+
 from bindai_core import ExecutionContext
-from bindai_core import ExecutionState
-
-from .result import ExecutionResult
 
 
-class Executor:
+class Executor(Protocol):
+    def __init__(
+        self,
+        executable: Any,
+    ) -> None:
+        ...
+
     def execute(
         self,
-        executable,
         context: ExecutionContext,
-    ) -> ExecutionResult:
-
-        try:
-            context.state = ExecutionState.RUNNING
-
-            value = executable.execute(context)
-
-            context.state = ExecutionState.COMPLETED
-
-            return ExecutionResult(
-                success=True,
-                value=value,
-            )
-
-        except Exception as ex:
-            context.state = ExecutionState.FAILED
-
-            return ExecutionResult(
-                success=False,
-                error=ex,
-            )
+    ) -> Any:
+        ...

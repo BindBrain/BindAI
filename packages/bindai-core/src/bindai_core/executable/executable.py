@@ -1,13 +1,16 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
+from typing import Generic
+from typing import TypeVar
 
 from bindai_core.context import ExecutionContext
 
-from .result import ExecutionResult
+TResult = TypeVar("TResult")
 
 
-class Executable(ABC):
+class Executable(ABC, Generic[TResult]):
     """
     Base contract for every executable component in BindAI.
     """
@@ -16,8 +19,5 @@ class Executable(ABC):
     def execute(
         self,
         context: ExecutionContext,
-    ) -> ExecutionResult:
-        """
-        Execute this component.
-        """
-        raise NotImplementedError
+    ) -> TResult:
+        ...

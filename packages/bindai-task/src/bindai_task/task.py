@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from bindai_agent import Agent
 
+from bindai_core.executable import Executable
+from bindai_core.context import ExecutionContext
+
 from .result import TaskResult
 from .state import TaskState
 
 
-class Task:
+class Task(Executable):
     """
     Represents one unit of work.
     """
@@ -31,14 +34,21 @@ class Task:
 
     def execute(
         self,
-        context,
-    ):
+        context: ExecutionContext,
+    ) -> TaskResult:
 
         self.state = TaskState.RUNNING
 
         try:
-            output = self.agent.chat(
+
+            response = self.agent.chat(
                 self.description,
+            )
+
+            output = (
+                response.output
+                if hasattr(response, "output")
+                else response
             )
 
             self.result = TaskResult(
@@ -51,6 +61,7 @@ class Task:
             return self.result
 
         except Exception as ex:
+
             self.result = TaskResult(
                 success=False,
                 error=str(ex),
@@ -58,4 +69,4 @@ class Task:
 
             self.state = TaskState.FAILED
 
-            raise
+            return self.result

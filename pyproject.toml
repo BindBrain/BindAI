@@ -1,11 +1,15 @@
 [project]
-name = "bindai"
+name = "bindai-root"
 version = "0.1.0"
-description = "Core framework for BindAI"
-readme = "README.md"
+description = "BindAI Workspace"
 requires-python = ">=3.12"
 
-dependencies = []
+dependencies = [
+    "openai>=2.47.0",
+    "pypdf>=6.14.2",
+    "python-dotenv>=1.2.2",
+    "pyyaml>=6.0.3",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -14,15 +18,46 @@ build-backend = "hatchling.build"
 [tool.uv]
 package = false
 
-authors = [
-    { name = "Agim Kostari", email = "gim@bindbrain.com" }
+[tool.uv.workspace]
+members = [
+    "packages/bindai",
+    "packages/bindai-agent",
+    "packages/bindai-application",
+    "packages/bindai-config",
+    "packages/bindai-core",
+    "packages/bindai-group",
+    "packages/bindai-knowledge",
+    "packages/bindai-memory",
+    "packages/bindai-model",
+    "packages/bindai-project",
+    "packages/bindai-runtime",
+    "packages/bindai-task",
+    "packages/bindai-workflow",
 ]
+
+[tool.uv.sources]
+bindai = { workspace = true }
+bindai-agent = { workspace = true }
+bindai-application = { workspace = true }
+bindai-config = { workspace = true }
+bindai-core = { workspace = true }
+bindai-group = { workspace = true }
+bindai-knowledge = { workspace = true }
+bindai-memory = { workspace = true }
+bindai-model = { workspace = true }
+bindai-project = { workspace = true }
+bindai-runtime = { workspace = true }
+bindai-task = { workspace = true }
+bindai-workflow = { workspace = true }
 
 [dependency-groups]
 dev = [
     "mypy>=2.3.0",
+    "pyright>=1.1.411",
     "pytest>=8.4",
     "pytest-cov>=7.1.0",
+    "reportlab>=5.0.0",
+    "types-pyyaml>=6.0.12.20260518",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -35,21 +70,18 @@ explicit_package_bases = true
 
 mypy_path = [
     "packages/bindai/src",
-    "packages/bindai-core/src",
     "packages/bindai-agent/src",
-    "packages/bindai-model/src",
-    "packages/bindai-tool/src",
-    "packages/bindai-memory/src",
-    "packages/bindai-config/src",
-    "packages/bindai-group/src",
-    "packages/bindai-project/src",
-    "packages/bindai-workflow/src",
-    "packages/bindai-host/src",
     "packages/bindai-application/src",
+    "packages/bindai-config/src",
+    "packages/bindai-core/src",
+    "packages/bindai-group/src",
     "packages/bindai-knowledge/src",
-    "packages/bindai-retrieval/src",
+    "packages/bindai-memory/src",
+    "packages/bindai-model/src",
+    "packages/bindai-project/src",
     "packages/bindai-runtime/src",
     "packages/bindai-task/src",
+    "packages/bindai-workflow/src",
 ]
 
 [[tool.mypy.overrides]]

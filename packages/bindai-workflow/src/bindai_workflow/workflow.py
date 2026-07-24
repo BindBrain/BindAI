@@ -1,12 +1,19 @@
 from __future__ import annotations
 
-from .node import WorkflowNode
-from .instance import WorkflowInstance
-
+import copy
 import uuid
 
+from bindai_core.context import ExecutionContext
+from bindai_core.executable import Executable
 
-class Workflow:
+from .executor import WorkflowExecutor
+from .instance import WorkflowInstance
+from .node import WorkflowNode
+from .result import WorkflowResult
+from .memory_store import MemoryWorkflowStore
+
+
+class Workflow(Executable):
     """
     Represents an executable workflow.
     """
@@ -25,6 +32,10 @@ class Workflow:
         self.nodes: dict[str, WorkflowNode] = {}
 
         self.start_node: str | None = None
+
+        self.executor = WorkflowExecutor(
+            MemoryWorkflowStore(),
+        )
 
     def add_node(
         self,
@@ -51,9 +62,20 @@ class Workflow:
             self,
         )
 
-    def clone(self):
+    def execute(
+        self,
+        context: ExecutionContext,
+    ) -> WorkflowResult:
 
-        import copy
+        instance = self.create_instance()
+
+        return self.executor.execute(
+            instance,
+        )
+
+    def clone(
+        self,
+    ):
 
         workflow = copy.deepcopy(
             self,

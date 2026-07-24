@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import uuid
-
-from .context import WorkflowContext
-from .workflow import Workflow
-
 from typing import TYPE_CHECKING
 
+from .context import WorkflowContext
+
 if TYPE_CHECKING:
+    from .workflow import Workflow
     from bindai_project import Project
 
 class WorkflowInstance:

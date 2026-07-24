@@ -6,5 +6,6 @@ description = "BindAI Runtime"
 requires-python = ">=3.12"
 
 dependencies = [
-    "bindai-core"
+    "bindai-core",
+    "bindai-task",
 ]
