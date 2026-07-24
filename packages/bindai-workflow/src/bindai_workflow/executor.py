@@ -231,10 +231,22 @@ class WorkflowExecutor:
             )
 
             #
-            # Waiting for external action?
+            # Waiting?
+            #
+            # JoinNode uses waiting internally, but it should not pause
+            # the whole workflow like WaitNode does.
             #
 
             if context.waiting:
+
+                if node.__class__.__name__ == "JoinNode":
+
+                    #
+                    # Branch finished.
+                    #
+
+                    continue
+
                 return WorkflowResult(
                     success=True,
                     output=context.variables,
@@ -256,12 +268,22 @@ class WorkflowExecutor:
             )
 
             #
-            # Schedule next nodes
+            # Next node
             #
 
-            context.execution_queue.extend(
-                node.next_nodes,
-            )
+            if context.current_node is not None:
+
+                context.execution_queue.append(
+                    context.current_node,
+                )
+
+                context.current_node = None
+
+            else:
+
+                context.execution_queue.extend(
+                    node.next_nodes,
+                )
 
         #
         # Workflow completed

@@ -29,6 +29,8 @@ class WorkflowContext:
 
         self.execution_queue: list[str] = []
 
+        self.current_node: str | None = None
+
         self.completed = False
 
         #
@@ -36,6 +38,12 @@ class WorkflowContext:
         #
 
         self.subworkflow = None
+
+        #
+        # Join nodes
+        #
+
+        self.join_state: dict[str, int] = {}
 
         #
         # Lifecycle
