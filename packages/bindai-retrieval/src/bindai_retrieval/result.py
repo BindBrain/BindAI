@@ -1,16 +1,16 @@
-from dataclasses import dataclass
+from __future__ import annotations
 
-from bindai_knowledge import KnowledgeDocument
+from dataclasses import dataclass
 
 
 @dataclass(slots=True)
 class RetrievalResult:
     """
-    Documents returned from retrieval.
+    Result returned from retrieval.
     """
 
     success: bool
 
-    documents: list[KnowledgeDocument]
+    documents: list
 
     error: str | None = None

@@ -93,6 +93,38 @@ class SQLiteMemoryProvider(MemoryProvider):
             ),
         )
 
+    def search(
+        self,
+        query: str,
+        namespace: str = "default",
+        limit: int = 10,
+        metadata: dict | None = None,
+    ):
+
+        rows = self._connection.execute(
+            """
+            SELECT key,value,type
+            FROM memory
+            WHERE namespace=?
+            AND value LIKE ?
+            LIMIT ?
+            """,
+            (
+                namespace,
+                f"%{query}%",
+                limit,
+            ),
+        ).fetchall()
+
+        return [
+            MemoryRecord(
+                key=row[0],
+                value=row[1],
+                namespace=namespace,
+            )
+            for row in rows
+        ]
+
     def delete(
         self,
         key: str,

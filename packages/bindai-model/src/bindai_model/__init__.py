@@ -1,8 +1,18 @@
+from .model import Model
+from .provider import ModelProvider
+from .providers import OpenAIProvider
 from .registry import ModelRegistry
+from .result import ModelResult
 
-ProviderRegistry = ModelRegistry
+ModelRegistry.register(
+    "openai",
+    OpenAIProvider,
+)
 
 __all__ = [
+    "Model",
+    "ModelProvider",
     "ModelRegistry",
-    "ProviderRegistry",
+    "ModelResult",
+    "OpenAIProvider",
 ]

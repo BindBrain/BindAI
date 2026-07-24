@@ -110,3 +110,41 @@ class ExecutionGraph:
             )
             == 0
         ]
+
+    def validate(
+        self,
+    ):
+
+        #
+        # Empty graph
+        #
+
+        if not self.nodes:
+            raise ValueError(
+                "Execution graph is empty."
+            )
+
+        #
+        # At least one root
+        #
+
+        if not self.roots():
+            raise ValueError(
+                "Execution graph has no root node."
+            )
+
+        #
+        # Edge validation
+        #
+
+        for edge in self.edges:
+
+            if edge.source not in self.nodes:
+                raise ValueError(
+                    f"Unknown source node '{edge.source}'."
+                )
+
+            if edge.target not in self.nodes:
+                raise ValueError(
+                    f"Unknown target node '{edge.target}'."
+                )

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bindai-prompt-builder"
+version = "0.1.0"
+description = "BindAI Prompt Builder"
+requires-python = ">=3.11"
+
+dependencies = [
+    "bindai-prompts",
+    "bindai-core",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

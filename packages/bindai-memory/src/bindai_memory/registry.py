@@ -42,3 +42,27 @@ class MemoryRegistry:
     ) -> dict[str, Type[MemoryProvider]]:
 
         return dict(cls._providers)
+
+
+#
+# Built-in providers
+#
+
+from .providers.in_memory import InMemoryProvider
+from .providers.sqlite import SQLiteMemoryProvider
+from .providers.vector_memory import VectorMemoryProvider
+
+MemoryRegistry.register(
+    "memory",
+    InMemoryProvider,
+)
+
+MemoryRegistry.register(
+    "sqlite",
+    SQLiteMemoryProvider,
+)
+
+MemoryRegistry.register(
+    "vector",
+    VectorMemoryProvider,
+)

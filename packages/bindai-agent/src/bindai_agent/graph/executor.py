@@ -5,13 +5,14 @@ from collections import deque
 
 class GraphExecutor:
     """
-    Executes an ExecutionGraph.
+    Executes an execution graph.
 
     Supports:
-        • DAG traversal
-        • conditional routing
-        • multiple outgoing edges
-        • future parallel execution
+
+    - DAG execution
+    - conditional routing
+    - multiple outgoing edges
+    - join-safe traversal
     """
 
     def execute(
@@ -20,44 +21,66 @@ class GraphExecutor:
         agent,
         context,
     ):
-        queue = deque(
-            graph.roots(),
-        )
 
-        visited = set()
+        graph.validate()
+        
+        queue = deque(graph.roots())
+
+        completed = set()
 
         while queue:
-            current = queue.popleft()
 
-            if current in visited:
+            node_id = queue.popleft()
+
+            #
+            # Already executed
+            #
+
+            if node_id in completed:
                 continue
 
-            visited.add(
-                current,
+            node = graph.get_node(
+                node_id,
             )
 
-            node = graph.get_node(
-                current,
-            )
+            #
+            # Execute node
+            #
 
             node.run(
                 agent,
                 context,
             )
 
+            completed.add(
+                node_id,
+            )
+
+            #
+            # Route outgoing edges
+            #
+
             for edge in graph.outgoing(
-                current,
+                node_id,
             ):
+
                 #
                 # Conditional edge
                 #
 
                 if edge.condition is not None:
+
                     if not edge.condition(
                         context,
                     ):
                         continue
 
+                #
+                # Queue next node
+                #
+
                 queue.append(
                     edge.target,
                 )
+
+        return context

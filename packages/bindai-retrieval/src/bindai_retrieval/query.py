@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -5,11 +7,13 @@ from typing import Any
 @dataclass(slots=True)
 class RetrievalQuery:
     """
-    Represents one retrieval request.
+    Retrieval request.
     """
 
-    query: str
+    text: str
 
-    limit: int = 5
+    namespace: str = "default"
 
-    filters: dict[str, Any] | None = None
+    limit: int = 10
+
+    metadata: dict[str, Any] | None = None

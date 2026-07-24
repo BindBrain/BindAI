@@ -47,6 +47,42 @@ class InMemoryProvider(MemoryProvider):
             value=record,
         )
 
+    def search(
+        self,
+        query: str,
+        namespace: str = "default",
+        limit: int = 10,
+        metadata: dict | None = None,
+    ):
+
+        query = query.lower()
+
+        results = []
+
+        for record in self._storage.get(namespace, {}).values():
+
+            if metadata:
+
+                ok = True
+
+                for key, value in metadata.items():
+
+                    if getattr(record, key, None) != value:
+                        ok = False
+                        break
+
+                if not ok:
+                    continue
+
+            if query in str(record.value).lower():
+
+                results.append(record)
+
+                if len(results) >= limit:
+                    break
+
+        return results
+
     def delete(
         self,
         key: str,

@@ -16,27 +16,49 @@ class KnowledgeStep(
         context,
     ):
 
-        if agent.knowledge is None:
+        #
+        # New Retrieval API
+        #
+
+        if agent.retriever is not None:
+
+            result = agent.retriever.retrieve(
+                context.variables.get(
+                    "input",
+                    "",
+                )
+            )
+
+            documents = result.documents
+
+        #
+        # Backward compatibility
+        #
+
+        elif agent.knowledge is not None:
+
+            result = agent.knowledge.search(
+                context.variables.get(
+                    "input",
+                    "",
+                )
+            )
+
+            if not result.success:
+                return
+
+            documents = result.value or []
+
+        else:
             return
-
-        user_input = context.variables.get(
-            "input",
-            "",
-        )
-
-        result = agent.knowledge.search(
-            user_input,
-        )
-
-        if not result.success:
-            return
-
-        documents = result.value or []
 
         if not documents:
             return
 
-        content = "\n\n".join(doc.content for doc in documents)
+        content = "\n\n".join(
+            getattr(doc, "content", getattr(doc, "value", ""))
+            for doc in documents
+        )
 
         agent.conversation.add_system(
             f"Relevant knowledge:\n{content}",

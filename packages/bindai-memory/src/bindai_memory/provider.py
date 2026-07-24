@@ -26,6 +26,15 @@ class MemoryProvider(ABC):
     ) -> MemoryResult: ...
 
     @abstractmethod
+    def search(
+        self,
+        query: str,
+        namespace: str = "default",
+        limit: int = 10,
+        metadata: dict | None = None,
+    ) -> list[MemoryRecord]: ...
+
+    @abstractmethod
     def delete(
         self,
         key: str,

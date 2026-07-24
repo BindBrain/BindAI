@@ -12,10 +12,11 @@ from .result import MemoryResult
 from .providers import (
     InMemoryProvider,
     SQLiteMemoryProvider,
+    VectorMemoryProvider,
 )
 
 #
-# Register built-in providers
+# Register aliases
 #
 
 MemoryRegistry.register(
@@ -33,6 +34,10 @@ MemoryRegistry.register(
     SQLiteMemoryProvider,
 )
 
+#
+# "vector" is already registered in registry.py
+#
+
 __all__ = [
     "Memory",
     "MemoryProvider",
@@ -42,4 +47,5 @@ __all__ = [
     "MemoryResult",
     "InMemoryProvider",
     "SQLiteMemoryProvider",
+    "VectorMemoryProvider",
 ]

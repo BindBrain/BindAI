@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import os
 
+from bindai_prompts import Prompt
+
 from dotenv import load_dotenv
 
 from bindai_core.model import ModelProvider
@@ -19,11 +21,13 @@ class AgentBuilder:
 
         self._name = "assistant"
 
-        self._instructions = ""
+        self._prompt = Prompt()
 
         self._tools = []
 
         self._memory = None
+
+        self._retriever = None
 
         self._knowledge = None
 
@@ -88,7 +92,7 @@ class AgentBuilder:
         value: str,
     ):
 
-        self._instructions = value
+        self._prompt.system = value
 
         return self
 
@@ -145,6 +149,15 @@ class AgentBuilder:
 
         return self
 
+    def retriever(
+        self,
+        retriever,
+    ):
+
+        self._retriever = retriever
+
+        return self
+
     def knowledge(
         self,
         knowledge,
@@ -191,7 +204,7 @@ class AgentBuilder:
 
         agent = AssistantAgent(
             name=self._name,
-            instructions=self._instructions,
+            instructions=self._prompt.system,
             provider=self._provider,
         )
 
@@ -222,6 +235,11 @@ class AgentBuilder:
         #
         # Knowledge
         #
+
+        if self._retriever is not None:
+            agent.use_retriever(
+                self._retriever,
+            )
 
         if self._knowledge is not None:
             agent.use_knowledge(

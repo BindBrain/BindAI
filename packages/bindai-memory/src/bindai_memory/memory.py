@@ -48,6 +48,21 @@ class Memory:
             namespace,
         )
 
+    def search(
+        self,
+        query: str,
+        namespace: str = "default",
+        limit: int = 10,
+        metadata: dict | None = None,
+    ):
+
+        return self.provider.search(
+            query=query,
+            namespace=namespace,
+            limit=limit,
+            metadata=metadata,
+        )
+
     def delete(
         self,
         key: str,

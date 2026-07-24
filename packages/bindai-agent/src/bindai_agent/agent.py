@@ -1,22 +1,22 @@
 from __future__ import annotations
 
 from bindai_core.tool import ToolRegistry
+from bindai_core.context import ExecutionContext
+from bindai_core.executable import Executable
 
-from .conversation import Conversation
-from .execution.engine import AgentExecutionEngine
+from bindai_prompts import Prompt
 
 from bindai_memory import (
     Memory,
     InMemoryProvider,
 )
 
-from .configuration import AgentConfiguration
+from .conversation import Conversation
+from .execution.engine import AgentExecutionEngine
 from .execution.data import ExecutionData
-
-from bindai_core.context import ExecutionContext
-from bindai_core.executable import Executable
-
+from .configuration import AgentConfiguration
 from .result import AgentResult
+
 
 class Agent(Executable):
     """
@@ -29,17 +29,28 @@ class Agent(Executable):
         name: str,
         provider,
         instructions: str = "",
+        prompt: Prompt | None = None,
     ):
 
         self.name = name
         self.provider = provider
-        self.instructions = instructions
+
+        self.prompt = prompt or Prompt()
+
+        if instructions:
+            self.prompt.system = instructions
+
+        self.retriever = None
+        self.knowledge = None
 
         self.conversation = Conversation()
+
         self.memory = Memory(
             InMemoryProvider(),
         )
+
         self.tools = ToolRegistry()
+
         self.configuration = AgentConfiguration()
 
         self.executor = AgentExecutionEngine(
@@ -48,9 +59,22 @@ class Agent(Executable):
 
         self.middleware: list[object] = []
 
-        self.knowledge = None
+        self.retriever = None
 
         self.hooks: list[object] = []
+
+    @property
+    def instructions(self) -> str:
+
+        return self.prompt.system
+
+    @instructions.setter
+    def instructions(
+        self,
+        value: str,
+    ):
+
+        self.prompt.system = value
 
     def chat(
         self,
@@ -106,9 +130,6 @@ class Agent(Executable):
         self,
         tool,
     ) -> "Agent":
-        """
-        Register a tool.
-        """
 
         self.tools.register(
             tool,
@@ -142,9 +163,6 @@ class Agent(Executable):
         name: str,
         **kwargs,
     ):
-        """
-        Execute a registered tool.
-        """
 
         return self.tools.execute(
             name,
@@ -168,6 +186,15 @@ class Agent(Executable):
     ) -> "Agent":
 
         self.memory = memory
+
+        return self
+
+    def use_retriever(
+        self,
+        retriever,
+    ) -> "Agent":
+
+        self.retriever = retriever
 
         return self
 
