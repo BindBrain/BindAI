@@ -59,7 +59,7 @@ class FinishStep(
 
         result = AgentResult(
             success=True,
-            response=response,
+            output=response,
         )
 
         #

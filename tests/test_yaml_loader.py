@@ -4,7 +4,7 @@ from bindai import YamlLoader
 def test_yaml_loader():
 
     group = YamlLoader().load(
-        "examples/marketing.yaml",
+        "examples/assets/marketing.yaml",
     )
 
     assert group is not None
