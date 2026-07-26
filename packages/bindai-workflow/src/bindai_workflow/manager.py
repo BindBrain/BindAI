@@ -17,11 +17,8 @@ class WorkflowManager:
 
     def __init__(
         self,
-        registry: WorkflowRegistry,
         executor: WorkflowExecutor,
     ):
-
-        self.registry = registry
 
         self.executor = executor
 
@@ -34,7 +31,7 @@ class WorkflowManager:
         workflow,
     ):
 
-        self.registry.register(
+        WorkflowRegistry.register(
             workflow,
         )
 
@@ -43,7 +40,7 @@ class WorkflowManager:
         name: str,
     ):
 
-        return self.registry.get(
+        return WorkflowRegistry.get(
             name,
         )
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from bindai_core.model.provider import ModelProvider
+    from .model_provider import ModelProvider
 
 from .exceptions import (
     ProviderAlreadyRegistered,

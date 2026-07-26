@@ -5,41 +5,71 @@ from .workflow import Workflow
 
 class WorkflowRegistry:
     """
-    Stores workflows by ID.
+    Global registry of workflows.
     """
 
-    def __init__(self):
+    _workflows: dict[str, Workflow] = {}
 
-        self._workflows = {}
-
+    @classmethod
     def register(
-        self,
+        cls,
         workflow: Workflow,
-    ):
+    ) -> None:
 
-        self._workflows[workflow.id] = workflow
+        cls._workflows[
+            workflow.id
+        ] = workflow
 
+    @classmethod
     def get(
-        self,
+        cls,
         workflow_id: str,
-    ) -> Workflow | None:
+    ) -> Workflow:
 
-        return self._workflows.get(
-            workflow_id,
-        )
+        return cls._workflows[
+            workflow_id
+        ]
 
-    def all(
-        self,
-    ) -> list[Workflow]:
-
-        return list(self._workflows.values())
-
+    @classmethod
     def remove(
-        self,
+        cls,
         workflow_id: str,
-    ):
+    ) -> None:
 
-        self._workflows.pop(
+        cls._workflows.pop(
             workflow_id,
             None,
+        )
+
+    @classmethod
+    def contains(
+        cls,
+        workflow_id: str,
+    ) -> bool:
+
+        return workflow_id in cls._workflows
+
+    @classmethod
+    def all(
+        cls,
+    ) -> list[Workflow]:
+
+        return list(
+            cls._workflows.values()
+        )
+
+    @classmethod
+    def clear(
+        cls,
+    ) -> None:
+
+        cls._workflows.clear()
+
+    @classmethod
+    def size(
+        cls,
+    ) -> int:
+
+        return len(
+            cls._workflows
         )

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from typing import cast
+
 from bindai_memory import MemoryRecord
 
-from .result import ExecutionResult
+from bindai_core.agent import AgentResult
 from .state import ExecutionState
 from .step import ExecutionStep
-from typing import cast
+
 
 class FinishStep(
     ExecutionStep,
@@ -20,7 +22,10 @@ class FinishStep(
         context,
     ):
 
-        state = cast(ExecutionState, context.data)
+        state = cast(
+            ExecutionState,
+            context.data,
+        )
 
         response = ""
 
@@ -52,10 +57,9 @@ class FinishStep(
                 )
             )
 
-        result = ExecutionResult(
+        result = AgentResult(
             success=True,
             response=response,
-            iterations=state.iterations,
         )
 
         #

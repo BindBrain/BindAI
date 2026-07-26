@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
+from bindai_core.context import ExecutionContext
+
 from .result import GroupResult
 
 
@@ -15,5 +17,6 @@ class Process(ABC):
     def execute(
         self,
         group,
+        context: ExecutionContext,
     ) -> GroupResult:
         ...

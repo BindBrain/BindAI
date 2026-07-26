@@ -1,18 +1,17 @@
 from bindai import AgentBuilder
 
-
 agent = (
     AgentBuilder()
     .name("Assistant")
     .instructions("You are a helpful assistant.")
     .openai(
-        model="gpt-4.1-mini",
+        model="gpt-5",
     )
     .build()
 )
 
-result = agent.chat("Explain what OpenAI does.")
-
-print(
-    result.output,
+result = agent.chat(
+    "What is BindAI?"
 )
+
+print(result.response)

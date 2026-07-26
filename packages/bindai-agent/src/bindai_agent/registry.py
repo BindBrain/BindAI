@@ -5,59 +5,67 @@ from .agent import Agent
 
 class AgentRegistry:
     """
-    Registry of application agents.
+    Global registry of application agents.
     """
 
-    def __init__(self):
+    _agents: dict[str, Agent] = {}
 
-        self._agents: dict[str, Agent] = {}
-
+    @classmethod
     def register(
-        self,
+        cls,
         agent: Agent,
     ) -> None:
 
-        self._agents[agent.name] = agent
+        cls._agents[agent.name] = agent
 
+    @classmethod
     def get(
-        self,
+        cls,
         name: str,
     ) -> Agent:
 
-        return self._agents[name]
+        return cls._agents[name]
 
+    @classmethod
     def remove(
-        self,
+        cls,
         name: str,
     ) -> None:
 
-        del self._agents[name]
+        cls._agents.pop(name, None)
 
+    @classmethod
     def contains(
-        self,
+        cls,
         name: str,
     ) -> bool:
 
-        return name in self._agents
+        return name in cls._agents
 
+    @classmethod
     def names(
-        self,
+        cls,
     ) -> list[str]:
 
-        return list(self._agents.keys())
+        return list(cls._agents.keys())
 
+    @classmethod
     def all(
-        self,
+        cls,
     ) -> list[Agent]:
 
-        return list(self._agents.values())
+        return list(cls._agents.values())
 
+    @classmethod
     def clear(
-        self,
+        cls,
     ) -> None:
 
-        self._agents.clear()
+        cls._agents.clear()
 
-    def __len__(self):
+    @classmethod
+    def size(
+        cls,
+    ) -> int:
 
-        return len(self._agents)
+        return len(cls._agents)

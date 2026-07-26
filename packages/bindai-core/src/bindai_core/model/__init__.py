@@ -1,6 +1,6 @@
 from .embedding import EmbeddingResponse
 from .message import Message
-from .provider import ModelProvider
+from bindai_core.provider.model_provider import ModelProvider
 from .provider_capabilities import ProviderCapabilities
 from .request import ModelRequest
 from .response import ModelResponse

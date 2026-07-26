@@ -34,7 +34,8 @@ class EventTypes:
     # Model
     #
 
-    MODEL_INVOKED = "model.invoked"
+    MODEL_REQUESTED = "model.requested"
+    MODEL_RESPONDED = "model.responded"
 
     #
     # Tools

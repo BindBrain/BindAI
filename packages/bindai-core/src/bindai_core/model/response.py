@@ -26,3 +26,7 @@ class ModelResponse:
     model: str | None = None
 
     structured_output: Any | None = None
+
+    @property
+    def has_tool_calls(self) -> bool:
+        return bool(self.tool_calls)

@@ -4,6 +4,8 @@ from .end import EndNode
 from .human import HumanTaskNode
 from .start import StartNode
 from .tool import ToolNode
+from .executable import ExecutableNode
+from .runnable import RunnableNode
 
 __all__ = [
     "AgentNode",
@@ -12,4 +14,6 @@ __all__ = [
     "HumanTaskNode",
     "StartNode",
     "ToolNode",
+    "ExecutableNode",
+    "RunnableNode",
 ]

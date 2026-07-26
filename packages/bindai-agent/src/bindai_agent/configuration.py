@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass(slots=True)
 class AgentConfiguration:
-    temperature: float = 0.7
+    temperature: float | None = None
 
     max_tokens: int | None = None
 

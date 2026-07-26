@@ -28,6 +28,11 @@ from .expression import WorkflowExpression
 from .services import WorkflowServices
 from .manager import WorkflowManager
 from .nodes.condition import ConditionNode
+from .nodes.agent import AgentNode
+from .nodes.start import StartNode
+from .nodes.end import EndNode
+from .nodes.loop import LoopNode
+from .nodes.runnable import RunnableNode
 
 __all__ = [
     "Workflow",
@@ -58,5 +63,11 @@ __all__ = [
     "WorkflowExpression",
     "WorkflowServices",
     "WorkflowManager",
-	"ConditionNode",
+    "ConditionNode",
+    "ParallelNode",
+    "LoopNode",
+    "StartNode",
+    "EndNode",
+    "AgentNode",
+    "RunnableNode",
 ]

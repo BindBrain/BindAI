@@ -15,8 +15,10 @@ from .conversation import Conversation
 from .execution.engine import AgentExecutionEngine
 from .execution.data import ExecutionData
 from .configuration import AgentConfiguration
-from .result import AgentResult
-
+from bindai_core.agent import AgentResult
+from bindai_core.events import EventBus
+from bindai_core.events import ToolExecutedEvent
+from bindai_core.context import ExecutionContext
 
 class Agent(Executable):
     """
@@ -40,6 +42,8 @@ class Agent(Executable):
         if instructions:
             self.prompt.system = instructions
 
+        self.events = EventBus()
+
         self.retriever = None
         self.knowledge = None
 
@@ -57,11 +61,9 @@ class Agent(Executable):
             self,
         )
 
-        self.middleware: list[object] = []
+        self.middleware = []
 
-        self.retriever = None
-
-        self.hooks: list[object] = []
+        self.hooks = []
 
     @property
     def instructions(self) -> str:
@@ -96,8 +98,7 @@ class Agent(Executable):
             output,
         )
 
-        return self.executor.execute(
-            self,
+        return self.execute(
             context,
         )
 
@@ -142,20 +143,9 @@ class Agent(Executable):
         context: ExecutionContext,
     ) -> AgentResult:
 
-        result = self.executor.execute(
+        return self.executor.execute(
             self,
             context,
-        )
-
-        if isinstance(
-            result,
-            AgentResult,
-        ):
-            return result
-
-        return AgentResult(
-            success=True,
-            output=result,
         )
 
     def execute_tool(
@@ -164,10 +154,18 @@ class Agent(Executable):
         **kwargs,
     ):
 
-        return self.tools.execute(
+        result = self.tools.execute(
             name,
             **kwargs,
         )
+
+        self.events.publish(
+            ToolExecutedEvent(
+                tool_name=name,
+            )
+        )
+
+        return result
 
     def use_middleware(
         self,

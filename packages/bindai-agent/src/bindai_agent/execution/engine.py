@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 from bindai_core.context import ExecutionContext
+from bindai_core.agent import AgentResult
+from bindai_core.events import (
+    AgentStartedEvent,
+    AgentFinishedEvent,
+)
 
 from .pipeline import ExecutionPipeline
 from .state import ExecutionState
@@ -10,6 +15,8 @@ from .knowledge_step import KnowledgeStep
 from .memory_step import MemoryStep
 from .model_generation_step import ModelGenerationStep
 from .finish_step import FinishStep
+
+from .tool_execution_step import ToolExecutionStep
 
 
 class AgentExecutionEngine:
@@ -42,6 +49,10 @@ class AgentExecutionEngine:
         )
 
         self.pipeline.add(
+            ToolExecutionStep(),
+        )
+
+        self.pipeline.add(
             FinishStep(),
         )
 
@@ -49,9 +60,17 @@ class AgentExecutionEngine:
         self,
         agent,
         context: ExecutionContext,
-    ):
+    ) -> AgentResult:
 
-        context.data = ExecutionState()
+        context.data = context.data or ExecutionState()
+
+        #
+        # Agent started
+        #
+
+        agent.events.publish(
+            AgentStartedEvent(),
+        )
 
         #
         # before middleware
@@ -67,7 +86,7 @@ class AgentExecutionEngine:
         # run pipeline
         #
 
-        result = self.pipeline.execute(
+        result: AgentResult = self.pipeline.execute(
             agent,
             context,
         )
@@ -83,11 +102,62 @@ class AgentExecutionEngine:
                 result,
             )
 
+        #
+        # Agent finished
+        #
+
+        agent.events.publish(
+            AgentFinishedEvent(),
+        )
+
         return result
 
     def stream(
         self,
         agent,
-        context: ExecutionContext,
+        context,
     ):
-        raise NotImplementedError("Streaming not implemented.")
+        """
+        Stream tokens directly from the provider.
+        """
+
+        #
+        # initialize execution state
+        #
+
+        context.data = ExecutionState(
+            streaming=True,
+        )
+
+        InitializationStep().execute(
+            agent,
+            context,
+        )
+
+        state = context.data
+
+        #
+        # optional knowledge
+        #
+
+        KnowledgeStep().execute(
+            agent,
+            context,
+        )
+
+        #
+        # optional memory
+        #
+
+        MemoryStep().execute(
+            agent,
+            context,
+        )
+
+        #
+        # stream directly from provider
+        #
+
+        return agent.provider.stream(
+            state.request,
+        )

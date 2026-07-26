@@ -7,12 +7,15 @@ from bindai_prompts import Prompt
 from dotenv import load_dotenv
 
 from bindai_core.model import ModelProvider
-from bindai_core.provider import ProviderConfiguration
+from bindai_providers import ProviderRegistry
 from bindai_provider_openai import OpenAIProvider
 
 from .assistant import AssistantAgent
 from .configuration import AgentConfiguration
+from bindai_core.events import EventBus
 
+from bindai_tool import FunctionTool
+from .registry import AgentRegistry
 
 class AgentBuilder:
     def __init__(self):
@@ -37,6 +40,8 @@ class AgentBuilder:
 
         self._configuration = AgentConfiguration()
 
+        self._events = EventBus()
+
     #
     # Providers
     #
@@ -48,29 +53,39 @@ class AgentBuilder:
 
         load_dotenv()
 
-        self._provider = OpenAIProvider(
-            ProviderConfiguration(
-                api_key=os.getenv(
-                    "OPENAI_API_KEY",
-                ),
-                organization=os.getenv(
-                    "OPENAI_ORGANIZATION",
-                ),
-                endpoint=os.getenv(
-                    "OPENAI_BASE_URL",
-                ),
-                model=model,
-            )
+        return self.provider(
+            "openai",
+            api_key=os.getenv(
+                "OPENAI_API_KEY",
+            ),
+            organization=os.getenv(
+                "OPENAI_ORGANIZATION",
+            ),
+            endpoint=os.getenv(
+                "OPENAI_BASE_URL",
+            ),
+            model=model,
         )
-
-        return self
 
     def provider(
         self,
-        provider: ModelProvider,
+        provider,
+        **kwargs,
     ):
 
-        self._provider = provider
+        if isinstance(
+            provider,
+            str,
+        ):
+
+            self._provider = ProviderRegistry.create(
+                provider,
+                **kwargs,
+            )
+
+        else:
+
+            self._provider = provider
 
         return self
 
@@ -207,7 +222,8 @@ class AgentBuilder:
             instructions=self._prompt.system,
             provider=self._provider,
         )
-
+        
+        agent.events = self._events
         #
         # Configuration
         #
@@ -219,9 +235,12 @@ class AgentBuilder:
         #
 
         for tool in self._tools:
-            agent.tool(
-                tool,
-            )
+
+            if callable(tool):
+
+                tool = FunctionTool(tool)
+
+            agent.tool(tool)
 
         #
         # Memory
@@ -264,4 +283,108 @@ class AgentBuilder:
                 hook,
             )
 
+        AgentRegistry.register(
+            agent,
+        )
+
         return agent
+
+    def events(
+        self,
+        events: EventBus,
+    ):
+
+        self._events = events
+
+        return self
+
+    def tools(
+        self,
+        *tools,
+    ):
+        for tool in tools:
+            self.tool(tool)
+
+        return self
+
+    def model(
+        self,
+        value: str,
+    ):
+        """
+        Accepts either:
+
+        openai:gpt-4.1-mini
+        openai:gpt-5
+        anthropic:claude-sonnet-4
+        ollama:llama3
+        lmstudio:qwen3
+        """
+
+        provider, model = value.split(
+            ":",
+            1,
+        )
+
+        if provider == "openai":
+            return self.openai(model)
+
+        return self.provider(
+            provider,
+            model=model,
+        )
+
+    def with_tools(
+        self,
+        *tools,
+    ):
+
+        for tool in tools:
+            self.tool(tool)
+
+        return self
+
+    def with_memory(
+        self,
+        memory,
+    ):
+
+        return self.memory(
+            memory,
+        )
+
+    def with_knowledge(
+        self,
+        knowledge,
+    ):
+
+        return self.knowledge(
+            knowledge,
+        )
+
+    def with_retriever(
+        self,
+        retriever,
+    ):
+
+        return self.retriever(
+            retriever,
+        )
+
+    def use(
+        self,
+        middleware,
+    ):
+
+        return self.middleware(
+            middleware,
+        )
+
+    def on(
+        self,
+        hook,
+    ):
+
+        return self.hook(
+            hook,
+        )

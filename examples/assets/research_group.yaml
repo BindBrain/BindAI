@@ -1,0 +1,30 @@
+group:
+  name: Research Group
+  description: Summarize the research in one paragraph.
+  process: sequential
+
+  agents:
+    - id: researcher
+      name: Researcher
+      instructions: >
+        Research the requested topic.
+      model: gpt-5
+
+    - id: writer
+      name: Writer
+      instructions: >
+        Write a concise summary.
+      model: gpt-5
+
+  tasks:
+    - id: research
+      description: >
+        Research the Python programming language.
+      agent: researcher
+
+    - id: summary
+      description: >
+        Summarize the research in one paragraph.
+      agent: writer
+      context:
+        - research

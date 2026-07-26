@@ -59,7 +59,7 @@ class OpenAIProvider(ModelProvider):
                 request.tools,
             )
 
-        if request.temperature != 1:
+        if request.temperature is not None:
             kwargs["temperature"] = request.temperature
 
         if request.max_tokens is not None:

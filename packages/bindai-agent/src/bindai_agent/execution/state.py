@@ -34,6 +34,8 @@ class ExecutionState:
 
     cancelled: bool = False
 
+    streaming: bool = False
+
     #
     # Scratchpad
     #

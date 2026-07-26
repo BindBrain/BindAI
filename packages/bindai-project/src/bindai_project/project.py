@@ -41,7 +41,7 @@ class Project:
         # Workflows
         #
 
-        self.workflows = WorkflowRegistry()
+        self.workflows = WorkflowRegistry
 
         self.scheduler = WorkflowScheduler()
 

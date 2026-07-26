@@ -299,8 +299,21 @@ class AgentExecutor:
                 call.name,
             )
 
+            #
+            # Build tool execution context
+            #
+
+            tool_context = ExecutionContext()
+
+            for key, value in call.arguments.items():
+
+                tool_context.variables.set(
+                    key,
+                    value,
+                )
+
             result = tool.execute(
-                **call.arguments,
+                tool_context,
             )
 
             #

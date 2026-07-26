@@ -11,6 +11,7 @@ from .instance import WorkflowInstance
 from .node import WorkflowNode
 from .result import WorkflowResult
 from .memory_store import MemoryWorkflowStore
+from bindai_agent import AgentRegistry
 
 
 class Workflow(Executable):
@@ -32,6 +33,8 @@ class Workflow(Executable):
         self.nodes: dict[str, WorkflowNode] = {}
 
         self.start_node: str | None = None
+
+        self.agents: dict[str, object] = {}
 
         self.executor = WorkflowExecutor(
             MemoryWorkflowStore(),
@@ -84,3 +87,15 @@ class Workflow(Executable):
         workflow.version += 1
 
         return workflow
+
+    def run(
+        self,
+        context=None,
+    ):
+        if context is None:
+            from bindai_core.context import ExecutionContext
+            context = ExecutionContext()
+
+        return self.execute(
+            context,
+        )

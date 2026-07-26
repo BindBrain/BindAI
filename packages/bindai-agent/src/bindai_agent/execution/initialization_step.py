@@ -27,9 +27,11 @@ class InitializationStep(
         )
 
         if len(agent.conversation) == 0:
-            agent.conversation.add_system(
-                agent.instructions,
-            )
+
+            if agent.instructions:
+                agent.conversation.add_system(
+                    agent.instructions,
+                )
 
         agent.conversation.add_user(
             user_input,
@@ -39,6 +41,7 @@ class InitializationStep(
 
         state.request = ModelRequest(
             messages=agent.conversation.messages,
+            tools=agent.tools.definitions(),
         )
 
         context.data = state

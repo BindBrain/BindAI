@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from abc import ABC
 from abc import abstractmethod
+from bindai_core.executable import Executable
 from typing import TYPE_CHECKING
 
 from .result import ToolResult
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .definition import ToolDefinition
 
 
-class Tool(ABC):
+class Tool(Executable[ToolResult]):
     """
     Base class for every BindAI tool.
     """
@@ -35,6 +35,5 @@ class Tool(ABC):
     def execute(
         self,
         context: ExecutionContext,
-        **kwargs,
     ) -> ToolResult:
         ...

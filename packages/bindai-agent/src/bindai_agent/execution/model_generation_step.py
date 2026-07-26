@@ -1,8 +1,15 @@
 from __future__ import annotations
 
-from .step import ExecutionStep
-from .state import ExecutionState
 from typing import cast
+
+from bindai_core.events import (
+    ModelRequestEvent,
+    ModelResponseEvent,
+)
+
+from .state import ExecutionState
+from .step import ExecutionStep
+
 
 class ModelGenerationStep(
     ExecutionStep,
@@ -17,10 +24,45 @@ class ModelGenerationStep(
         context,
     ):
 
-        state = cast(ExecutionState, context.data)
+        state = cast(
+            ExecutionState,
+            context.data,
+        )
 
-        state.response = agent.provider.generate(
-            state.request,
+        #
+        # Publish request event.
+        #
+
+        agent.events.publish(
+            ModelRequestEvent(
+                request=state.request,
+            )
+        )
+
+        #
+        # Generate model response.
+        #
+
+        if state.streaming:
+
+            state.response = agent.provider.generate_stream(
+                state.request,
+            )
+
+        else:
+
+            state.response = agent.provider.generate(
+                state.request,
+            )
+
+        #
+        # Publish response event.
+        #
+
+        agent.events.publish(
+            ModelResponseEvent(
+                response=state.response,
+            )
         )
 
         #

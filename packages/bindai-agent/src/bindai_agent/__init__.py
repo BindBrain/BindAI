@@ -1,4 +1,4 @@
-from .agent import Agent
+from .factory import Agent
 from .assistant import AssistantAgent
 from .builder import AgentBuilder
 from .registry import AgentRegistry

@@ -67,7 +67,7 @@ class InMemoryProvider(MemoryProvider):
 
                 for key, value in metadata.items():
 
-                    if getattr(record, key, None) != value:
+                    if record.metadata.get(key) != value:
                         ok = False
                         break
 

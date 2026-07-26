@@ -27,6 +27,18 @@ class FakeProvider(ModelProvider):
             usage=TokenUsage(),
         )
 
+    def stream(
+        self,
+        request,
+    ):
+        yield
+
+    @property
+    def capabilities(self):
+        from bindai_core.model import ProviderCapabilities
+
+        return ProviderCapabilities()
+
 
 def test_provider_registry():
 

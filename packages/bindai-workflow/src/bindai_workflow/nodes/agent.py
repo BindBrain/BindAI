@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from ..node import WorkflowNode
-
+from .runnable import RunnableNode
 from bindai_agent import AgentRegistry
 
 
 class AgentNode(
-    WorkflowNode,
+    RunnableNode,
 ):
     def __init__(
         self,
@@ -19,35 +18,39 @@ class AgentNode(
 
         super().__init__(
             node_id=node_id,
+            runnable=AgentRegistry.get(
+                agent,
+            ),
             name=name,
         )
 
         self.agent = agent
-
         self.input_variable = input_variable
-
         self.output_variable = output_variable
 
-    def execute(
+    def before_execute(
         self,
         context,
     ):
-
-        registry = context.services.resolve(
-            AgentRegistry,
-        )
-
-        agent = registry.get(
-            self.agent,
-        )
 
         prompt = context.get(
             self.input_variable,
         )
 
-        result = agent.chat(
-            prompt,
-        )
+        #
+        # Temporary compatibility
+        #
+
+        context.input = prompt
+
+        return context
+
+
+    def after_execute(
+        self,
+        context,
+        result,
+    ):
 
         context.set(
             self.output_variable,

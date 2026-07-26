@@ -21,7 +21,7 @@ class ModelRequest:
         default_factory=list,
     )
 
-    temperature: float = 0.7
+    temperature: float | None = None
 
     max_tokens: int | None = None
 

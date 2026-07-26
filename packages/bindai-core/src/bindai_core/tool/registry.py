@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from bindai_core.context import ExecutionContext
+
 from .exceptions import ToolAlreadyRegistered
 from .exceptions import ToolNotFound
 
 from .base import Tool
-
+from bindai_tool.function_tool import FunctionTool
 
 class ToolRegistry:
     def __init__(self):
@@ -15,6 +17,9 @@ class ToolRegistry:
         self,
         tool: Tool,
     ):
+
+        if callable(tool):
+            tool = FunctionTool(tool)
 
         if tool.name in self._tools:
             raise ToolAlreadyRegistered(
@@ -78,10 +83,18 @@ class ToolRegistry:
         **kwargs,
     ):
 
+        context = ExecutionContext()
+
+        for key, value in kwargs.items():
+            context.variables.set(
+                key,
+                value,
+            )
+
         return self.get(
             name,
         ).execute(
-            **kwargs,
+            context,
         )
 
     def __len__(

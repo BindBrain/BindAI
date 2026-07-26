@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import yaml
 
-from bindai import (
-    AgentBuilder,
-    GroupBuilder,
-    Task,
-)
+from bindai_agent import AgentBuilder
+from bindai_group import GroupBuilder
+from bindai_group import Task
 
 from .loader import ConfigLoader
 from .models import (

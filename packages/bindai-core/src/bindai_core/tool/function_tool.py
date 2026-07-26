@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bindai_core.context import ExecutionContext
 
-
 class FunctionTool(Tool):
     """
     Wraps a Python function as a BindAI Tool.
@@ -59,11 +58,18 @@ class FunctionTool(Tool):
 
     def execute(
         self,
-        context: ExecutionContext | None = None,
-        **kwargs,
+        context: ExecutionContext,
+        **overrides,
     ) -> ToolResult:
 
         try:
+
+            kwargs = context.variables.as_dict()
+
+            kwargs.update(
+                overrides,
+            )
+
             result = self.function(
                 **kwargs,
             )
@@ -74,7 +80,9 @@ class FunctionTool(Tool):
             )
 
         except Exception as ex:
+
             return ToolResult(
                 success=False,
+                output=None,
                 error=str(ex),
             )

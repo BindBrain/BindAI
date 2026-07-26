@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from bindai_core.context import ExecutionContext
+
 from ..process import Process
 from ..result import GroupResult
 from ..state import GroupState
@@ -13,6 +15,7 @@ class SequentialProcess(Process):
     def execute(
         self,
         group,
+        context: ExecutionContext,
     ):
 
         group.state = GroupState.RUNNING
@@ -22,6 +25,7 @@ class SequentialProcess(Process):
         for task in group.tasks:
             result = self._execute_task(
                 task,
+                context,
             )
 
             task.result = result
@@ -35,10 +39,10 @@ class SequentialProcess(Process):
                     tasks=group.tasks,
                 )
 
-            if result.output:
+            if result.response:
                 outputs.append(
                     str(
-                        result.output,
+                        result.response,
                     )
                 )
 
@@ -57,14 +61,20 @@ class SequentialProcess(Process):
     def _execute_task(
         self,
         task,
+        context: ExecutionContext,
     ):
 
         prompt = self._build_prompt(
             task,
         )
 
-        return task.agent.chat(
+        context.variables.set(
+            "input",
             prompt,
+        )
+
+        return task.agent.execute(
+            context,
         )
 
     def _build_prompt(
@@ -107,7 +117,7 @@ class SequentialProcess(Process):
                         previous.agent.name,
                         "",
                         str(
-                            previous.result.output,
+                            previous.result.response,
                         ),
                     ]
                 )

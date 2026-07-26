@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from bindai_core.context import ExecutionContext
+from bindai_core.executable import Executable
+from .result import GroupResult
+
 from typing import TYPE_CHECKING
 
 from .executor import GroupExecutor
@@ -11,7 +15,7 @@ if TYPE_CHECKING:
     from .task import Task
 
 
-class Group:
+class Group(Executable[GroupResult]):
     """
     Coordinates a collection of agents executing tasks.
     """
@@ -102,10 +106,22 @@ class Group:
 
     def run(
         self,
-    ):
+    ) -> GroupResult:
+
+        context = ExecutionContext()
+
+        return self.execute(
+            context,
+        )
+
+    def execute(
+        self,
+        context: ExecutionContext,
+    ) -> GroupResult:
 
         return self.executor.execute(
             self,
+            context,
         )
 
     #
