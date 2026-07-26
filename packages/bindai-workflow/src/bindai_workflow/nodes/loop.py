@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
 from ..node import WorkflowNode
+
+if TYPE_CHECKING:
+    from ..context import WorkflowContext
 
 
 class LoopNode(WorkflowNode):
@@ -14,7 +20,7 @@ class LoopNode(WorkflowNode):
     def __init__(
         self,
         node_id: str,
-        predicate,
+        predicate: Callable[[WorkflowContext], bool],
         name: str | None = None,
     ):
 
@@ -27,8 +33,8 @@ class LoopNode(WorkflowNode):
 
     def execute(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> None:
 
         if len(self.next_nodes) < 2:
             raise RuntimeError(

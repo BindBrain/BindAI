@@ -8,15 +8,14 @@ from .nodes.agent import AgentNode
 from .nodes.start import StartNode
 from .nodes.end import EndNode
 
-from .nodes.condition import ConditionNode
-from .nodes.parallel import ParallelNode
-from .nodes.loop import LoopNode
-
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
 
 from .nodes.condition import ConditionNode
 from .nodes.parallel import ParallelNode
 from .nodes.loop import LoopNode
+
+if TYPE_CHECKING:
+    from bindai_agent import Agent
 
 class WorkflowBuilder:
 
@@ -90,7 +89,7 @@ class WorkflowBuilder:
 
     def agent(
         self,
-        agent,
+        agent: Agent,
         *,
         input_variable: str = "input",
         output_variable: str = "agent_output",
@@ -125,40 +124,6 @@ class WorkflowBuilder:
         return self.then(
             EndNode("end"),
         )
-
-    def condition(
-        self,
-        expression: str,
-    ):
-
-        node = ConditionNode(
-            node_id=f"condition_{len(self._workflow.nodes)}",
-            expression=expression,
-        )
-
-        return self.then(node)
-
-    def parallel(
-        self,
-    ):
-
-        node = ParallelNode(
-            node_id=f"parallel_{len(self._workflow.nodes)}",
-        )
-
-        return self.then(node)
-
-    def loop(
-        self,
-        expression: str,
-    ):
-
-        node = LoopNode(
-            node_id=f"loop_{len(self._workflow.nodes)}",
-            expression=expression,
-        )
-
-        return self.then(node)
 
     def condition(
         self,

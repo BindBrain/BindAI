@@ -9,19 +9,19 @@ class MemoryWorkflowStore(
 ):
     def __init__(self):
 
-        self.instances = {}
+        self.instances: dict[str, WorkflowInstance] = {}
 
     def save(
         self,
         instance: WorkflowInstance,
-    ):
+    ) -> None:
 
         self.instances[instance.id] = instance
 
     def load(
         self,
         instance_id: str,
-    ):
+    ) -> WorkflowInstance | None:
 
         return self.instances.get(
             instance_id,
@@ -30,7 +30,7 @@ class MemoryWorkflowStore(
     def delete(
         self,
         instance_id: str,
-    ):
+    ) -> None:
 
         self.instances.pop(
             instance_id,

@@ -11,7 +11,6 @@ from .instance import WorkflowInstance
 from .node import WorkflowNode
 from .result import WorkflowResult
 from .memory_store import MemoryWorkflowStore
-from bindai_agent import AgentRegistry
 
 
 class Workflow(Executable):
@@ -43,7 +42,7 @@ class Workflow(Executable):
     def add_node(
         self,
         node: WorkflowNode,
-    ):
+    ) -> None:
 
         self.nodes[node.id] = node
 
@@ -78,7 +77,7 @@ class Workflow(Executable):
 
     def clone(
         self,
-    ):
+    ) -> Workflow:
 
         workflow = copy.deepcopy(
             self,
@@ -90,10 +89,10 @@ class Workflow(Executable):
 
     def run(
         self,
-        context=None,
-    ):
+        context: ExecutionContext | None = None,
+    ) -> WorkflowResult:
+        
         if context is None:
-            from bindai_core.context import ExecutionContext
             context = ExecutionContext()
 
         return self.execute(

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from .runnable import RunnableNode
 from bindai_agent import AgentRegistry
+
+if TYPE_CHECKING:
+    from ..context import WorkflowContext
 
 
 class AgentNode(
@@ -30,8 +35,8 @@ class AgentNode(
 
     def before_execute(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> WorkflowContext:
 
         prompt = context.get(
             self.input_variable,
@@ -45,12 +50,11 @@ class AgentNode(
 
         return context
 
-
     def after_execute(
         self,
-        context,
-        result,
-    ):
+        context: WorkflowContext,
+        result: object,
+    ) -> WorkflowContext:
 
         context.set(
             self.output_variable,
@@ -61,7 +65,7 @@ class AgentNode(
 
     def to_dict(
         self,
-    ):
+    ) -> dict:
 
         data = super().to_dict()
 
@@ -78,7 +82,7 @@ class AgentNode(
     def load_dict(
         self,
         data: dict,
-    ):
+    ) -> None:
 
         super().load_dict(
             data,

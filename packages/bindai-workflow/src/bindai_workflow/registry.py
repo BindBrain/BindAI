@@ -24,7 +24,7 @@ class WorkflowRegistry:
     def get(
         cls,
         workflow_id: str,
-    ) -> Workflow:
+    ) -> Workflow | None:
 
         return cls._workflows[
             workflow_id

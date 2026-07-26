@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from .workflow import Workflow
     from bindai_project import Project
 
+
 class WorkflowInstance:
     """
     Represents one running execution
@@ -28,12 +29,12 @@ class WorkflowInstance:
 
         self.context.instance = self
 
-        self.completed = False
+        self.completed: bool = False
 
         self.workflow_id = workflow.id
 
         self.workflow_version = workflow.version
 
-        self.retry_policy = None
+        self.retry_policy: object | None = None
 
         self.project: Project | None = None

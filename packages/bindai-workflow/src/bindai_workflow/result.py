@@ -7,6 +7,6 @@ from bindai_core.executable import ExecutionResult
 class WorkflowResult(ExecutionResult):
     success: bool
 
-    output: object = None
+    output: object | None = None
 
     error: str | None = None

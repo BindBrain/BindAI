@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from bindai_workflow.node import WorkflowNode
 
+if TYPE_CHECKING:
+    from ..context import WorkflowContext
 
 class ConditionNode(WorkflowNode):
 
     def __init__(
         self,
         node_id: str,
-        predicate,
+        predicate: Callable[[WorkflowContext], bool],
     ):
         super().__init__(node_id)
 
@@ -33,8 +37,9 @@ class ConditionNode(WorkflowNode):
 
     def execute(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> WorkflowContext:
+    
         if self.predicate(context):
             if self.true_node:
                 context.execution_queue.append(

@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ..node import WorkflowNode
+
+if TYPE_CHECKING:
+    from ..context import WorkflowContext
 
 
 class ParallelNode(WorkflowNode):
@@ -23,6 +28,6 @@ class ParallelNode(WorkflowNode):
 
     def execute(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> WorkflowContext:
         return context

@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from bindai_core.context import ExecutionContext
 
 class WorkflowNode(ABC):
     """
@@ -24,8 +27,8 @@ class WorkflowNode(ABC):
     @abstractmethod
     def execute(
         self,
-        context,
-    ): ...
+        context: ExecutionContext,
+    ) -> None: ...
 
     #
     # Serialization
@@ -33,7 +36,7 @@ class WorkflowNode(ABC):
 
     def to_dict(
         self,
-    ) -> dict:
+    ) -> dict[str, object]:
 
         return {
             "id": self.id,
@@ -46,8 +49,8 @@ class WorkflowNode(ABC):
 
     def load_dict(
         self,
-        data: dict,
-    ):
+        data: dict[str, object],
+    ) -> None:
 
         self.next_nodes = list(
             data.get(
@@ -59,7 +62,7 @@ class WorkflowNode(ABC):
     @property
     def next_node(
         self,
-    ):
+    ) -> str | None:
 
         if not self.next_nodes:
             return None

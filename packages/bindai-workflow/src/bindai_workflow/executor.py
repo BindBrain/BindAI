@@ -7,7 +7,12 @@ from .history import WorkflowHistory
 from .history_store import MemoryHistoryStore
 from .instance import WorkflowInstance
 from .result import WorkflowResult
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from .store import WorkflowStore
+    from .history_store import WorkflowHistoryStore
+    from .node import WorkflowNode
 
 class WorkflowExecutor:
     """
@@ -16,8 +21,8 @@ class WorkflowExecutor:
 
     def __init__(
         self,
-        store,
-        history_store=None,
+        store: WorkflowStore,
+        history_store: WorkflowHistoryStore | None = None,
     ):
 
         self.store = store
@@ -336,7 +341,7 @@ class WorkflowExecutor:
     def _execute_node(
         self,
         instance: WorkflowInstance,
-        node,
+        node: WorkflowNode,
     ) -> WorkflowResult | None:
 
         context = instance.context

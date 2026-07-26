@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ..node import WorkflowNode
+
+if TYPE_CHECKING:
+    from ..context import WorkflowContext
 
 
 class JoinNode(WorkflowNode):
@@ -23,8 +28,8 @@ class JoinNode(WorkflowNode):
 
     def execute(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> None:
 
         current = context.join_state.get(
             self.id,

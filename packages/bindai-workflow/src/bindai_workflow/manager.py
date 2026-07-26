@@ -4,6 +4,10 @@ from .executor import WorkflowExecutor
 from .instance import WorkflowInstance
 from .registry import WorkflowRegistry
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .workflow import Workflow
 
 class WorkflowManager:
     """
@@ -28,8 +32,8 @@ class WorkflowManager:
 
     def register(
         self,
-        workflow,
-    ):
+        workflow: Workflow,
+    ) -> None:
 
         WorkflowRegistry.register(
             workflow,
@@ -38,7 +42,7 @@ class WorkflowManager:
     def workflow(
         self,
         name: str,
-    ):
+    ) -> Workflow | None:
 
         return WorkflowRegistry.get(
             name,

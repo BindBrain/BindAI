@@ -13,7 +13,7 @@ class WorkflowValidator:
         workflow: Workflow,
     ) -> list[str]:
 
-        errors = []
+        errors: list[str] = []
 
         #
         # Must have start node

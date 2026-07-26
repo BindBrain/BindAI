@@ -3,7 +3,14 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
+from typing import TYPE_CHECKING
+
+from bindai_core.executable import Executable
+
 from ..node import WorkflowNode
+
+if TYPE_CHECKING:
+    from ..context import WorkflowContext
 
 
 class ExecutableNode(
@@ -17,14 +24,14 @@ class ExecutableNode(
     @abstractmethod
     def get_executable(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> Executable:
         ...
 
     def before_execute(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> WorkflowContext:
         """
         Optional preprocessing.
         """
@@ -32,9 +39,9 @@ class ExecutableNode(
 
     def after_execute(
         self,
-        context,
+        context: WorkflowContext,
         result,
-    ):
+    ) -> WorkflowContext:
         """
         Optional postprocessing.
         """
@@ -42,8 +49,8 @@ class ExecutableNode(
 
     def execute(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> WorkflowContext:
 
         context = self.before_execute(
             context,

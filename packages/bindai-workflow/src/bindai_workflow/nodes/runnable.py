@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from bindai_core.runnable import Runnable
 
 from .executable_node import ExecutableNode
+
+if TYPE_CHECKING:
+    from ..context import WorkflowContext
 
 
 class RunnableNode(
@@ -28,7 +33,7 @@ class RunnableNode(
 
     def get_executable(
         self,
-        context,
-    ):
+        context: WorkflowContext,
+    ) -> Runnable:
 
         return self.runnable

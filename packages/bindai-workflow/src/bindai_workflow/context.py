@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from bindai_core.context import Variables
 
 from typing import TYPE_CHECKING
-
+from collections.abc import Callable
 if TYPE_CHECKING:
     from .instance import WorkflowInstance
     
@@ -57,13 +57,10 @@ class WorkflowContext:
         # Identity
         #
 
-        self.user = None
-
-        self.tenant = None
-
-        self.project = None
-
-        self.application = None
+        self.user: str | None = None
+        self.tenant: str | None = None
+        self.project: object | None = None
+        self.application: str | None = None
 
         #
         # Runtime
@@ -75,19 +72,19 @@ class WorkflowContext:
         # Execution events
         #
 
-        self.events: list = []
+        self.events: list[object] = []
 
         self.waiting = False
 
-        self.task = None
+        self.task: object | None = None
 
         self.instance: WorkflowInstance | None = None
 
         self.retry_attempt = 0
 
-        self.retry_policy = None
+        self.retry_policy: object | None = None
 
-        self.timeout_policy = None
+        self.timeout_policy: object | None = None
 
         #
         # Dependency Injection
@@ -99,15 +96,13 @@ class WorkflowContext:
         # Compensation
         #
 
-        from collections.abc import Callable
-
-        self.compensations: list[Callable] = []
+        self.compensations: list[Callable[..., None]] = []
 
     def get(
         self,
         name: str,
-        default=None,
-    ):
+        default: object | None = None,
+    ) -> object:
 
         return self.variables.get(
             name,
@@ -116,9 +111,9 @@ class WorkflowContext:
 
     def set(
         self,
-        name,
-        value,
-    ):
+        name: str,
+        value: object,
+    ) -> None:
 
         self.variables.set(
             name,

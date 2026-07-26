@@ -11,7 +11,7 @@ class MemoryHistoryStore:
     def add(
         self,
         history: WorkflowHistory,
-    ):
+    ) -> None:
 
         self._history.append(
             history,
@@ -26,6 +26,10 @@ class MemoryHistoryStore:
     def workflow(
         self,
         workflow_id: str,
-    ):
+    ) -> list[WorkflowHistory]:
 
-        return [item for item in self._history if item.workflow_id == workflow_id]
+        return [
+            item
+            for item in self._history
+            if item.workflow_id == workflow_id
+        ]

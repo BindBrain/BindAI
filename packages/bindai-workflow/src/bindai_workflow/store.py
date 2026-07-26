@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
-from .instance import WorkflowInstance
+if TYPE_CHECKING:
+    from .instance import WorkflowInstance
 
 
 class WorkflowStore(ABC):
@@ -15,7 +17,7 @@ class WorkflowStore(ABC):
     def save(
         self,
         instance: WorkflowInstance,
-    ): ...
+    ) -> None: ...
 
     @abstractmethod
     def load(
@@ -27,4 +29,4 @@ class WorkflowStore(ABC):
     def delete(
         self,
         instance_id: str,
-    ): ...
+    ) -> None: ...
