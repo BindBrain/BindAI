@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
-from typing import Callable
-from typing import TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING
 
-from bindai_core.tool.definition import ToolDefinition
-from bindai_core.tool.inspector import ToolInspector
-
+from .definition import ToolDefinition
+from .inspector import ToolInspector
 from .result import ToolResult
 from .tool import Tool
 
@@ -24,70 +21,45 @@ class FunctionTool(Tool):
         function: Callable[..., Any],
         name: str | None = None,
     ):
-
         self.function = function
-
         self._name = name or function.__name__
 
     @property
     def name(self) -> str:
-
         return self._name
 
     @property
     def description(self) -> str:
-
         return (self.function.__doc__ or "").strip()
 
     @property
-    def parameters(
-        self,
-    ) -> dict[str, Any]:
-
-        return ToolInspector.parameters(
-            self.function,
-        )
-
-    @property
-    def definition(
-        self,
-    ) -> ToolDefinition:
-
+    def definition(self) -> ToolDefinition:
         return ToolDefinition(
             name=self.name,
             description=self.description,
             parameters=self.parameters,
         )
 
+    @property
+    def parameters(self) -> dict[str, Any]:
+        return ToolInspector.parameters(
+            self.function,
+        )
+
     def execute(
         self,
         context: ExecutionContext,
-        **kwargs,
+        **overrides,
     ) -> ToolResult:
-
         try:
+            kwargs = context.variables.as_dict()
 
-            #
-            # Backwards compatibility.
-            #
-            # Older callers still invoke:
-            #
-            # tool.execute(context, a=1, b=2)
-            #
-            # Copy them into the execution context.
-            #
-
-            if kwargs:
-
-                for key, value in kwargs.items():
-
-                    context.variables.set(
-                        key,
-                        value,
-                    )
+            kwargs.update(
+                overrides,
+            )
 
             result = self.function(
-                **context.variables.as_dict(),
+                **kwargs,
             )
 
             return ToolResult(
@@ -96,7 +68,6 @@ class FunctionTool(Tool):
             )
 
         except Exception as ex:
-
             return ToolResult(
                 success=False,
                 output=None,

@@ -1,23 +1,45 @@
-import inspect
+from __future__ import annotations
 
-from .metadata import ToolMetadata
+from typing import Any, Callable, overload
+
+from .function_tool import FunctionTool
+
+
+@overload
+def tool(func: Callable[..., Any]) -> FunctionTool: ...
+
+
+@overload
+def tool(
+    *,
+    name: str | None = None,
+) -> Callable[[Callable[..., Any]], FunctionTool]: ...
 
 
 def tool(
-    name=None,
-    description=None,
-):
-    def wrapper(func):
+    func: Callable[..., Any] | None = None,
+    *,
+    name: str | None = None,
+) -> FunctionTool | Callable[[Callable[..., Any]], FunctionTool]:
+    """
+    Supports:
 
-        func.__bind_tool__ = True
+        @tool
 
-        func.__metadata__ = ToolMetadata(
-            name=name or func.__name__,
-            description=description or "",
+        @tool()
+
+        @tool(name="calculator")
+    """
+
+    def decorator(
+        func: Callable[..., Any],
+    ) -> FunctionTool:
+        return FunctionTool(
+            function=func,
+            name=name,
         )
 
-        func.__signature__ = inspect.signature(func)
+    if func is not None:
+        return decorator(func)
 
-        return func
-
-    return wrapper
+    return decorator
