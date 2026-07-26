@@ -7,7 +7,7 @@ from bindai_core.model import (
     ModelResponse,
 )
 
-from bindai_core.agent import AgentResult
+from ..result import AgentResult
 
 
 @dataclass(slots=True)

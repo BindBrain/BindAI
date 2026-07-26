@@ -4,7 +4,7 @@ from typing import cast
 
 from bindai_memory import MemoryRecord
 
-from bindai_core.agent import AgentResult
+from ..result import AgentResult
 from .state import ExecutionState
 from .step import ExecutionStep
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bindai_core.context import ExecutionContext
-from bindai_core.agent import AgentResult
+from ..result import AgentResult
 from bindai_core.events import (
     AgentStartedEvent,
     AgentFinishedEvent,

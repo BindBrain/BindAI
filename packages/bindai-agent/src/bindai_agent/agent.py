@@ -15,7 +15,7 @@ from .conversation import Conversation
 from .execution.engine import AgentExecutionEngine
 from .execution.data import ExecutionData
 from .configuration import AgentConfiguration
-from bindai_core.agent import AgentResult
+from .result import AgentResult
 from bindai_core.events import EventBus
 from bindai_core.events import ToolExecutedEvent
 from bindai_core.context import ExecutionContext

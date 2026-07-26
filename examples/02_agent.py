@@ -24,7 +24,7 @@ from bindai_core.model import (
     ProviderCapabilities,
 )
 
-from bindai_core.agent import (
+from bindai_agent import (
     Agent,
     AgentResult,
 )

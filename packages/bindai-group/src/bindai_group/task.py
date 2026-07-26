@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bindai_agent import Agent
-    from bindai_core.agent import AgentResult
+    from bindai_agent import AgentResult
 
 
 @dataclass(slots=True)
