@@ -45,9 +45,14 @@ class ModelGenerationStep(
 
         if state.streaming:
 
-            state.response = agent.provider.generate_stream(
-                state.request,
-            )
+            if hasattr(agent.provider, "generate_stream"):
+                state.response = agent.provider.generate_stream(
+                    state.request,
+                )
+            else:
+                state.response = agent.provider.stream(
+                    state.request,
+                )
 
         else:
 

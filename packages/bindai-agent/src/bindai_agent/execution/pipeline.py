@@ -65,7 +65,8 @@ class ExecutionPipeline:
             if result is not None:
                 return result
 
-        iterations = 0
+        state = context.data
+        iterations = state.iterations
 
         while True:
 
@@ -98,10 +99,10 @@ class ExecutionPipeline:
             # Prevent infinite loops.
             #
 
-            iterations += 1
+            state.iterations += 1
 
             if (
-                iterations
+                state.iterations
                 >= agent.configuration.max_tool_iterations
             ):
 

@@ -8,6 +8,11 @@ from .exceptions import ToolNotFound
 from .tool import Tool
 from bindai_tool.function_tool import FunctionTool
 
+try:
+    from bindai.tool import Tool as PublicTool
+except Exception:
+    PublicTool = None
+
 class ToolRegistry:
     def __init__(self):
 
@@ -18,8 +23,41 @@ class ToolRegistry:
         tool: Tool,
     ):
 
-        if callable(tool):
+        #
+        # Runtime Tool -> keep
+        #
+
+        if isinstance(tool, Tool):
+
+            pass
+
+        #
+        # Public API Tool (@tool decorator)
+        #
+
+        elif (
+            PublicTool is not None
+            and isinstance(tool, PublicTool)
+        ):
+
+            tool = FunctionTool(
+                function=tool.function,
+                name=tool.name,
+            )
+
+        #
+        # Raw Python function
+        #
+
+        elif callable(tool):
+
             tool = FunctionTool(tool)
+
+        else:
+
+            raise TypeError(
+                f"Unsupported tool type: {type(tool).__name__}"
+            )
 
         if tool.name in self._tools:
             raise ToolAlreadyRegistered(

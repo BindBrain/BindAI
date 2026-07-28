@@ -43,10 +43,14 @@ class AgentNode(
         )
 
         #
-        # Temporary compatibility
+        # BindAI AgentExecutionEngine expects
+        # ExecutionContext.variables["input"].
         #
 
-        context.input = prompt
+        context.variables.set(
+            "input",
+            prompt,
+        )
 
         return context
 

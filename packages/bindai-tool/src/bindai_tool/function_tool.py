@@ -20,9 +20,16 @@ class FunctionTool(Tool):
         self,
         function: Callable[..., Any],
         name: str | None = None,
+        description: str | None = None,
     ):
         self.function = function
+
         self._name = name or function.__name__
+
+        self._description = (
+            description
+            or (function.__doc__ or "").strip()
+        )
 
     @property
     def name(self) -> str:
@@ -30,7 +37,7 @@ class FunctionTool(Tool):
 
     @property
     def description(self) -> str:
-        return (self.function.__doc__ or "").strip()
+        return self._description
 
     @property
     def definition(self) -> ToolDefinition:
@@ -64,12 +71,57 @@ class FunctionTool(Tool):
 
             return ToolResult(
                 success=True,
-                output=result,
+                value=result,
             )
 
         except Exception as ex:
             return ToolResult(
                 success=False,
-                output=None,
+                value=None,
                 error=str(ex),
             )
+
+    def __call__(
+        self,
+        *args,
+        **kwargs,
+    ):
+        """
+        Backwards-compatible callable interface.
+        """
+
+        from bindai_core.context import ExecutionContext
+
+        context = ExecutionContext()
+
+        #
+        # Positional arguments
+        #
+
+        parameter_names = list(
+            self.parameters.keys()
+        )
+
+        for name, value in zip(
+            parameter_names,
+            args,
+        ):
+            context.variables.set(
+                name,
+                value,
+            )
+
+        #
+        # Keyword arguments
+        #
+
+        for key, value in kwargs.items():
+
+            context.variables.set(
+                key,
+                value,
+            )
+
+        return self.execute(
+            context,
+        )

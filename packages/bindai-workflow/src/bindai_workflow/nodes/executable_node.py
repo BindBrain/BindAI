@@ -6,6 +6,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from bindai_core.executable import Executable
+from bindai_core.context import ExecutionContext
 
 from ..node import WorkflowNode
 
@@ -66,8 +67,16 @@ class ExecutableNode(
                 "returned no executable."
             )
 
+        #
+        # WorkflowContext -> ExecutionContext adapter
+        #
+
+        execution_context = ExecutionContext()
+
+        execution_context.variables = context.variables
+
         result = executable.execute(
-            context,
+            execution_context,
         )
 
         context = self.after_execute(

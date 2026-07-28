@@ -71,6 +71,15 @@ class Workflow(Executable):
 
         instance = self.create_instance()
 
+        #
+        # propagate variables
+        #
+
+        if hasattr(context, "variables"):
+            instance.context.variables.update(
+                context.variables,
+            )
+
         return self.executor.execute(
             instance,
         )

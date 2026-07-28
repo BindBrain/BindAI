@@ -29,9 +29,7 @@ class FinishStep(
 
         response = ""
 
-        #
-        # Store assistant message
-        #
+        structured = None
 
         if state.response is not None:
             response = state.response.content or ""
@@ -39,6 +37,21 @@ class FinishStep(
             agent.conversation.add_assistant(
                 response,
             )
+
+            output_type = context.variables.get(
+                "output_type",
+            )
+
+            if output_type is not None:
+                try:
+                    import json
+
+                    data = json.loads(response)
+
+                    structured = output_type(**data)
+
+                except Exception:
+                    structured = None
 
         #
         # Persist conversation memory
@@ -59,11 +72,18 @@ class FinishStep(
 
         result = AgentResult(
             success=True,
-            output=response,
+            output=structured if structured is not None else response,
         )
 
         #
-        # Middleware (after)
+        # Execute hooks
         #
+
+        for hook in agent.hooks:
+            hook(
+                agent,
+                context,
+                result,
+            )
 
         return result

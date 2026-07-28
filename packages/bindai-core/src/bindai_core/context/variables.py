@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+from collections.abc import Iterator
 
 
 class Variables:
@@ -40,7 +41,7 @@ class Variables:
 
     def update(
         self,
-        values: dict[str, Any] | Variables,
+        values: dict[str, Any] | "Variables",
     ) -> None:
 
         if isinstance(
@@ -103,6 +104,24 @@ class Variables:
             self._values,
         )
 
+    def items(
+        self,
+    ):
+
+        return self._values.items()
+
+    def keys(
+        self,
+    ):
+
+        return self._values.keys()
+
+    def values(
+        self,
+    ):
+
+        return self._values.values()
+
     #
     # Python API
     #
@@ -131,7 +150,7 @@ class Variables:
 
     def __iter__(
         self,
-    ):
+    ) -> Iterator[str]:
 
         return iter(
             self._values,
@@ -142,5 +161,13 @@ class Variables:
     ):
 
         return len(
+            self._values,
+        )
+
+    def __repr__(
+        self,
+    ) -> str:
+
+        return repr(
             self._values,
         )

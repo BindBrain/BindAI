@@ -20,10 +20,18 @@ class Tool:
         self.description = description
         self.function = function
 
-    def __call__(self, *args, **kwargs) -> ToolResult:
+    def __call__(
+        self,
+        *args,
+        **kwargs,
+    ) -> ToolResult:
 
         try:
-            value = self.function(*args, **kwargs)
+
+            value = self.function(
+                *args,
+                **kwargs,
+            )
 
             return ToolResult(
                 success=True,
@@ -31,6 +39,7 @@ class Tool:
             )
 
         except Exception as e:
+
             return ToolResult(
                 success=False,
                 error=str(e),

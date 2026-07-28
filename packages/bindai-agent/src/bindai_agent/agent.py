@@ -65,6 +65,12 @@ class Agent(Executable):
 
         self.hooks = []
 
+        self.callbacks = {
+            "before_run": [],
+            "after_run": [],
+            "error": [],
+        }
+
     @property
     def instructions(self) -> str:
 
@@ -215,6 +221,75 @@ class Agent(Executable):
         )
 
         return self
+
+    def before_run(
+        self,
+        context: ExecutionContext,
+    ) -> None:
+
+        self.emit(
+            "before_run",
+            self,
+            context,
+        )
+
+
+    def after_run(
+        self,
+        context: ExecutionContext,
+        result: AgentResult,
+    ) -> None:
+
+        self.emit(
+            "after_run",
+            self,
+            context,
+            result,
+        )
+
+
+    def on_error(
+        self,
+        context: ExecutionContext,
+        error: Exception,
+    ) -> None:
+
+        self.emit(
+            "error",
+            self,
+            context,
+            error,
+        )
+
+    def on(
+        self,
+        event: str,
+        callback,
+    ) -> "Agent":
+
+        self.callbacks.setdefault(
+            event,
+            [],
+        ).append(
+            callback,
+        )
+
+        return self
+
+
+    def emit(
+        self,
+        event: str,
+        *args,
+    ) -> None:
+
+        for callback in self.callbacks.get(
+            event,
+            [],
+        ):
+            callback(
+                *args,
+            )
 
     def session(self):
 

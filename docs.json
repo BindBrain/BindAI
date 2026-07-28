@@ -14,17 +14,17 @@
     "logoDark": "/logo/dark.svg",
   
     "navigation": {
-      "groups": [
-        {
-          "group": "Getting Started",
-          "pages": [
-            "docs/README.md",
-            "docs/01. getting-started/01.1 introduction",
-            "docs/01. getting-started/01.2 installation",
-            "docs/01. getting-started/01.3 quick-start",
-            "docs/01. getting-started/01.4 first-agent",
-            "docs/01. getting-started/01.5 project-structure"
-          ]
+        "groups": [
+            {
+                "group": "Getting Started",
+                "pages": [
+                "README",
+                "getting-started/introduction",
+                "getting-started/installation",
+                "getting-started/quick-start",
+                "getting-started/first-agent",
+                "getting-started/project-structure"
+                ]
         },
         {
           "group": "Core",

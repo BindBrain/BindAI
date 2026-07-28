@@ -60,7 +60,7 @@ class ToolExecutionStep(
 
             agent.conversation.add_tool(
                 tool_call_id=tool_call.id,
-                content=str(result.output),
+                content=str(result.value),
             )
 
         #

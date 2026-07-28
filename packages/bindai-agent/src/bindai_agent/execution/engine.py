@@ -73,34 +73,58 @@ class AgentExecutionEngine:
         )
 
         #
-        # before middleware
+        # Lifecycle
         #
 
-        for middleware in agent.middleware:
-            middleware.before_execute(
-                agent,
-                context,
-            )
-
-        #
-        # run pipeline
-        #
-
-        result: AgentResult = self.pipeline.execute(
-            agent,
+        agent.before_run(
             context,
         )
 
-        #
-        # after middleware
-        #
+        try:
 
-        for middleware in reversed(agent.middleware):
-            middleware.after_execute(
+            #
+            # before middleware
+            #
+
+            for middleware in agent.middleware:
+                middleware.before_execute(
+                    agent,
+                    context,
+                )
+
+            #
+            # run pipeline
+            #
+
+            result: AgentResult = self.pipeline.execute(
                 agent,
+                context,
+            )
+
+            #
+            # after middleware
+            #
+
+            for middleware in reversed(agent.middleware):
+                middleware.after_execute(
+                    agent,
+                    context,
+                    result,
+                )
+
+            agent.after_run(
                 context,
                 result,
             )
+
+        except Exception as ex:
+
+            agent.on_error(
+                context,
+                ex,
+            )
+
+            raise
 
         #
         # Agent finished
@@ -129,35 +153,56 @@ class AgentExecutionEngine:
             streaming=True,
         )
 
-        InitializationStep().execute(
-            agent,
+        agent.events.publish(
+            AgentStartedEvent(),
+        )
+
+        agent.before_run(
             context,
         )
 
-        state = context.data
+        try:
 
-        #
-        # optional knowledge
-        #
+            InitializationStep().execute(
+                agent,
+                context,
+            )
 
-        KnowledgeStep().execute(
-            agent,
-            context,
-        )
+            #
+            # optional knowledge
+            #
 
-        #
-        # optional memory
-        #
+            KnowledgeStep().execute(
+                agent,
+                context,
+            )
 
-        MemoryStep().execute(
-            agent,
-            context,
-        )
+            #
+            # optional memory
+            #
 
-        #
-        # stream directly from provider
-        #
+            MemoryStep().execute(
+                agent,
+                context,
+            )
 
-        return agent.provider.stream(
-            state.request,
-        )
+            state = context.data
+
+            return agent.provider.stream(
+                state.request,
+            )
+
+        except Exception as ex:
+
+            agent.on_error(
+                context,
+                ex,
+            )
+
+            raise
+
+        finally:
+
+            agent.events.publish(
+                AgentFinishedEvent(),
+            )
