@@ -1,112 +1,118 @@
 {
-	"$schema": "https://mintlify.com/docs.json",
-	"name": "BindAI",
-	"theme": "mint",
-	"colors": {
-		"primary": "#2563eb",
-		"light": "#3b82f6",
-		"dark": "#1d4ed8"
-	},
-	"navigation": {
-		"groups": [
-			{
-				"group": "Getting Started",
-				"pages": [
-					"docs/README",
-					"docs/01. getting-started/01.1 introduction",
-					"docs/01. getting-started/01.2 installation",
-					"docs/01. getting-started/01.3 quick-start",
-					"docs/01. getting-started/01.4 first-agent",
-					"docs/01. getting-started/01.5 project-structure"
-				]
-			},
-			{
-				"group": "Core",
-				"pages": [
-					"docs/02. core/02.1 agents",
-					"docs/02. core/02.2 prompts",
-					"docs/02. core/02.3 execution",
-					"docs/02. core/02.4 providers",
-					"docs/02. core/02.5 results",
-					"docs/02. core/02.6 events"
-				]
-			},
-			{
-				"group": "Tools",
-				"pages": [
-					"docs/03. tools/03.1 overview",
-					"docs/03. tools/03.2 creating-tools",
-					"docs/03. tools/03.3 tool-context",
-					"docs/03. tools/03.4 tool-results"
-				]
-			},
-			{
-				"group": "Memory",
-				"pages": [
-					"docs/04. memory/04.1 overview",
-					"docs/04. memory/04.2 providers",
-					"docs/04. memory/04.3 conversation-memory",
-					"docs/04. memory/04.4 custom-memory"
-				]
-			},
-			{
-				"group": "Knowledge",
-				"pages": [
-					"docs/05. knowledge/05.1 overview",
-					"docs/05. knowledge/05.2 documents",
-					"docs/05. knowledge/05.3 embeddings",
-					"docs/05. knowledge/05.4 retrievers",
-					"docs/05. knowledge/05.5 rag"
-				]
-			},
-			{
-				"group": "Workflows",
-				"pages": [
-					"docs/06. workflows/06.1 overview",
-					"docs/06. workflows/06.2 builder",
-					"docs/06. workflows/06.3 nodes",
-					"docs/06. workflows/06.4 conditions",
-					"docs/06. workflows/06.5 loops",
-					"docs/06. workflows/06.6 parallel",
-					"docs/06. workflows/06.7 retry",
-					"docs/06. workflows/06.8 timeout",
-					"docs/06. workflows/06.9 scheduling",
-					"docs/06. workflows/06.10 human-tasks"
-				]
-			},
-			{
-				"group": "Projects",
-				"pages": [
-					"docs/07. projects/07.1 overview",
-					"docs/07. projects/07.2 applications",
-					"docs/07. projects/07.3 shared-tools",
-					"docs/07. projects/07.4 deployment"
-				]
-			},
-			{
-				"group": "Templates",
-				"pages": [
-					"docs/08. templates/08.1 workflow-basic",
-					"docs/08. templates/08.2 workflow-condition",
-					"docs/08. templates/08.3 workflow-loop",
-					"docs/08. templates/08.4 workflow-parallel",
-					"docs/08. templates/08.5 workflow-human",
-					"docs/08. templates/08.6 workflow-retry",
-					"docs/08. templates/08.7 workflow-timeout",
-					"docs/08. templates/08.8 workflow-schedule"
-				]
-			},
-			{
-				"group": "API Reference",
-				"pages": [
-					"docs/10. api/10.1 agent",
-					"docs/10. api/10.2 workflow",
-					"docs/10. api/10.3 project",
-					"docs/10. api/10.4 tool",
-					"docs/10. api/10.5 memory",
-					"docs/10. api/10.6 provider"
-				]
-			}
-		]
-	}
-}
+    "$schema": "https://mintlify.com/docs.json",
+    "name": "BindAI",
+    "theme": "mint",
+  
+    "colors": {
+      "primary": "#2563eb",
+      "light": "#3b82f6",
+      "dark": "#1d4ed8"
+    },
+  
+    "favicon": "/favicon.ico",
+    "logo": "/logo/light.svg",
+    "logoDark": "/logo/dark.svg",
+  
+    "navigation": {
+      "groups": [
+        {
+          "group": "Getting Started",
+          "pages": [
+            "docs/README",
+            "docs/01. getting-started/01.1 introduction",
+            "docs/01. getting-started/01.2 installation",
+            "docs/01. getting-started/01.3 quick-start",
+            "docs/01. getting-started/01.4 first-agent",
+            "docs/01. getting-started/01.5 project-structure"
+          ]
+        },
+        {
+          "group": "Core",
+          "pages": [
+            "docs/02. core/02.1 agents",
+            "docs/02. core/02.2 prompts",
+            "docs/02. core/02.3 execution",
+            "docs/02. core/02.4 providers",
+            "docs/02. core/02.5 results",
+            "docs/02. core/02.6 events"
+          ]
+        },
+        {
+          "group": "Tools",
+          "pages": [
+            "docs/03. tools/03.1 overview",
+            "docs/03. tools/03.2 creating-tools",
+            "docs/03. tools/03.3 tool-context",
+            "docs/03. tools/03.4 tool-results"
+          ]
+        },
+        {
+          "group": "Memory",
+          "pages": [
+            "docs/04. memory/04.1 overview",
+            "docs/04. memory/04.2 providers",
+            "docs/04. memory/04.3 conversation-memory",
+            "docs/04. memory/04.4 custom-memory"
+          ]
+        },
+        {
+          "group": "Knowledge",
+          "pages": [
+            "docs/05. knowledge/05.1 overview",
+            "docs/05. knowledge/05.2 documents",
+            "docs/05. knowledge/05.3 embeddings",
+            "docs/05. knowledge/05.4 retrievers",
+            "docs/05. knowledge/05.5 rag"
+          ]
+        },
+        {
+          "group": "Workflows",
+          "pages": [
+            "docs/06. workflows/06.1 overview",
+            "docs/06. workflows/06.2 builder",
+            "docs/06. workflows/06.3 nodes",
+            "docs/06. workflows/06.4 conditions",
+            "docs/06. workflows/06.5 loops",
+            "docs/06. workflows/06.6 parallel",
+            "docs/06. workflows/06.7 retry",
+            "docs/06. workflows/06.8 timeout",
+            "docs/06. workflows/06.9 scheduling",
+            "docs/06. workflows/06.10 human-tasks"
+          ]
+        },
+        {
+          "group": "Projects",
+          "pages": [
+            "docs/07. projects/07.1 overview",
+            "docs/07. projects/07.2 applications",
+            "docs/07. projects/07.3 shared-tools",
+            "docs/07. projects/07.4 deployment"
+          ]
+        },
+        {
+          "group": "Templates",
+          "pages": [
+            "docs/08. templates/08.1 workflow-basic",
+            "docs/08. templates/08.2 workflow-condition",
+            "docs/08. templates/08.3 workflow-loop",
+            "docs/08. templates/08.4 workflow-parallel",
+            "docs/08. templates/08.5 workflow-human",
+            "docs/08. templates/08.6 workflow-retry",
+            "docs/08. templates/08.7 workflow-timeout",
+            "docs/08. templates/08.8 workflow-schedule"
+          ]
+        },
+        {
+          "group": "API Reference",
+          "pages": [
+            "docs/10. api/10.1 agent",
+            "docs/10. api/10.2 workflow",
+            "docs/10. api/10.3 project",
+            "docs/10. api/10.4 tool",
+            "docs/10. api/10.5 memory",
+            "docs/10. api/10.6 provider"
+          ]
+        }
+      ]
+    }
+  }
