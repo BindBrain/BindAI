@@ -12,6 +12,7 @@
 			{
 				"group": "Getting Started",
 				"pages": [
+					"docs/README",
 					"docs/01. getting-started/01.1 introduction",
 					"docs/01. getting-started/01.2 installation",
 					"docs/01. getting-started/01.3 quick-start",
