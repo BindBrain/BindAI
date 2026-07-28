@@ -1,0 +1,84 @@
+---
+title: BindAI
+description: Build production-ready AI applications with agents, workflows, tools, memory, and knowledge.
+---
+
+# BindAI
+
+Build production-ready AI applications with a modern Python framework designed for AI agents, workflows, tools, memory, and retrieval.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" href="/docs/01. getting-started/01.1 introduction">
+    Learn how to install BindAI and build your first AI agent.
+  </Card>
+
+  <Card title="Core Concepts" href="/docs/02. core/02.1 agents">
+    Understand agents, prompts, execution, providers and events.
+  </Card>
+
+  <Card title="Tools" href="/docs/03. tools/03.1 overview">
+    Extend your agents using custom tools.
+  </Card>
+
+  <Card title="Memory" href="/docs/04. memory/04.1 overview">
+    Give your agents persistent conversational memory.
+  </Card>
+
+  <Card title="Knowledge" href="/docs/05. knowledge/05.1 overview">
+    Load documents and build Retrieval-Augmented Generation (RAG).
+  </Card>
+
+  <Card title="Workflows" href="/docs/06. workflows/06.1 overview">
+    Build complex AI pipelines with workflow nodes.
+  </Card>
+
+  <Card title="Projects" href="/docs/07. projects/07.1 overview">
+    Organize applications, tools and configuration.
+  </Card>
+
+  <Card title="API Reference" href="/docs/10. api/10.1 agent">
+    Explore every BindAI package.
+  </Card>
+</CardGroup>
+
+---
+
+## Installation
+
+```bash
+pip install bindai
+```
+
+---
+
+## Example
+
+```python
+from bindai import Agent
+
+agent = (
+    Agent.builder()
+    .openai("gpt-4.1-mini")
+    .system_prompt("You are a helpful assistant.")
+    .build()
+)
+
+result = agent.run("Hello!")
+print(result.text)
+```
+
+---
+
+## Documentation
+
+- Getting Started
+- Core Concepts
+- Tools
+- Memory
+- Knowledge
+- Workflows
+- Projects
+- Templates
+- API Reference
+
+Happy building with **BindAI** 🚀
