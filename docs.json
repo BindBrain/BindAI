@@ -116,5 +116,15 @@
     },
     "fonts": {
       "family": "Lexend"
+    },
+    "footer": {
+      "socials": {
+        "github": "https://github.com/bindbrain",
+        "linkedin": "https://www.linkedin.com/company/bindbrain",
+        "youtube": "https://www.youtube.com/@bindbrain"
+      }
+    },
+    "background": {
+      "decoration": "grid"
     }
   }
