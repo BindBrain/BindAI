@@ -1,0 +1,7 @@
+name: approval-agent
+
+model: openai:gpt-4.1-mini
+
+instructions: |
+  Reply with exactly:
+  Human task completed.

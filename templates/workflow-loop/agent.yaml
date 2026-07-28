@@ -1,0 +1,8 @@
+name: loop-agent
+
+provider: openai
+
+model: openai:gpt-4.1-mini
+
+instructions: |
+  Reply exactly with the user's message.

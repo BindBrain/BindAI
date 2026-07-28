@@ -1,0 +1,4 @@
+bindai
+bindai-provider-openai
+python-dotenv
+pyyaml

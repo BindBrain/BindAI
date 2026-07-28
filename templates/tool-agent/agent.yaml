@@ -1,0 +1,12 @@
+name: tool-agent
+
+model: openai:gpt-4.1-mini
+
+instructions: |
+  You are a helpful assistant.
+
+  Use tools whenever they help answer the user's question.
+
+temperature: 0.7
+
+max_tool_iterations: 5

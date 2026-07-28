@@ -1,0 +1,7 @@
+name: parallel-agent-a
+
+model: openai:gpt-4.1-mini
+
+instructions: |
+  Reply with exactly:
+  Branch A completed.
