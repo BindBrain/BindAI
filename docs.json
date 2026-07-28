@@ -113,5 +113,8 @@
           ]
         }
       ]
+    },
+    "fonts": {
+      "family": "Lexend"
     }
   }
