@@ -1,299 +1,320 @@
-BindAI
+<p align="center">
+  <a href="https://docs.bindai.dev">
+    <img src="logo/light.png" alt="BindAI Logo" width="220">
+  </a>
+</p>
 
-Build AI applications with agents, tools...
+<h1 align="center">BindAI</h1>
 
-Features
+<p align="center">
+  Open-source Python framework for building production-ready AI agents, workflows, tools, memory, knowledge retrieval, and enterprise AI applications.
+</p>
 
-Installation
+<p align="center">
+  <a href="https://docs.bindai.dev"><strong>Documentation</strong></a> •
+  <a href="https://bindai.dev"><strong>Website</strong></a> •
+  <a href="https://github.com/BindBrain/BindAI"><strong>GitHub</strong></a>
+</p>
 
-Quick Start
-
-Examples
-...
 
 # BindAI
 
-> A modern Python framework for building agentic AI applications.
+> **Open-source Python framework for building production-ready AI agents, workflows, tools, memory, knowledge retrieval, and enterprise AI applications.**
 
-BindAI is an open-source framework that provides the building blocks required to create AI agents, workflows, tools, providers, memory systems, and execution pipelines.
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-bindai.dev-blue)](https://docs.bindai.dev)
 
-The goal of BindAI is to provide a clean, modular, provider-agnostic architecture for building production-ready AI systems.
+BindAI is a modern Python framework that provides everything you need to build intelligent AI systems using a clean, modular, and provider-agnostic architecture.
 
----
-
-## Features
-
-Current features included in **v0.1.0**
-
-- Multi-provider architecture
-- Agent framework
-- Tool calling
-- Conversation management
-- Prompt templates
-- Middleware pipeline
-- Dependency Injection
-- Execution pipeline
-- Streaming responses
-- Extensible provider system
-- Provider registry and factory
-- Tool schema generation
-- Automatic tool registration
+Whether you're creating a simple AI assistant, an enterprise workflow, or a complex multi-agent platform, BindAI gives you the building blocks to develop scalable, production-ready AI applications.
 
 ---
 
-## Installation
+# Why BindAI?
+
+Modern AI applications require far more than a single LLM call.
+
+BindAI combines:
+
+* AI Agents
+* Workflows
+* Tools
+* Memory
+* Knowledge Retrieval (RAG)
+* Human Approval Tasks
+* Multi-provider LLM support
+* Projects
+* Templates
+
+into one unified framework.
+
+Everything is modular, extensible, and designed for real-world applications.
+
+---
+
+# Features
+
+## AI Agents
+
+* Intelligent agent execution
+* Conversation management
+* Prompt management
+* Structured outputs
+* Tool calling
+* Streaming responses
+
+## Workflows
+
+* Visual workflow architecture
+* Conditional branching
+* Loops
+* Parallel execution
+* Retry policies
+* Timeouts
+* Human approval steps
+* Scheduling
+
+## Tools
+
+* Automatic tool registration
+* Function schema generation
+* Tool metadata
+* Context-aware execution
+
+## Memory
+
+* Conversation memory
+* Custom memory providers
+* Extensible memory architecture
+
+## Knowledge
+
+* Document ingestion
+* Embeddings
+* Vector retrieval
+* Retrieval-Augmented Generation (RAG)
+
+## Providers
+
+Provider-agnostic architecture supporting:
+
+* OpenAI
+* Anthropic
+* Ollama
+* Azure OpenAI
+* Custom providers
+
+## Projects
+
+Organize multiple applications, workflows, agents, and shared resources inside a single project.
+
+---
+
+# Installation
 
 Clone the repository:
 
 ```bash
 git clone https://github.com/BindBrain/BindAI.git
 
-cd bindai
+cd BindAI
 ```
 
-Install the core package in editable mode:
+Install the framework:
 
 ```bash
-pip install -e packages/bindai-core
+pip install -e .
 ```
+
+Or install individual packages during development.
 
 ---
 
-## Quick Start
+# Quick Example
 
 ```python
-from bindai_core import AssistantAgent
+from bindai import Agent
 
-agent = AssistantAgent(
+agent = Agent(
     name="assistant",
-    instructions="You are a helpful AI assistant.",
-    provider=my_provider,
+    instructions="You are a helpful AI assistant."
 )
 
-result = agent.execute(context)
+response = agent.run(
+    "Explain what BindAI is."
+)
 
-print(result.output)
+print(response.output)
 ```
 
 ---
 
-## Example
+# Documentation
 
-```python
-from bindai_core import (
-    AssistantAgent,
-    ExecutionContext,
-)
+Complete documentation is available at:
 
-context = ExecutionContext()
+**https://docs.bindai.dev**
 
-agent = AssistantAgent(
-    name="assistant",
-    instructions="You are a helpful AI assistant.",
-    provider=my_provider,
-)
+Documentation includes:
 
-result = agent.execute(context)
-
-print(result.output)
-```
-
-Additional examples are available in the **examples/** directory.
+* Getting Started
+* Core Concepts
+* Agents
+* Tools
+* Memory
+* Knowledge & RAG
+* Workflows
+* Projects
+* Templates
+* API Reference
 
 ---
 
-## Architecture
+# Templates
+
+BindAI includes ready-to-use templates to accelerate development.
+
+Examples include:
+
+* Basic AI Chat
+* AI Assistant
+* Workflow Automation
+* Human Approval Workflow
+* Multi-Agent Systems
+* Developer Assistant
+
+Additional templates will continue to be added as the framework evolves.
+
+---
+
+# Architecture
 
 ```text
                 User
-                 │
-                 ▼
-          Assistant Agent
-                 │
-                 ▼
-       Execution Pipeline
-                 │
-                 ▼
-        Model Provider
-                 │
-                 ▼
-        OpenAI / Anthropic
-          Ollama / Others
+                  │
+                  ▼
+             AI Agent
+                  │
+                  ▼
+          Execution Engine
+                  │
+      ┌───────────┴───────────┐
+      │                       │
+      ▼                       ▼
+    Tools                 Workflows
+      │                       │
+      └───────────┬───────────┘
+                  ▼
+         Memory & Knowledge
+                  │
+                  ▼
+           Model Providers
+                  │
+      ┌───────────┴───────────┐
+      │                       │
+ OpenAI  Anthropic  Ollama  Azure
 ```
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
-bindai/
-│
+BindAI/
+
 ├── packages/
+│   ├── bindai/
+│   ├── bindai-agent/
 │   ├── bindai-core/
-│   ├── bindai-runtime/
+│   ├── bindai-memory/
+│   ├── bindai-model/
 │   ├── bindai-tool/
-│   └── providers/
-│
-├── examples/
-│
-├── playground/
-│
-├── scripts/
+│   ├── bindai-workflow/
+│   ├── bindai-project/
+│   └── ...
 │
 ├── docs/
+├── templates/
+├── examples/
+├── scripts/
 │
-├── architecture/
-│
+├── docs.json
 ├── README.md
-├── CHANGELOG.md
 └── pyproject.toml
 ```
 
 ---
 
-## Current Status
+# Roadmap
 
-Current release: **v0.1.0**
+Upcoming milestones include:
 
-Implemented
-
-- ✅ Agent framework
-- ✅ Assistant agents
-- ✅ Provider architecture
-- ✅ Provider registry
-- ✅ Provider factory
-- ✅ Tool framework
-- ✅ Automatic tool registration
-- ✅ Tool metadata
-- ✅ Tool schema generation
-- ✅ Conversation management
-- ✅ Prompt builder
-- ✅ Prompt templates
-- ✅ Execution pipeline
-- ✅ Middleware
-- ✅ Runtime
-- ✅ Streaming model responses
-- ✅ Playground integration tests
+* Additional LLM providers
+* Expanded workflow engine
+* Enhanced memory systems
+* Advanced RAG capabilities
+* Visual workflow editor
+* Enterprise integrations
+* Monitoring & Observability
+* Template marketplace
+* Plugin ecosystem
 
 ---
 
-## Design Goals
-
-BindAI is built around several core principles.
-
-- Modular architecture
-- Provider agnostic
-- Extensible components
-- Strong typing
-- Easy to understand
-- Production ready
-- Testable
-- Lightweight
-- Framework-first design
-
----
-
-## Roadmap
-
-### v0.2
-
-- Native OpenAI provider
-- Anthropic provider
-- Ollama provider
-- Improved tool execution
-- Better streaming support
-- Tool choice configuration
-
-### v0.3
-
-- Multi-agent orchestration
-- Planner agents
-- Memory improvements
-- Workflow engine
-- Workflow visualizer
-
-### v0.4
-
-- MCP support
-- Vector memory
-- Retrieval-Augmented Generation (RAG)
-- Plugin ecosystem
-- Knowledge providers
-
-### Future
-
-- Web UI
-- Monitoring
-- Distributed execution
-- Cloud deployment
-- Visual workflow editor
-- Agent marketplace
-
----
-
-## Inspiration
-
-BindAI is inspired by ideas from several modern frameworks.
-
-- ASP.NET Core
-- Semantic Kernel
-- LangGraph
-- AutoGen
-- FastAPI
-
-The objective is not to replace these projects, but to provide a clean, Python-native framework with a modular architecture and a consistent developer experience.
-
----
-
-## Testing
-
-The framework currently includes an extensive playground used for validating components during development.
-
-Current status:
-
-- ✅ 30 / 30 playground tests passing
-
-Run all playground tests:
-
-```bash
-python scripts/run_playground_tests.py
-```
-
----
-
-## Contributing
+# Contributing
 
 Contributions are welcome.
 
-As the project grows, contribution guidelines, coding standards, and development documentation will be added.
-
-For now:
+If you'd like to improve BindAI:
 
 1. Fork the repository.
 2. Create a feature branch.
-3. Add or update playground tests.
-4. Submit a Pull Request.
+3. Implement your changes.
+4. Add tests where appropriate.
+5. Submit a Pull Request.
+
+Bug reports, feature requests, and documentation improvements are always appreciated.
 
 ---
 
-## License
+# Community
 
-This project is licensed under the **MIT License**.
+* Documentation: https://docs.bindai.dev
+* GitHub Issues: https://github.com/BindBrain/BindAI/issues
+
+Additional community channels will be announced in future releases.
 
 ---
 
-## Version
+# License
 
-Current version:
+BindAI is released under the **MIT License**.
 
-**v0.1.0**
+---
 
-This release establishes the core architecture of BindAI and provides the foundation for future providers, workflows, memory systems, and agent orchestration.
+# Vision
+
+BindAI is designed to become a complete ecosystem for building modern AI software.
+
+The long-term vision is to provide:
+
+* A powerful open-source AI framework
+* Production-ready enterprise components
+* Installable application templates
+* Visual workflow designer
+* Complete AI development platform
+
+Build once.
+
+Scale everywhere.
 
 ---
 
 <div align="center">
 
-Built with ❤️ using Python.
+**Built with ❤️ by BindBrain**
+
+https://bindai.dev
 
 </div>
