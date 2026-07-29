@@ -1,23 +1,6 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 
-from .models import (
-    ProviderCapabilities,
-    ProviderConfiguration,
-)
-
-
-class ModelProvider(ABC):
-    """
-    Base class for all model providers.
-    """
-
-    def __init__(
-        self,
-        configuration: ProviderConfiguration,
-    ):
-        self.configuration = configuration
+class BaseProvider(ABC):
 
     @property
     @abstractmethod
@@ -26,19 +9,13 @@ class ModelProvider(ABC):
 
     @property
     @abstractmethod
-    def capabilities(self) -> ProviderCapabilities:
+    def capabilities(self):
         ...
 
     @abstractmethod
-    def generate(
-        self,
-        request,
-    ):
+    async def generate(self, request):
         ...
 
     @abstractmethod
-    def stream(
-        self,
-        request,
-    ):
+    async def stream(self, request):
         ...

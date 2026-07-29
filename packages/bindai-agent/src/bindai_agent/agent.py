@@ -84,6 +84,20 @@ class Agent(Executable):
 
         self.prompt.system = value
 
+    def run(
+        self,
+        message: str,
+        output: type | None = None,
+    ):
+        """
+        Primary execution entry point.
+        """
+
+        return self.chat(
+            message,
+            output,
+        )
+
     def chat(
         self,
         message: str,

@@ -1,0 +1,14 @@
+{
+	"name": "basic-chat",
+	"title": "Basic Chat",
+	"description": "Minimal conversational AI assistant.",
+	"version": "1.0.0",
+	"author": "BindBrain",
+	"category": "chat",
+	"status": "stable",
+	"tags": [
+	  "chat",
+	  "assistant",
+	  "beginner"
+	]
+  }

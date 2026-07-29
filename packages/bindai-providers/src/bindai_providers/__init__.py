@@ -1,17 +1,31 @@
-from .base import ModelProvider
-from .builder import ProviderBuilder
-from .registry import ProviderRegistry
+from .base import BaseProvider
 from .configuration import ProviderConfiguration
+from .registry import ProviderRegistry
+from .builder import ProviderBuilder
+from .bootstrap import bootstrap
+
+bootstrap()
+import bindai_providers
 from .models import (
-    ProviderCapabilities,
-    ProviderConfiguration,
+    Message,
+    ToolCall,
+    ToolDefinition,
+    ToolChoice,
+    Usage,
+    ChatCompletionRequest,
+    ChatCompletionResponse,
 )
 
 __all__ = [
-    "ModelProvider",
-    "ProviderBuilder",
-    "ProviderRegistry",
-    "ProviderCapabilities",
+    "BaseProvider",
     "ProviderConfiguration",
-	"ProviderConfiguration",
+    "ProviderRegistry",
+    "ProviderBuilder",
+    "Message",
+    "ToolCall",
+    "ToolDefinition",
+    "ToolChoice",
+    "Usage",
+    "ChatCompletionRequest",
+    "ChatCompletionResponse",
 ]

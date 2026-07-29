@@ -1,0 +1,19 @@
+[project]
+name = "bindai-cli"
+version = "0.1.0"
+
+description = "BindAI Command Line Interface"
+
+requires-python = ">=3.11"
+
+dependencies = [
+    "typer>=0.16",
+    "rich>=14.0",
+]
+
+[project.scripts]
+bindai = "bindai_cli.__main__:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
