@@ -46,7 +46,7 @@ Current features included in **v0.1.0**
 Clone the repository:
 
 ```bash
-git clone https://github.com/g1mco/bindai.git
+git clone https://github.com/BindBrain/BindAI.git
 
 cd bindai
 ```
