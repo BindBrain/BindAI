@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class TaskState(str, Enum):
+class TaskState(StrEnum):
     PENDING = "pending"
 
     RUNNING = "running"

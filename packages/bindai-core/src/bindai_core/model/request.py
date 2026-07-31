@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from bindai_core.schema import ResponseSchema
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bindai_core.tool.definition import ToolDefinition

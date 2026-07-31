@@ -22,20 +22,46 @@ def run():
 
     config = project / "bindai.toml"
 
-    if not config.exists():
-        print("[red]bindai.toml not found.[/red]")
-        raise typer.Exit(1)
-
     main = project / "main.py"
 
-    if not main.exists():
-        print("[red]main.py not found.[/red]")
+    workflow = project / "workflow.py"
+
+    # Full BindAI project
+    if config.exists():
+        if not main.exists():
+            print("[red]main.py not found.[/red]")
+
+            raise typer.Exit(1)
+
+        target = main
+
+    # Template / example / demo
+    elif main.exists():
+        target = main
+
+    # Future workflow entrypoint
+    elif workflow.exists():
+        target = workflow
+
+    else:
+        print("[red]Nothing to run.[/red]")
+
+        print()
+
+        print("Expected one of:")
+
+        print("  • bindai.toml")
+
+        print("  • main.py")
+
+        print("  • workflow.py")
+
         raise typer.Exit(1)
 
     subprocess.run(
         [
             sys.executable,
-            str(main),
+            str(target),
         ],
         check=True,
     )

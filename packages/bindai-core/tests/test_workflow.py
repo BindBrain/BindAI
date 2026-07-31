@@ -1,7 +1,7 @@
 from bindai_core.workflow import (
     Workflow,
-    WorkflowNode,
     WorkflowExecutor,
+    WorkflowNode,
 )
 
 

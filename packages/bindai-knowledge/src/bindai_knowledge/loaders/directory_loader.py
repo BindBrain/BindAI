@@ -30,24 +30,17 @@ class DirectoryLoader(DocumentLoader):
         pattern = "**/*" if self.recursive else "*"
 
         for file in self.path.glob(pattern):
-
             if not file.is_file():
                 continue
 
             suffix = file.suffix.lower()
 
             if suffix == ".txt":
-
-                documents.extend(
-                    TextLoader(str(file)).load()
-                )
+                documents.extend(TextLoader(str(file)).load())
 
             elif suffix == ".md":
-
                 from .markdown_loader import MarkdownLoader
 
-                documents.extend(
-                    MarkdownLoader(str(file)).load()
-                )
+                documents.extend(MarkdownLoader(str(file)).load())
 
         return documents

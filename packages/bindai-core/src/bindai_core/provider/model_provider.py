@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from bindai_core.provider.configuration import ProviderConfiguration
     from bindai_core.model.request import ModelRequest
     from bindai_core.model.response import ModelResponse
+    from bindai_core.provider.configuration import ProviderConfiguration
 
 
 class ModelProvider(ABC):
@@ -22,24 +22,20 @@ class ModelProvider(ABC):
 
     @property
     @abstractmethod
-    def name(self) -> str:
-        ...
+    def name(self) -> str: ...
 
     @abstractmethod
     def generate(
         self,
         request: ModelRequest,
-    ) -> ModelResponse:
-        ...
+    ) -> ModelResponse: ...
 
     @abstractmethod
     def stream(
         self,
         request: ModelRequest,
-    ):
-        ...
+    ): ...
 
     @property
     @abstractmethod
-    def capabilities(self):
-        ...
+    def capabilities(self): ...

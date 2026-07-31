@@ -19,6 +19,15 @@ def copy_scaffold(
         destination.name,
     )
 
+    example = destination / ".env.example"
+    env = destination / ".env"
+
+    if example.exists() and not env.exists():
+        shutil.copy2(
+            example,
+            env,
+        )
+
 
 def replace_placeholders(
     root: Path,
@@ -26,7 +35,6 @@ def replace_placeholders(
 ):
 
     for file in root.rglob("*"):
-
         if not file.is_file():
             continue
 

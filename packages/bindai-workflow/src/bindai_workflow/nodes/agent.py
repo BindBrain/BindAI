@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .runnable import RunnableNode
 from bindai_agent import AgentRegistry
+
+from .runnable import RunnableNode
 
 if TYPE_CHECKING:
     from ..context import WorkflowContext

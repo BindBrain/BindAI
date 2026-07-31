@@ -6,7 +6,6 @@ from ..result import RetrievalResult
 
 
 class VectorRetrieverProvider(RetrieverProvider):
-
     def retrieve(
         self,
         query: RetrievalQuery,

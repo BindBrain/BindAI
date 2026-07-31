@@ -1,6 +1,4 @@
-from bindai import Tool
-from bindai import ToolExecutor
-from bindai import ToolRegistry
+from bindai import Tool, ToolExecutor, ToolRegistry
 
 
 def test_execute():

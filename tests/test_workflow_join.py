@@ -8,7 +8,6 @@ from bindai_workflow.workflow import Workflow
 
 
 class EndNode(WorkflowNode):
-
     def execute(
         self,
         context,

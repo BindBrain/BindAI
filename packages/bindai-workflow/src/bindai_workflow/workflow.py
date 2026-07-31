@@ -8,9 +8,9 @@ from bindai_core.executable import Executable
 
 from .executor import WorkflowExecutor
 from .instance import WorkflowInstance
+from .memory_store import MemoryWorkflowStore
 from .node import WorkflowNode
 from .result import WorkflowResult
-from .memory_store import MemoryWorkflowStore
 
 
 class Workflow(Executable):
@@ -100,7 +100,7 @@ class Workflow(Executable):
         self,
         context: ExecutionContext | None = None,
     ) -> WorkflowResult:
-        
+
         if context is None:
             context = ExecutionContext()
 

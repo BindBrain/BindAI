@@ -11,7 +11,7 @@ class PipelineBuilder:
     def add(
         self,
         step: ExecutionStep,
-    ) -> "PipelineBuilder":
+    ) -> PipelineBuilder:
         self._steps.append(step)
         return self
 

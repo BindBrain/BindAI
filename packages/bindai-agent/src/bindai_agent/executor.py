@@ -306,7 +306,6 @@ class AgentExecutor:
             tool_context = ExecutionContext()
 
             for key, value in call.arguments.items():
-
                 tool_context.variables.set(
                     key,
                     value,

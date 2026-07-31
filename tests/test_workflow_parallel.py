@@ -7,7 +7,6 @@ from bindai_workflow.nodes.parallel import ParallelNode
 
 
 class EndNode(WorkflowNode):
-
     def execute(
         self,
         context,

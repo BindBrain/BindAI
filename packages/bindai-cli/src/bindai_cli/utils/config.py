@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
-import tomllib
+
+from bindai_config import ProjectRuntime
 
 
-def load_config() -> dict:
-    path = Path("bindai.toml")
+def load_config():
 
-    if not path.exists():
-        return {}
+    runtime = ProjectRuntime(
+        Path.cwd(),
+    )
 
-    with path.open("rb") as f:
-        return tomllib.load(f)
+    return runtime.config

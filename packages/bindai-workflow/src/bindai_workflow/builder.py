@@ -1,24 +1,23 @@
 from __future__ import annotations
 
-from .workflow import Workflow
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
 from .node import WorkflowNode
-from .validation import WorkflowValidator
-
 from .nodes.agent import AgentNode
-from .nodes.start import StartNode
-from .nodes.end import EndNode
-
-from typing import Callable, TYPE_CHECKING
-
 from .nodes.condition import ConditionNode
-from .nodes.parallel import ParallelNode
+from .nodes.end import EndNode
 from .nodes.loop import LoopNode
+from .nodes.parallel import ParallelNode
+from .nodes.start import StartNode
+from .validation import WorkflowValidator
+from .workflow import Workflow
 
 if TYPE_CHECKING:
     from bindai_agent import Agent
 
-class WorkflowBuilder:
 
+class WorkflowBuilder:
     def __init__(
         self,
         name: str | None = None,
@@ -139,7 +138,6 @@ class WorkflowBuilder:
             node,
         )
 
-
     def parallel(
         self,
     ):
@@ -151,7 +149,6 @@ class WorkflowBuilder:
         return self.then(
             node,
         )
-
 
     def loop(
         self,

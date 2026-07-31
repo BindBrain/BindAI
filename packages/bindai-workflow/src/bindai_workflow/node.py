@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from bindai_core.context import ExecutionContext
+
 
 class WorkflowNode(ABC):
     """

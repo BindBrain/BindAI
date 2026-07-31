@@ -5,7 +5,10 @@ description = "BindAI Core"
 readme = "README.md"
 requires-python = ">=3.12"
 
-dependencies = []
+dependencies = [
+    "bindai-host",
+    "bindai-tool",
+]
 
 [build-system]
 requires = ["hatchling"]

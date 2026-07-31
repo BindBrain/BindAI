@@ -4,6 +4,7 @@ app = typer.Typer(
     invoke_without_command=True,
 )
 
+
 @app.callback()
 def version():
     """

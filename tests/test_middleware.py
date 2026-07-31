@@ -1,5 +1,4 @@
 from bindai_agent import AssistantAgent
-
 from bindai_core.middleware import Middleware
 from bindai_core.model import (
     ModelResponse,

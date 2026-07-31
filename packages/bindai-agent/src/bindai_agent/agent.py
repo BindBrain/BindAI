@@ -1,24 +1,21 @@
 from __future__ import annotations
 
-from bindai_core.tool import ToolRegistry
 from bindai_core.context import ExecutionContext
+from bindai_core.events import EventBus, ToolExecutedEvent
 from bindai_core.executable import Executable
-
+from bindai_core.tool import ToolRegistry
+from bindai_memory import (
+    InMemoryProvider,
+    Memory,
+)
 from bindai_prompts import Prompt
 
-from bindai_memory import (
-    Memory,
-    InMemoryProvider,
-)
-
-from .conversation import Conversation
-from .execution.engine import AgentExecutionEngine
-from .execution.data import ExecutionData
 from .configuration import AgentConfiguration
+from .conversation import Conversation
+from .execution.data import ExecutionData
+from .execution.engine import AgentExecutionEngine
 from .result import AgentResult
-from bindai_core.events import EventBus
-from bindai_core.events import ToolExecutedEvent
-from bindai_core.context import ExecutionContext
+
 
 class Agent(Executable):
     """
@@ -150,7 +147,7 @@ class Agent(Executable):
     def tool(
         self,
         tool,
-    ) -> "Agent":
+    ) -> Agent:
 
         self.tools.register(
             tool,
@@ -190,7 +187,7 @@ class Agent(Executable):
     def use_middleware(
         self,
         middleware,
-    ) -> "Agent":
+    ) -> Agent:
 
         self.middleware.append(
             middleware,
@@ -201,7 +198,7 @@ class Agent(Executable):
     def use_memory(
         self,
         memory,
-    ) -> "Agent":
+    ) -> Agent:
 
         self.memory = memory
 
@@ -210,7 +207,7 @@ class Agent(Executable):
     def use_retriever(
         self,
         retriever,
-    ) -> "Agent":
+    ) -> Agent:
 
         self.retriever = retriever
 
@@ -219,7 +216,7 @@ class Agent(Executable):
     def use_knowledge(
         self,
         knowledge,
-    ) -> "Agent":
+    ) -> Agent:
 
         self.knowledge = knowledge
 
@@ -228,7 +225,7 @@ class Agent(Executable):
     def hook(
         self,
         hook,
-    ) -> "Agent":
+    ) -> Agent:
 
         self.hooks.append(
             hook,
@@ -247,7 +244,6 @@ class Agent(Executable):
             context,
         )
 
-
     def after_run(
         self,
         context: ExecutionContext,
@@ -260,7 +256,6 @@ class Agent(Executable):
             context,
             result,
         )
-
 
     def on_error(
         self,
@@ -279,7 +274,7 @@ class Agent(Executable):
         self,
         event: str,
         callback,
-    ) -> "Agent":
+    ) -> Agent:
 
         self.callbacks.setdefault(
             event,
@@ -289,7 +284,6 @@ class Agent(Executable):
         )
 
         return self
-
 
     def emit(
         self,

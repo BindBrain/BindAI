@@ -1,9 +1,7 @@
 import os
 
 import pytest
-
 from bindai_model import Model
-
 
 pytestmark = pytest.mark.skipif(
     "OPENAI_API_KEY" not in os.environ,

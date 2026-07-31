@@ -52,7 +52,6 @@ class ToolExecutionStep(
         #
 
         for tool_call in response.tool_calls:
-
             result = agent.execute_tool(
                 tool_call.name,
                 **tool_call.arguments,

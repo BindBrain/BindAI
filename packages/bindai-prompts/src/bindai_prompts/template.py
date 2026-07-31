@@ -4,7 +4,6 @@ from .prompt import Prompt
 
 
 class PromptTemplate:
-
     def __init__(
         self,
         prompt: Prompt,

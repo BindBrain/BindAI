@@ -7,7 +7,6 @@ from .models import Template
 
 
 class TemplateRegistry:
-
     def __init__(self):
 
         current = Path(__file__).resolve()
@@ -22,17 +21,12 @@ class TemplateRegistry:
         templates = []
 
         for folder in sorted(self.root.iterdir()):
-
             metadata = folder / "template.json"
 
             if not metadata.exists():
                 continue
 
-            data = json.loads(
-                metadata.read_text(
-                    encoding="utf-8"
-                )
-            )
+            data = json.loads(metadata.read_text(encoding="utf-8"))
 
             templates.append(
                 Template(
@@ -51,7 +45,6 @@ class TemplateRegistry:
     ) -> Template | None:
 
         for template in self.list():
-
             if template.name == name:
                 return template
 

@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from bindai_core.context import Variables
 
-from typing import TYPE_CHECKING
-from collections.abc import Callable
 if TYPE_CHECKING:
     from .instance import WorkflowInstance
-    
+
+
 class WorkflowContext:
     """
     Shared execution context

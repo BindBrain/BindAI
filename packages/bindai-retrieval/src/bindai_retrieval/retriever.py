@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from .provider import RetrieverProvider
-from .registry import RetrievalRegistry
 from .query import RetrievalQuery
+from .registry import RetrievalRegistry
 from .result import RetrievalResult
 
 

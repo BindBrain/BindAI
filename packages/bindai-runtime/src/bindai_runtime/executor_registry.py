@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .executor import Executor
 
+
 class ExecutorRegistry:
     def __init__(self):
         self._executors: dict[type, type[Executor]] = {}
@@ -23,6 +24,4 @@ class ExecutorRegistry:
             if isinstance(executable, executable_type):
                 return executor
 
-        raise RuntimeError(
-            f"No executor registered for {type(executable).__name__}."
-        )
+        raise RuntimeError(f"No executor registered for {type(executable).__name__}.")

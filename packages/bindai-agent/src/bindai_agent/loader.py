@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import yaml
 
 from .builder import AgentBuilder
 
 
 class AgentLoader:
-
     @staticmethod
     def from_yaml(path: str | Path):
 
-        with open(path, "r", encoding="utf8") as f:
+        with open(path, encoding="utf8") as f:
             config = yaml.safe_load(f)
 
         builder = AgentBuilder()

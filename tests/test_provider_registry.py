@@ -4,7 +4,6 @@ from bindai_providers import ProviderRegistry
 def test_provider_registry():
 
     class DummyProvider:
-
         def __init__(
             self,
             value,

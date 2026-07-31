@@ -1,9 +1,9 @@
 from bindai_tool import (
+    FunctionTool,
     Tool,
     ToolDefinition,
     ToolRegistry,
     ToolResult,
-    FunctionTool,
     tool,
 )
 

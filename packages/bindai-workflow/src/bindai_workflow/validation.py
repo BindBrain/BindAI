@@ -29,8 +29,6 @@ class WorkflowValidator:
         for node in workflow.nodes.values():
             for next_node in node.next_nodes:
                 if next_node not in workflow.nodes:
-                    errors.append(
-                        f"Node '{node.id}' references missing node '{next_node}'."
-                    )
+                    errors.append(f"Node '{node.id}' references missing node '{next_node}'.")
 
         return errors

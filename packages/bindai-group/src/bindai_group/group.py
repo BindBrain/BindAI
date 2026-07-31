@@ -1,17 +1,18 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from bindai_core.context import ExecutionContext
 from bindai_core.executable import Executable
-from .result import GroupResult
-
-from typing import TYPE_CHECKING
 
 from .executor import GroupExecutor
 from .processes.sequential import SequentialProcess
+from .result import GroupResult
 from .state import GroupState
 
 if TYPE_CHECKING:
     from bindai_agent import Agent
+
     from .task import Task
 
 
@@ -46,7 +47,7 @@ class Group(Executable[GroupResult]):
     def agent(
         self,
         agent: Agent,
-    ) -> "Group":
+    ) -> Group:
 
         self.agents.append(
             agent,
@@ -57,7 +58,7 @@ class Group(Executable[GroupResult]):
     def add_agent(
         self,
         agent: Agent,
-    ) -> "Group":
+    ) -> Group:
 
         return self.agent(
             agent,
@@ -70,7 +71,7 @@ class Group(Executable[GroupResult]):
     def task(
         self,
         task: Task,
-    ) -> "Group":
+    ) -> Group:
 
         self.tasks.append(
             task,
@@ -81,7 +82,7 @@ class Group(Executable[GroupResult]):
     def add_task(
         self,
         task: Task,
-    ) -> "Group":
+    ) -> Group:
 
         return self.task(
             task,
@@ -94,7 +95,7 @@ class Group(Executable[GroupResult]):
     def use_process(
         self,
         process,
-    ) -> "Group":
+    ) -> Group:
 
         self.process = process
 

@@ -1,5 +1,4 @@
 class PromptRegistry:
-
     _prompts = {}
 
     @classmethod

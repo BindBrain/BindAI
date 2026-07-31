@@ -1,13 +1,12 @@
 from bindai_agent import AssistantAgent
-from bindai_knowledge import (
-    Knowledge,
-    KnowledgeDocument,
-    InMemoryKnowledgeProvider,
-)
-
 from bindai_core.model import (
     ModelResponse,
     TokenUsage,
+)
+from bindai_knowledge import (
+    InMemoryKnowledgeProvider,
+    Knowledge,
+    KnowledgeDocument,
 )
 
 
@@ -59,9 +58,7 @@ def test_knowledge_is_injected():
 
     agent.chat("What is BindAI?")
 
-    conversation = "\n".join(
-        message.content for message in provider.last_request.messages
-    )
+    conversation = "\n".join(message.content for message in provider.last_request.messages)
 
     assert "Relevant knowledge:" in conversation
 

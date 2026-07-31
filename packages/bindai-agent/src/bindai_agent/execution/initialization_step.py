@@ -27,7 +27,6 @@ class InitializationStep(
         )
 
         if len(agent.conversation) == 0:
-
             if agent.instructions:
                 agent.conversation.add_system(
                     agent.instructions,

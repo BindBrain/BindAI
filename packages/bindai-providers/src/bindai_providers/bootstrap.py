@@ -1,19 +1,22 @@
+from __future__ import annotations
+
+
 def bootstrap():
 
-    try:
-        from bindai_provider_openai import register
-        register()
-    except ImportError:
-        pass
+    providers = [
+        "bindai_provider_openai",
+        "bindai_provider_anthropic",
+        "bindai_provider_google",
+    ]
 
-    try:
-        from bindai_provider_anthropic import register
-        register()
-    except ImportError:
-        pass
+    for module_name in providers:
+        try:
+            module = __import__(
+                module_name,
+                fromlist=["register"],
+            )
 
-    try:
-        from bindai_provider_google import register
-        register()
-    except ImportError:
-        pass
+            module.register()
+
+        except ImportError:
+            pass

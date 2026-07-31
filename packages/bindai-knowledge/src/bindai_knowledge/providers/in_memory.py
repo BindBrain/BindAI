@@ -85,9 +85,7 @@ class InMemoryKnowledgeProvider(KnowledgeProvider):
             if filters:
                 metadata = document.metadata or {}
 
-                if not all(
-                    metadata.get(key) == value for key, value in filters.items()
-                ):
+                if not all(metadata.get(key) == value for key, value in filters.items()):
                     continue
 
             title = document.title.lower()

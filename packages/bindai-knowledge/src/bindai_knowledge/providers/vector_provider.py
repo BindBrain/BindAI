@@ -5,7 +5,6 @@ from ..embedding import EmbeddingProvider
 from ..result import KnowledgeResult
 from ..similarity import cosine_similarity
 from ..vector_store import VectorRecord
-
 from .in_memory import InMemoryKnowledgeProvider
 
 
@@ -95,9 +94,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             if filters:
                 metadata = record.document.metadata or {}
 
-                if not all(
-                    metadata.get(key) == value for key, value in filters.items()
-                ):
+                if not all(metadata.get(key) == value for key, value in filters.items()):
                     continue
 
             score = cosine_similarity(

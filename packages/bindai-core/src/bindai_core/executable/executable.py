@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Generic
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 from bindai_core.context import ExecutionContext
 from bindai_core.runnable import Runnable
@@ -22,5 +21,4 @@ class Executable(
     def execute(
         self,
         context: ExecutionContext,
-    ) -> TResult:
-        ...
+    ) -> TResult: ...

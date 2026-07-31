@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
-
-from typing import TYPE_CHECKING
-from typing import Any
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from bindai_agent.agent import Agent
     from bindai_core.context import ExecutionContext
+
+    from bindai_agent.agent import Agent
 
 
 class ExecutionStep(ABC):

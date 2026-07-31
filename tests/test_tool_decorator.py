@@ -1,5 +1,4 @@
-from bindai import Tool
-from bindai import tool
+from bindai import Tool, tool
 
 
 def test_tool_decorator():

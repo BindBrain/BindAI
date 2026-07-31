@@ -9,14 +9,14 @@ if TYPE_CHECKING:
 class ProviderFactory:
     _providers: dict[
         str,
-        type["ModelProvider"],
+        type[ModelProvider],
     ] = {}
 
     @classmethod
     def register(
         cls,
         name: str,
-        provider: type["ModelProvider"],
+        provider: type[ModelProvider],
     ):
 
         cls._providers[name.lower()] = provider

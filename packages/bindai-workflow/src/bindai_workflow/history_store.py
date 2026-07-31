@@ -28,8 +28,4 @@ class MemoryHistoryStore:
         workflow_id: str,
     ) -> list[WorkflowHistory]:
 
-        return [
-            item
-            for item in self._history
-            if item.workflow_id == workflow_id
-        ]
+        return [item for item in self._history if item.workflow_id == workflow_id]

@@ -3,7 +3,6 @@ from bindai_memory import (
     MemoryRecord,
     MemoryRegistry,
 )
-
 from bindai_memory.providers import (
     InMemoryProvider,
     SQLiteMemoryProvider,

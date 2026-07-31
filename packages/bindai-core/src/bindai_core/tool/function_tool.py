@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
-from .definition import ToolDefinition
-
-from .result import ToolResult
 from .base import Tool
-
+from .definition import ToolDefinition
 from .inspector import ToolInspector
-
-from typing import TYPE_CHECKING
+from .result import ToolResult
 
 if TYPE_CHECKING:
     from bindai_core.context import ExecutionContext
+
 
 class FunctionTool(Tool):
     """
@@ -63,7 +61,6 @@ class FunctionTool(Tool):
     ) -> ToolResult:
 
         try:
-
             kwargs = context.variables.as_dict()
 
             kwargs.update(
@@ -80,7 +77,6 @@ class FunctionTool(Tool):
             )
 
         except Exception as ex:
-
             return ToolResult(
                 success=False,
                 output=None,

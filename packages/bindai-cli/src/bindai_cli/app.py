@@ -1,10 +1,12 @@
 import typer
 
-from bindai_cli.commands.version import app as version_app
 from bindai_cli.commands.doctor import app as doctor_app
+from bindai_cli.commands.inspect import app as inspect_app
 from bindai_cli.commands.new import app as new_app
 from bindai_cli.commands.run import app as run_app
 from bindai_cli.commands.template import app as template_app
+from bindai_cli.commands.version import app as version_app
+from bindai_cli.commands.workflow import app as workflow_app
 
 app = typer.Typer(
     help="BindAI Command Line Interface",
@@ -34,4 +36,14 @@ app.add_typer(
 app.add_typer(
     template_app,
     name="template",
+)
+
+app.add_typer(
+    workflow_app,
+    name="workflow",
+)
+
+app.add_typer(
+    inspect_app,
+    name="inspect",
 )

@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class RuntimeState(str, Enum):
+class RuntimeState(StrEnum):
     CREATED = "created"
 
     RUNNING = "running"

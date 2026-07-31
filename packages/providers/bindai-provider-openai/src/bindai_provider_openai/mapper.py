@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import json
 
-from openai.types.chat import ChatCompletionMessage
-
 from bindai_core import (
     Message,
     MessageRole,
     ToolCall,
     ToolDefinition,
 )
+from openai.types.chat import ChatCompletionMessage
 
 
 class OpenAIMapper:
@@ -84,9 +83,7 @@ class OpenAIMapper:
                             for key, value in tool.parameters.items()
                         },
                         "required": [
-                            key
-                            for key, value in tool.parameters.items()
-                            if value.get("required")
+                            key for key, value in tool.parameters.items() if value.get("required")
                         ],
                     },
                 },

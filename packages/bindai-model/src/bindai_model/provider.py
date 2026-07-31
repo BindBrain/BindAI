@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 
 class ModelProvider(ABC):
-
     @abstractmethod
     def generate(
         self,
         prompt: str,
         **kwargs,
-    ) -> str:
-        ...
+    ) -> str: ...

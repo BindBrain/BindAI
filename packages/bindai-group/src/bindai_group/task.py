@@ -4,8 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from bindai_agent import Agent
-    from bindai_agent import AgentResult
+    from bindai_agent import Agent, AgentResult
 
 
 @dataclass(slots=True)
@@ -20,7 +19,7 @@ class Task:
 
     expected_output: str | None = None
 
-    context: list["Task"] = field(
+    context: list[Task] = field(
         default_factory=list,
     )
 
@@ -28,8 +27,8 @@ class Task:
 
     def context_from(
         self,
-        *tasks: "Task",
-    ) -> "Task":
+        *tasks: Task,
+    ) -> Task:
 
         self.context.extend(
             tasks,

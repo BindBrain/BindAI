@@ -1,9 +1,9 @@
 from .base import DocumentLoader
-from .text_loader import TextLoader
 from .directory_loader import DirectoryLoader
+from .html_loader import HTMLLoader
 from .markdown_loader import MarkdownLoader
 from .pdf_loader import PDFLoader
-from .html_loader import HTMLLoader
+from .text_loader import TextLoader
 
 __all__ = [
     "DocumentLoader",

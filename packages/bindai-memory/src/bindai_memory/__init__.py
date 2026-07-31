@@ -1,19 +1,16 @@
 from .memory import Memory
 from .provider import MemoryProvider
-from .registry import MemoryRegistry
-
-from .record import (
-    MemoryRecord,
-    MemoryType,
-)
-
-from .result import MemoryResult
-
 from .providers import (
     InMemoryProvider,
     SQLiteMemoryProvider,
     VectorMemoryProvider,
 )
+from .record import (
+    MemoryRecord,
+    MemoryType,
+)
+from .registry import MemoryRegistry
+from .result import MemoryResult
 
 #
 # Register aliases

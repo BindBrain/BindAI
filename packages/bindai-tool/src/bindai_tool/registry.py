@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from bindai_core.context import ExecutionContext
 
-from .exceptions import ToolAlreadyRegistered
-from .exceptions import ToolNotFound
-
-from .tool import Tool
 from bindai_tool.function_tool import FunctionTool
+
+from .exceptions import ToolAlreadyRegistered, ToolNotFound
+from .tool import Tool
 
 try:
     from bindai.tool import Tool as PublicTool
 except Exception:
     PublicTool = None
+
 
 class ToolRegistry:
     def __init__(self):
@@ -28,18 +28,13 @@ class ToolRegistry:
         #
 
         if isinstance(tool, Tool):
-
             pass
 
         #
         # Public API Tool (@tool decorator)
         #
 
-        elif (
-            PublicTool is not None
-            and isinstance(tool, PublicTool)
-        ):
-
+        elif PublicTool is not None and isinstance(tool, PublicTool):
             tool = FunctionTool(
                 function=tool.function,
                 name=tool.name,
@@ -50,14 +45,10 @@ class ToolRegistry:
         #
 
         elif callable(tool):
-
             tool = FunctionTool(tool)
 
         else:
-
-            raise TypeError(
-                f"Unsupported tool type: {type(tool).__name__}"
-            )
+            raise TypeError(f"Unsupported tool type: {type(tool).__name__}")
 
         if tool.name in self._tools:
             raise ToolAlreadyRegistered(

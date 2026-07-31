@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class WorkflowState(str, Enum):
+class WorkflowState(StrEnum):
     """
     High-level workflow execution state.
     """

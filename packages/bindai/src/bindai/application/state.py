@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ApplicationState(str, Enum):
+class ApplicationState(StrEnum):
     CREATED = "created"
 
     INITIALIZED = "initialized"

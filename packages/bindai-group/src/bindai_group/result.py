@@ -15,6 +15,6 @@ class GroupResult:
 
     error: str | None = None
 
-    tasks: list["Task"] = field(
+    tasks: list[Task] = field(
         default_factory=list,
     )

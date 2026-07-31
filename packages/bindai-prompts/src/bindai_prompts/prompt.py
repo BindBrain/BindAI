@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 @dataclass(slots=True)
 class Prompt:
-
     system: str | None = None
 
     user: str = ""

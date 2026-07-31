@@ -1,6 +1,5 @@
 from bindai_workflow import Workflow
 from bindai_workflow.node import WorkflowNode
-from bindai_workflow.context import WorkflowContext
 
 
 class DummyNode(WorkflowNode):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
 from collections.abc import Iterator
+from typing import Any
 
 
 class Variables:
@@ -41,7 +41,7 @@ class Variables:
 
     def update(
         self,
-        values: dict[str, Any] | "Variables",
+        values: dict[str, Any] | Variables,
     ) -> None:
 
         if isinstance(
@@ -86,7 +86,7 @@ class Variables:
 
     def copy(
         self,
-    ) -> "Variables":
+    ) -> Variables:
 
         variables = Variables()
 

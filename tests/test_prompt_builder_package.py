@@ -1,10 +1,9 @@
-from bindai_prompt_builder import PromptBuilder
 from bindai_agent.execution.state import ExecutionState
 from bindai_core.context import ExecutionContext
+from bindai_prompt_builder import PromptBuilder
 
 
 class DummyConversation:
-
     def to_request(self):
 
         from bindai_core.model import ModelRequest
@@ -13,13 +12,11 @@ class DummyConversation:
 
 
 class DummyTools:
-
     def definitions(self):
         return []
 
 
 class DummyAgent:
-
     def __init__(self):
 
         self.conversation = DummyConversation()

@@ -4,7 +4,6 @@ from bindai_retrieval import Retriever
 
 
 class KnowledgeRetriever:
-
     def __init__(
         self,
         retriever: Retriever,

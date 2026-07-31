@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from bindai_agent import Agent
-
-from bindai_core.executable import Executable
 from bindai_core.context import ExecutionContext
+from bindai_core.executable import Executable
 
 from .result import TaskResult
 from .state import TaskState
@@ -40,16 +39,11 @@ class Task(Executable):
         self.state = TaskState.RUNNING
 
         try:
-
             response = self.agent.chat(
                 self.description,
             )
 
-            output = (
-                response.output
-                if hasattr(response, "output")
-                else response
-            )
+            output = response.output if hasattr(response, "output") else response
 
             self.result = TaskResult(
                 success=True,
@@ -61,7 +55,6 @@ class Task(Executable):
             return self.result
 
         except Exception as ex:
-
             self.result = TaskResult(
                 success=False,
                 error=str(ex),

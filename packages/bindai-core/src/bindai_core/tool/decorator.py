@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, overload
+from collections.abc import Callable
+from typing import Any, overload
 
 from .function_tool import FunctionTool
 

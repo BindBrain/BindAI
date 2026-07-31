@@ -7,7 +7,6 @@ from bindai_model.result import ModelResult
 
 
 class OpenAIProvider(ModelProvider):
-
     def __init__(
         self,
         model: str = "gpt-4.1-mini",
@@ -42,7 +41,5 @@ class OpenAIProvider(ModelProvider):
             model=self.model,
             provider="openai",
             finish_reason=response.choices[0].finish_reason,
-            usage=response.usage.model_dump()
-            if response.usage
-            else None,
+            usage=response.usage.model_dump() if response.usage else None,
         )

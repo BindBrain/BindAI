@@ -1,8 +1,5 @@
-from bindai_memory import Memory
-from bindai_memory import MemoryRecord
-
+from bindai_memory import Memory, MemoryRecord
 from bindai_retrieval import Retriever
-from bindai_retrieval.providers.memory import MemoryRetrieverProvider
 
 
 def test_retrieve():
@@ -21,9 +18,7 @@ def test_retrieve():
         memory=memory,
     )
 
-    docs = retriever.retrieve(
-        "capital of France"
-    )
+    docs = retriever.retrieve("capital of France")
 
     assert docs.success
     assert len(docs.documents) == 1

@@ -4,7 +4,6 @@ from .registry import ModelRegistry
 
 
 class Model:
-
     def __init__(
         self,
         provider: str,

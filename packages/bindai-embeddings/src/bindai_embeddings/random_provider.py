@@ -26,7 +26,6 @@ class RandomEmbeddingProvider(EmbeddingProvider):
         #
 
         for token in text.lower().split():
-
             index = (
                 int(
                     hashlib.sha256(
@@ -46,10 +45,6 @@ class RandomEmbeddingProvider(EmbeddingProvider):
         norm = sum(v * v for v in vector) ** 0.5
 
         if norm > 0:
-
-            vector = [
-                v / norm
-                for v in vector
-            ]
+            vector = [v / norm for v in vector]
 
         return vector

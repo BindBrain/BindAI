@@ -7,7 +7,6 @@ from bindai_workflow.workflow import Workflow
 
 
 class IncrementNode(WorkflowNode):
-
     def execute(
         self,
         context,
@@ -24,7 +23,6 @@ class IncrementNode(WorkflowNode):
 
 
 class EndNode(WorkflowNode):
-
     def execute(
         self,
         context,

@@ -1,13 +1,11 @@
 from bindai_agent import AssistantAgent
-
-from bindai_memory import (
-    Memory,
-    MemoryRecord,
-    InMemoryProvider,
-)
-
 from bindai_core.model import (
     ModelResponse,
+)
+from bindai_memory import (
+    InMemoryProvider,
+    Memory,
+    MemoryRecord,
 )
 
 

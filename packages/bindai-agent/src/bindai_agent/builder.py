@@ -1,21 +1,20 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
+from bindai_config.runtime import ProjectRuntime
+from bindai_config.tool_loader import ToolLoader
+from bindai_core.events import EventBus
 from bindai_prompts import Prompt
-
-from dotenv import load_dotenv
-
-from bindai_core.model import ModelProvider
 from bindai_providers import ProviderRegistry
-from bindai_provider_openai import OpenAIProvider
+from bindai_tool.function_tool import FunctionTool
+from dotenv import load_dotenv
 
 from .assistant import AssistantAgent
 from .configuration import AgentConfiguration
-from bindai_core.events import EventBus
-
-from bindai_tool import FunctionTool
 from .registry import AgentRegistry
+
 
 class AgentBuilder:
     def __init__(self):
@@ -77,14 +76,12 @@ class AgentBuilder:
             provider,
             str,
         ):
-
             self._provider = ProviderRegistry.create(
                 provider,
                 **kwargs,
             )
 
         else:
-
             self._provider = provider
 
         return self
@@ -213,16 +210,20 @@ class AgentBuilder:
     ):
 
         if self._provider is None:
-            raise ValueError(
-                "No provider configured. Use .provider(...) or .openai(...)."
+            runtime = ProjectRuntime(
+                Path.cwd(),
             )
+
+            self.model(f"{runtime.config.provider}:{runtime.config.model}")
+
+            self.temperature(runtime.config.temperature)
 
         agent = AssistantAgent(
             name=self._name,
             instructions=self._prompt.system,
             provider=self._provider,
         )
-        
+
         agent.events = self._events
         #
         # Configuration
@@ -235,9 +236,8 @@ class AgentBuilder:
         #
 
         for tool in self._tools:
-
-            if callable(tool):
-
+            # Only wrap raw Python functions.
+            if callable(tool) and not isinstance(tool, FunctionTool):
                 tool = FunctionTool(tool)
 
             agent.tool(tool)
@@ -388,3 +388,27 @@ class AgentBuilder:
         return self.hook(
             hook,
         )
+
+    def from_project(
+        self,
+        root: str | Path = ".",
+    ):
+
+        runtime = ProjectRuntime(
+            Path(root),
+        )
+
+        config = runtime.config
+
+        for tool in ToolLoader.load(
+            Path(root),
+        ):
+            self.tool(tool)
+
+        self.model(f"{config.provider}:{config.model}")
+
+        self.temperature(
+            config.temperature,
+        )
+
+        return self

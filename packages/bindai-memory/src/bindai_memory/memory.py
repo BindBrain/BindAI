@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from .provider import MemoryProvider
 from .record import MemoryRecord
-from .result import MemoryResult
-
 from .registry import MemoryRegistry
+from .result import MemoryResult
 
 
 class Memory:

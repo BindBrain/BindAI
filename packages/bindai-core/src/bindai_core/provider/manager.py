@@ -20,7 +20,7 @@ class ProviderManager:
 
     def register(
         self,
-        provider: "ModelProvider",
+        provider: ModelProvider,
         *,
         default=False,
     ):

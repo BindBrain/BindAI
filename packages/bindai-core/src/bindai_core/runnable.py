@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from bindai_core.context import ExecutionContext
 from bindai_core.executable.result import ExecutionResult
@@ -16,8 +15,7 @@ class Runnable(ABC):
     def execute(
         self,
         context: ExecutionContext,
-    ) -> ExecutionResult:
-        ...
+    ) -> ExecutionResult: ...
 
     def stream(
         self,
@@ -27,6 +25,4 @@ class Runnable(ABC):
         Optional streaming interface.
         """
 
-        raise NotImplementedError(
-            f"{type(self).__name__} does not support streaming."
-        )
+        raise NotImplementedError(f"{type(self).__name__} does not support streaming.")

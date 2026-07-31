@@ -1,5 +1,4 @@
-from bindai import Tool
-from bindai import ToolRegistry
+from bindai import Tool, ToolRegistry
 
 
 def test_register():

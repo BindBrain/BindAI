@@ -15,7 +15,6 @@ def calculator() -> str:
 
 
 class FakeProvider(ModelProvider):
-
     def __init__(self):
 
         super().__init__(

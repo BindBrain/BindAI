@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from bindai_core.tool import Tool
-from bindai_core.tool import ToolDefinition
+from bindai_core.tool import Tool, ToolDefinition
+
 
 class ToolRegistry:
     """

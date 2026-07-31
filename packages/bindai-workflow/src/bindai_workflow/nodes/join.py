@@ -45,7 +45,6 @@ class JoinNode(WorkflowNode):
         #
 
         if current < self.expected:
-
             context.waiting = True
 
             return

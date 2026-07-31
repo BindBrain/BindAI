@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ServiceLifetime(str, Enum):
+class ServiceLifetime(StrEnum):
     """
     Defines how long a service instance lives.
     """

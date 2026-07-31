@@ -1,5 +1,4 @@
-from bindai import LLMProvider
-from bindai import LLMResult
+from bindai import LLMProvider, LLMResult
 
 
 class DummyProvider(LLMProvider):

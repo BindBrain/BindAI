@@ -13,7 +13,6 @@ class MemoryType(Enum):
 
 @dataclass(slots=True)
 class MemoryRecord:
-
     key: str
 
     value: Any

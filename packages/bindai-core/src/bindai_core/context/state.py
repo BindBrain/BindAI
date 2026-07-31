@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ExecutionState(str, Enum):
+class ExecutionState(StrEnum):
     CREATED = "created"
     RUNNING = "running"
     COMPLETED = "completed"

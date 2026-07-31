@@ -1,10 +1,8 @@
 from bindai_knowledge import (
+    FakeEmbeddingProvider,
     Knowledge,
     KnowledgeDocument,
     VectorKnowledgeProvider,
-)
-from bindai_knowledge import (
-    FakeEmbeddingProvider,
 )
 
 

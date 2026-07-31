@@ -4,11 +4,10 @@ import shutil
 from pathlib import Path
 
 from .registry import TemplateRegistry
-
 from .validator import TemplateValidator
 
-class TemplateInstaller:
 
+class TemplateInstaller:
     def __init__(self):
 
         self.registry = TemplateRegistry()
@@ -22,11 +21,14 @@ class TemplateInstaller:
         template = self.registry.get(name)
 
         if template is None:
-            raise ValueError(
-                f"Unknown template '{name}'."
-            )
+            raise ValueError(f"Unknown template '{name}'.")
 
         source = Path(template.path)
+
+        errors = TemplateValidator.validate(source)
+
+        if errors:
+            raise ValueError("\n".join(errors))
 
         shutil.copytree(
             source,
@@ -45,7 +47,6 @@ class TemplateInstaller:
         env = destination / ".env"
 
         if example.exists() and not env.exists():
-
             shutil.copy2(
                 example,
                 env,
@@ -54,7 +55,4 @@ class TemplateInstaller:
         errors = TemplateValidator.validate(source)
 
         if errors:
-
-            raise ValueError(
-                "\n".join(errors)
-            )
+            raise ValueError("\n".join(errors))

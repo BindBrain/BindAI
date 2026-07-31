@@ -1,10 +1,10 @@
 from bindai_core.container import BindContainer
 
-from .execution.memory_step import MemoryStep
+from .execution.finish_step import FinishStep
 from .execution.knowledge_step import KnowledgeStep
+from .execution.memory_step import MemoryStep
 from .execution.prompt_builder import PromptBuilder
 from .execution.tool_executor import ToolExecutor
-from .execution.finish_step import FinishStep
 
 
 def register_agent_services(

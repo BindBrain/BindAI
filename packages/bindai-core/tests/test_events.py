@@ -8,7 +8,6 @@ from bindai_core.events import (
 
 @dataclass(slots=True, kw_only=True)
 class HelloEvent(Event):
-
     @property
     def name(self) -> str:
         return "hello"
@@ -16,7 +15,6 @@ class HelloEvent(Event):
 
 @dataclass(slots=True, kw_only=True)
 class GoEvent(Event):
-
     @property
     def name(self) -> str:
         return "go"

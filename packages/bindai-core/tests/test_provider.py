@@ -4,7 +4,6 @@ from bindai_core.model import (
     ModelResponse,
     TokenUsage,
 )
-
 from bindai_core.provider import (
     ProviderConfiguration,
     ProviderRegistry,

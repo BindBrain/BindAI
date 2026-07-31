@@ -3,7 +3,6 @@ from bindai_model import ModelRegistry
 
 
 class ApplicationRegistry:
-
     def __init__(self):
 
         self.models = ModelRegistry()

@@ -6,7 +6,6 @@ from ..result import RetrievalResult
 
 
 class BM25RetrieverProvider(RetrieverProvider):
-
     def retrieve(
         self,
         query: RetrievalQuery,

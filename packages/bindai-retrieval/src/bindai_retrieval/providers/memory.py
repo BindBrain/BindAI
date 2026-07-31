@@ -8,7 +8,6 @@ from bindai_retrieval.result import RetrievalResult
 
 
 class MemoryRetrieverProvider(RetrieverProvider):
-
     def __init__(
         self,
         memory: Memory,

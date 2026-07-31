@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from .definition import ToolDefinition
 from .inspector import ToolInspector
@@ -26,10 +27,7 @@ class FunctionTool(Tool):
 
         self._name = name or function.__name__
 
-        self._description = (
-            description
-            or (function.__doc__ or "").strip()
-        )
+        self._description = description or (function.__doc__ or "").strip()
 
     @property
     def name(self) -> str:
@@ -98,9 +96,7 @@ class FunctionTool(Tool):
         # Positional arguments
         #
 
-        parameter_names = list(
-            self.parameters.keys()
-        )
+        parameter_names = list(self.parameters.keys())
 
         for name, value in zip(
             parameter_names,
@@ -116,7 +112,6 @@ class FunctionTool(Tool):
         #
 
         for key, value in kwargs.items():
-
             context.variables.set(
                 key,
                 value,

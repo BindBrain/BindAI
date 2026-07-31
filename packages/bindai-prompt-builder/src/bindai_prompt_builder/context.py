@@ -7,7 +7,6 @@ from bindai_core.model import ModelRequest
 
 @dataclass(slots=True)
 class PromptBuildContext:
-
     request: ModelRequest
 
     tools: list

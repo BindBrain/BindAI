@@ -16,12 +16,12 @@ class ProviderRegistry:
 
         self._providers: dict[
             str,
-            "ModelProvider",
+            ModelProvider,
         ] = {}
 
     def register(
         self,
-        provider: "ModelProvider",
+        provider: ModelProvider,
     ):
 
         if provider.name in self._providers:
@@ -34,7 +34,7 @@ class ProviderRegistry:
     def get(
         self,
         name: str,
-    ) -> "ModelProvider":
+    ) -> ModelProvider:
 
         if name not in self._providers:
             raise ProviderNotFound(

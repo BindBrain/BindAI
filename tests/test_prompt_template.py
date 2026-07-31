@@ -1,5 +1,4 @@
-from bindai_prompts import Prompt
-from bindai_prompts import PromptTemplate
+from bindai_prompts import Prompt, PromptTemplate
 
 
 def test_template():

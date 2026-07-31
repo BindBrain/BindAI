@@ -1,7 +1,7 @@
 from bindai_knowledge import (
+    InMemoryKnowledgeProvider,
     Knowledge,
     KnowledgeDocument,
-    InMemoryKnowledgeProvider,
 )
 
 

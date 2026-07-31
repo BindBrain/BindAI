@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from typing import Type
-
 from .provider import ModelProvider
 
 
 class ModelRegistry:
-
     _providers: dict[
         str,
-        Type[ModelProvider],
+        type[ModelProvider],
     ] = {}
 
     @classmethod

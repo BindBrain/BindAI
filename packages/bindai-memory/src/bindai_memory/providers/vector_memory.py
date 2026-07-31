@@ -6,11 +6,8 @@ from bindai_memory.provider import MemoryProvider
 from bindai_memory.record import MemoryRecord
 from bindai_memory.result import MemoryResult
 
-from bindai_embeddings import RandomEmbeddingProvider
-
 
 class VectorMemoryProvider(MemoryProvider):
-
     def __init__(
         self,
         embedding: str = "random",
@@ -49,11 +46,7 @@ class VectorMemoryProvider(MemoryProvider):
     ):
 
         for record in self.records:
-
-            if (
-                record.key == key
-                and record.namespace == namespace
-            ):
+            if record.key == key and record.namespace == namespace:
                 return MemoryResult(
                     success=True,
                     value=record,
@@ -69,14 +62,7 @@ class VectorMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ):
 
-        self.records = [
-            r
-            for r in self.records
-            if not (
-                r.key == key
-                and r.namespace == namespace
-            )
-        ]
+        self.records = [r for r in self.records if not (r.key == key and r.namespace == namespace)]
 
         return MemoryResult(success=True)
 
@@ -86,22 +72,14 @@ class VectorMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ):
 
-        return any(
-            r.key == key
-            and r.namespace == namespace
-            for r in self.records
-        )
+        return any(r.key == key and r.namespace == namespace for r in self.records)
 
     def clear(
         self,
         namespace: str = "default",
     ):
 
-        self.records = [
-            r
-            for r in self.records
-            if r.namespace != namespace
-        ]
+        self.records = [r for r in self.records if r.namespace != namespace]
 
         return MemoryResult(success=True)
 
@@ -118,7 +96,6 @@ class VectorMemoryProvider(MemoryProvider):
         scored = []
 
         for record in self.records:
-
             if record.namespace != namespace:
                 continue
 

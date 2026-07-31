@@ -132,7 +132,7 @@ class Workflow:
     # Versioning
     #
 
-    def clone(self) -> "Workflow":
+    def clone(self) -> Workflow:
         """
         Clone the workflow and increment version.
         """

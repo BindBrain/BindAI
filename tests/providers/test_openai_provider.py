@@ -14,12 +14,10 @@ from bindai_core import (
     ModelRequest,
     ProviderConfiguration,
 )
-
 from bindai_core.tool import (
     Tool,
     ToolResult,
 )
-
 from bindai_provider_openai import OpenAIProvider
 
 

@@ -1,8 +1,3 @@
 from bindai import Agent
 
-
-agent = Agent(
-    instructions="""
-    You are a helpful AI assistant.
-    """
-)
+agent = Agent(instructions="You are helpful.")

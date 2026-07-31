@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class AgentState(str, Enum):
+class AgentState(StrEnum):
     IDLE = "idle"
 
     RUNNING = "running"

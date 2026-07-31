@@ -16,9 +16,7 @@ class WorkflowRegistry:
         workflow: Workflow,
     ) -> None:
 
-        cls._workflows[
-            workflow.id
-        ] = workflow
+        cls._workflows[workflow.id] = workflow
 
     @classmethod
     def get(
@@ -26,9 +24,7 @@ class WorkflowRegistry:
         workflow_id: str,
     ) -> Workflow | None:
 
-        return cls._workflows[
-            workflow_id
-        ]
+        return cls._workflows[workflow_id]
 
     @classmethod
     def remove(
@@ -54,9 +50,7 @@ class WorkflowRegistry:
         cls,
     ) -> list[Workflow]:
 
-        return list(
-            cls._workflows.values()
-        )
+        return list(cls._workflows.values())
 
     @classmethod
     def clear(
@@ -70,6 +64,4 @@ class WorkflowRegistry:
         cls,
     ) -> int:
 
-        return len(
-            cls._workflows
-        )
+        return len(cls._workflows)

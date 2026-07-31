@@ -1,21 +1,19 @@
 from __future__ import annotations
 
 from bindai_core.context import ExecutionContext
-from ..result import AgentResult
 from bindai_core.events import (
-    AgentStartedEvent,
     AgentFinishedEvent,
+    AgentStartedEvent,
 )
 
-from .pipeline import ExecutionPipeline
-from .state import ExecutionState
-
+from ..result import AgentResult
+from .finish_step import FinishStep
 from .initialization_step import InitializationStep
 from .knowledge_step import KnowledgeStep
 from .memory_step import MemoryStep
 from .model_generation_step import ModelGenerationStep
-from .finish_step import FinishStep
-
+from .pipeline import ExecutionPipeline
+from .state import ExecutionState
 from .tool_execution_step import ToolExecutionStep
 
 
@@ -81,7 +79,6 @@ class AgentExecutionEngine:
         )
 
         try:
-
             #
             # before middleware
             #
@@ -118,7 +115,6 @@ class AgentExecutionEngine:
             )
 
         except Exception as ex:
-
             agent.on_error(
                 context,
                 ex,
@@ -162,7 +158,6 @@ class AgentExecutionEngine:
         )
 
         try:
-
             InitializationStep().execute(
                 agent,
                 context,
@@ -193,7 +188,6 @@ class AgentExecutionEngine:
             )
 
         except Exception as ex:
-
             agent.on_error(
                 context,
                 ex,
@@ -202,7 +196,6 @@ class AgentExecutionEngine:
             raise
 
         finally:
-
             agent.events.publish(
                 AgentFinishedEvent(),
             )

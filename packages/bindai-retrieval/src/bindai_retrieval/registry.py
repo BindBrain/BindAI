@@ -1,20 +1,18 @@
-from typing import Type
 
 from .provider import RetrieverProvider
 
 
 class RetrievalRegistry:
-
     _providers: dict[
         str,
-        Type[RetrieverProvider],
+        type[RetrieverProvider],
     ] = {}
 
     @classmethod
     def register(
         cls,
         name: str,
-        provider: Type[RetrieverProvider],
+        provider: type[RetrieverProvider],
     ) -> None:
 
         cls._providers[name] = provider
@@ -23,20 +21,18 @@ class RetrievalRegistry:
     def provider(
         cls,
         name: str,
-    ) -> Type[RetrieverProvider]:
+    ) -> type[RetrieverProvider]:
 
         try:
             return cls._providers[name]
 
         except KeyError as exc:
-            raise ValueError(
-                f"Unknown retriever provider '{name}'."
-            ) from exc
+            raise ValueError(f"Unknown retriever provider '{name}'.") from exc
 
     @classmethod
     def providers(
         cls,
-    ) -> dict[str, Type[RetrieverProvider]]:
+    ) -> dict[str, type[RetrieverProvider]]:
 
         return dict(cls._providers)
 
@@ -45,10 +41,10 @@ class RetrievalRegistry:
 # Built-in providers
 #
 
-from .providers.memory import MemoryRetrieverProvider
-from .providers.vector import VectorRetrieverProvider
 from .providers.bm25 import BM25RetrieverProvider
 from .providers.hybrid import HybridRetrieverProvider
+from .providers.memory import MemoryRetrieverProvider
+from .providers.vector import VectorRetrieverProvider
 
 RetrievalRegistry.register(
     "memory",

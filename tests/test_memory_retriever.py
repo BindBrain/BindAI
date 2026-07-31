@@ -1,10 +1,9 @@
-from bindai_memory import Memory
-from bindai_memory import MemoryRecord
-
+from bindai_memory import Memory, MemoryRecord
+from bindai_retrieval import RetrievalQuery
 from bindai_retrieval.providers.memory import (
     MemoryRetrieverProvider,
 )
-from bindai_retrieval import RetrievalQuery
+
 
 def test_memory_provider():
 

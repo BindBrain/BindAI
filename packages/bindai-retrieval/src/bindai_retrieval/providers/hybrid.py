@@ -6,7 +6,6 @@ from ..result import RetrievalResult
 
 
 class HybridRetrieverProvider(RetrieverProvider):
-
     def retrieve(
         self,
         query: RetrievalQuery,

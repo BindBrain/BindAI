@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import inspect
-
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
 
 
 class ToolInspector:

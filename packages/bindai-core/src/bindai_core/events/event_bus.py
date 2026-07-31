@@ -1,9 +1,8 @@
-from collections import defaultdict
 import logging
+from collections import defaultdict
 
 from .event import Event
 from .event_handler import EventHandler
-
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +52,4 @@ class EventBus:
                 handler(event)
 
             except Exception:
-                logger.exception(
-                    "Event handler failed."
-                )
+                logger.exception("Event handler failed.")

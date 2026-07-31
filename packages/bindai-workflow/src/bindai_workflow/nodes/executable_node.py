@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
-
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from bindai_core.executable import Executable
 from bindai_core.context import ExecutionContext
+from bindai_core.executable import Executable
 
 from ..node import WorkflowNode
 
@@ -26,8 +24,7 @@ class ExecutableNode(
     def get_executable(
         self,
         context: WorkflowContext,
-    ) -> Executable:
-        ...
+    ) -> Executable: ...
 
     def before_execute(
         self,
@@ -62,10 +59,7 @@ class ExecutableNode(
         )
 
         if executable is None:
-            raise RuntimeError(
-                f"{self.__class__.__name__} "
-                "returned no executable."
-            )
+            raise RuntimeError(f"{self.__class__.__name__} returned no executable.")
 
         #
         # WorkflowContext -> ExecutionContext adapter

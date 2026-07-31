@@ -56,7 +56,6 @@ class ExecutionPipeline:
         #
 
         for step in initialization:
-
             result = step.execute(
                 agent,
                 context,
@@ -66,10 +65,8 @@ class ExecutionPipeline:
                 return result
 
         state = context.data
-        iterations = state.iterations
 
         while True:
-
             #
             # Ask model.
             #
@@ -85,11 +82,7 @@ class ExecutionPipeline:
             # No tools requested.
             #
 
-            if (
-                state.response is None
-                or not state.response.tool_calls
-            ):
-
+            if state.response is None or not state.response.tool_calls:
                 return finish_step.execute(
                     agent,
                     context,
@@ -101,11 +94,7 @@ class ExecutionPipeline:
 
             state.iterations += 1
 
-            if (
-                state.iterations
-                >= agent.configuration.max_tool_iterations
-            ):
-
+            if state.iterations >= agent.configuration.max_tool_iterations:
                 return finish_step.execute(
                     agent,
                     context,

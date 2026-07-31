@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from bindai_application import Application
 from bindai_core.tool import ToolRegistry
-from bindai_workflow import WorkflowRegistry
-from bindai_workflow import WorkflowScheduler
+from bindai_workflow import WorkflowRegistry, WorkflowScheduler
 
 from .configuration import ProjectConfiguration
 

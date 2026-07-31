@@ -9,11 +9,9 @@ class Executor(Protocol):
     def __init__(
         self,
         executable: Any,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def execute(
         self,
         context: ExecutionContext,
-    ) -> Any:
-        ...
+    ) -> Any: ...

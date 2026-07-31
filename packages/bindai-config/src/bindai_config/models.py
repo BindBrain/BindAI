@@ -50,3 +50,38 @@ class GroupConfig:
     tasks: list[TaskConfig] = field(
         default_factory=list,
     )
+
+
+@dataclass(slots=True)
+class WorkflowNodeConfig:
+    id: str
+
+    type: str
+
+    agent: str | None = None
+
+    tool: str | None = None
+
+    input_variable: str = "input"
+
+    output_variable: str = "output"
+
+
+@dataclass(slots=True)
+class WorkflowEdgeConfig:
+    source: str
+
+    target: str
+
+
+@dataclass(slots=True)
+class WorkflowConfig:
+    name: str
+
+    nodes: list[WorkflowNodeConfig] = field(
+        default_factory=list,
+    )
+
+    edges: list[WorkflowEdgeConfig] = field(
+        default_factory=list,
+    )

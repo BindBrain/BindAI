@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class MessageRole(str, Enum):
+class MessageRole(StrEnum):
     """
     Standard conversation roles.
     """

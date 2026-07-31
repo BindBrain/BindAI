@@ -55,7 +55,7 @@ class Application:
     def add_provider(
         self,
         provider: ModelProvider,
-    ) -> "Application":
+    ) -> Application:
 
         self.providers.register(
             provider,
@@ -66,7 +66,7 @@ class Application:
     def add_agent(
         self,
         agent: Agent,
-    ) -> "Application":
+    ) -> Application:
 
         self.agents.register(
             agent,

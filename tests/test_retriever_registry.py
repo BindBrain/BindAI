@@ -4,8 +4,6 @@ from bindai_retrieval.providers.memory import MemoryRetrieverProvider
 
 def test_registry():
 
-    provider = RetrievalRegistry.provider(
-        "memory"
-    )
+    provider = RetrievalRegistry.provider("memory")
 
     assert provider is MemoryRetrieverProvider

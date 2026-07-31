@@ -21,7 +21,6 @@ class WorkflowExecutor:
         node_id = self.workflow.start_node
 
         while node_id is not None:
-
             node = self.workflow.get(
                 node_id,
             )

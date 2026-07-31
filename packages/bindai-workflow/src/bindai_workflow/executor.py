@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
 
 from .events import WorkflowEvent
 from .history import WorkflowHistory
 from .history_store import MemoryHistoryStore
 from .instance import WorkflowInstance
 from .result import WorkflowResult
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .store import WorkflowStore
     from .history_store import WorkflowHistoryStore
     from .node import WorkflowNode
+    from .store import WorkflowStore
+
 
 class WorkflowExecutor:
     """
@@ -143,7 +144,6 @@ class WorkflowExecutor:
             #
 
             if not context.execution_queue:
-
                 context.completed = True
                 break
 
@@ -189,7 +189,6 @@ class WorkflowExecutor:
             #
 
             if context.subworkflow is not None:
-
                 if instance.project is None:
                     return self._failure(
                         instance,
@@ -243,9 +242,7 @@ class WorkflowExecutor:
             #
 
             if context.waiting:
-
                 if node.__class__.__name__ == "JoinNode":
-
                     #
                     # Branch finished.
                     #
@@ -277,7 +274,6 @@ class WorkflowExecutor:
             #
 
             if context.current_node is not None:
-
                 context.execution_queue.append(
                     context.current_node,
                 )
@@ -285,7 +281,6 @@ class WorkflowExecutor:
                 context.current_node = None
 
             else:
-
                 context.execution_queue.extend(
                     node.next_nodes,
                 )

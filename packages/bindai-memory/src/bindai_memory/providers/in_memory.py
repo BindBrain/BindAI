@@ -60,13 +60,10 @@ class InMemoryProvider(MemoryProvider):
         results = []
 
         for record in self._storage.get(namespace, {}).values():
-
             if metadata:
-
                 ok = True
 
                 for key, value in metadata.items():
-
                     if record.metadata.get(key) != value:
                         ok = False
                         break
@@ -75,7 +72,6 @@ class InMemoryProvider(MemoryProvider):
                     continue
 
             if query in str(record.value).lower():
-
                 results.append(record)
 
                 if len(results) >= limit:

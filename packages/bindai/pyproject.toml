@@ -2,7 +2,7 @@
 name = "bindai"
 version = "0.1.0"
 description = "BindAI Framework"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 dependencies = [
     "bindai-core",
@@ -17,11 +17,14 @@ dependencies = [
     "bindai-runtime",
     "bindai-task",
     "bindai-workflow",
+
+    "bindai-prompt-builder",
+    "bindai-retrieval",
 ]
 
 [build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/bindai"]

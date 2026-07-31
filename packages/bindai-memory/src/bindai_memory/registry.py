@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Type
-
 from .provider import MemoryProvider
 
 
@@ -12,14 +10,14 @@ class MemoryRegistry:
 
     _providers: dict[
         str,
-        Type[MemoryProvider],
+        type[MemoryProvider],
     ] = {}
 
     @classmethod
     def register(
         cls,
         name: str,
-        provider: Type[MemoryProvider],
+        provider: type[MemoryProvider],
     ) -> None:
 
         cls._providers[name] = provider
@@ -28,7 +26,7 @@ class MemoryRegistry:
     def provider(
         cls,
         name: str,
-    ) -> Type[MemoryProvider]:
+    ) -> type[MemoryProvider]:
 
         try:
             return cls._providers[name]
@@ -39,7 +37,7 @@ class MemoryRegistry:
     @classmethod
     def providers(
         cls,
-    ) -> dict[str, Type[MemoryProvider]]:
+    ) -> dict[str, type[MemoryProvider]]:
 
         return dict(cls._providers)
 

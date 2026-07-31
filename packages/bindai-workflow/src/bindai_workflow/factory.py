@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .workflow import Workflow
 from .node_factory import WorkflowNodeFactory
+from .workflow import Workflow
 
 
 class WorkflowFactory:

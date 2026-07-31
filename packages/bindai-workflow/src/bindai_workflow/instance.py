@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING
 from .context import WorkflowContext
 
 if TYPE_CHECKING:
-    from .workflow import Workflow
     from bindai_project import Project
+
+    from .workflow import Workflow
 
 
 class WorkflowInstance:

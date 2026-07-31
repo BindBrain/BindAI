@@ -3,7 +3,6 @@ from bindai_model.provider import ModelProvider
 
 
 class DummyProvider(ModelProvider):
-
     def generate(
         self,
         prompt,

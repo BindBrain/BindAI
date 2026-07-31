@@ -1,19 +1,16 @@
 from __future__ import annotations
 
-from typing import Type
-
 from .provider import EmbeddingProvider
 
 
 class EmbeddingRegistry:
-
-    _providers: dict[str, Type[EmbeddingProvider]] = {}
+    _providers: dict[str, type[EmbeddingProvider]] = {}
 
     @classmethod
     def register(
         cls,
         name: str,
-        provider: Type[EmbeddingProvider],
+        provider: type[EmbeddingProvider],
     ):
         cls._providers[name] = provider
 

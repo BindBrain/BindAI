@@ -37,10 +37,7 @@ class LoopNode(WorkflowNode):
     ) -> None:
 
         if len(self.next_nodes) < 2:
-            raise RuntimeError(
-                "LoopNode requires two next nodes "
-                "(body and exit)."
-            )
+            raise RuntimeError("LoopNode requires two next nodes (body and exit).")
 
         #
         # Continue loop
@@ -49,7 +46,6 @@ class LoopNode(WorkflowNode):
         if self.predicate(
             context,
         ):
-
             context.current_node = self.next_nodes[0]
 
         #
@@ -57,5 +53,4 @@ class LoopNode(WorkflowNode):
         #
 
         else:
-
             context.current_node = self.next_nodes[1]

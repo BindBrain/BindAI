@@ -21,7 +21,6 @@ class KnowledgeStep(
         #
 
         if agent.retriever is not None:
-
             result = agent.retriever.retrieve(
                 context.variables.get(
                     "input",
@@ -36,7 +35,6 @@ class KnowledgeStep(
         #
 
         elif agent.knowledge is not None:
-
             result = agent.knowledge.search(
                 context.variables.get(
                     "input",
@@ -56,8 +54,7 @@ class KnowledgeStep(
             return
 
         content = "\n\n".join(
-            getattr(doc, "content", getattr(doc, "value", ""))
-            for doc in documents
+            getattr(doc, "content", getattr(doc, "value", "")) for doc in documents
         )
 
         agent.conversation.add_system(

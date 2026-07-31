@@ -3,28 +3,28 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*$py.class
+
+# Caches
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.hypothesis/
 
-# Virtual environment
+# Virtual environments
 .venv/
+venv/
+env/
 
 # Build
-dist/
 build/
+dist/
 *.egg-info/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
+pip-wheel-metadata/
 
 # Coverage
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
 
@@ -32,8 +32,24 @@ htmlcov/
 .env
 .env.*
 
+# IDE
+.vscode/
+.idea/
+
 # Jupyter
 .ipynb_checkpoints/
 
+# OS
+.DS_Store
+Thumbs.db
+
 # Logs
 *.log
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python version managers
+.python-version

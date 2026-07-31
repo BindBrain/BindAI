@@ -1,6 +1,6 @@
 from bindai_knowledge import (
-    Embedding,
     DummyEmbeddingProvider,
+    Embedding,
 )
 
 

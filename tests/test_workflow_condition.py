@@ -1,13 +1,12 @@
 from bindai_workflow import Workflow
 from bindai_workflow.executor import WorkflowExecutor
-from bindai_workflow.memory_store import MemoryWorkflowStore
 from bindai_workflow.instance import WorkflowInstance
+from bindai_workflow.memory_store import MemoryWorkflowStore
 from bindai_workflow.node import WorkflowNode
 from bindai_workflow.nodes.condition import ConditionNode
 
 
 class EndNode(WorkflowNode):
-
     def execute(self, context):
         context.variables["done"] = self.id
         context.completed = True

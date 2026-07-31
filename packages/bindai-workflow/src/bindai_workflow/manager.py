@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from .executor import WorkflowExecutor
 from .instance import WorkflowInstance
 from .registry import WorkflowRegistry
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from .workflow import Workflow
+
 
 class WorkflowManager:
     """
@@ -62,9 +63,7 @@ class WorkflowManager:
         )
 
         if workflow is None:
-            raise ValueError(
-                f'Workflow "{workflow_name}" not found.'
-            )
+            raise ValueError(f'Workflow "{workflow_name}" not found.')
 
         instance = workflow.create_instance()
 

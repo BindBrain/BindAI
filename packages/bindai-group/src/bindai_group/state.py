@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class GroupState(str, Enum):
+class GroupState(StrEnum):
     """
     Current execution state of a Group.
     """

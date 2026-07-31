@@ -41,9 +41,7 @@ class ProviderRegistry:
             return cls._providers[name]
 
         except KeyError as exc:
-            raise ValueError(
-                f"Unknown provider '{name}'."
-            ) from exc
+            raise ValueError(f"Unknown provider '{name}'.") from exc
 
     @classmethod
     def create(

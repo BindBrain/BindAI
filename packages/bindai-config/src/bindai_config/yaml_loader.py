@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import yaml
-
 from bindai_agent import AgentBuilder
-from bindai_group import GroupBuilder
-from bindai_group import Task
+from bindai_group import GroupBuilder, Task
 
 from .loader import ConfigLoader
 from .models import (
@@ -22,7 +20,6 @@ class YamlLoader(ConfigLoader):
 
         with open(
             path,
-            "r",
             encoding="utf-8",
         ) as file:
             data = yaml.safe_load(
@@ -159,7 +156,6 @@ class YamlLoader(ConfigLoader):
         agents = {}
 
         for item in config.agents:
-
             agent_builder = (
                 AgentBuilder()
                 .name(

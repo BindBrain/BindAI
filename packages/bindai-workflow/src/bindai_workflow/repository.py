@@ -1,7 +1,9 @@
 from __future__ import annotations
-from .workflow import Workflow
+
 from datetime import datetime
+
 from .deployment import WorkflowDeployment
+from .workflow import Workflow
 
 
 class WorkflowRepository:
@@ -63,9 +65,7 @@ class WorkflowRepository:
         name: str,
     ) -> Workflow:
 
-        versions = [
-            workflow for workflow in self._workflows.values() if workflow.name == name
-        ]
+        versions = [workflow for workflow in self._workflows.values() if workflow.name == name]
 
         return max(
             versions,

@@ -1,12 +1,11 @@
 from pathlib import Path
 
-from reportlab.pdfgen import canvas
-
 from bindai_knowledge import (
     InMemoryKnowledgeProvider,
     Knowledge,
     PDFLoader,
 )
+from reportlab.pdfgen import canvas
 
 
 def test_pdf_loader(tmp_path: Path):
