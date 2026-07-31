@@ -4,16 +4,16 @@ from bindai_providers import (
 )
 
 from .provider import OpenAIProvider
+from bindai_providers import ProviderRegistry
 
+from .provider import OpenAIProvider
 
 def register():
 
     ProviderRegistry.register(
         "openai",
-        lambda **kwargs: OpenAIProvider(
-            ProviderConfiguration(
-                **kwargs,
-            )
+        lambda configuration: OpenAIProvider(
+            configuration,
         ),
     )
 

@@ -16,6 +16,7 @@ from .execution.data import ExecutionData
 from .execution.engine import AgentExecutionEngine
 from .result import AgentResult
 from .state import AgentState
+from .provider_resolver import resolve_provider
 
 class Agent(Executable):
     """
@@ -32,7 +33,10 @@ class Agent(Executable):
     ):
 
         self.name = name
-        self.provider = provider
+        if isinstance(provider, str):
+            self.provider = resolve_provider(provider)
+        else:
+            self.provider = provider
 
         self.prompt = prompt or Prompt()
 

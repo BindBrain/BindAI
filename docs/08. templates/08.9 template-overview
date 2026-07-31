@@ -1,0 +1,245 @@
+# Templates Overview
+
+Templates are complete, runnable BindAI projects that demonstrate common patterns and best practices.
+
+Instead of starting from an empty project, you can use templates to learn the framework, experiment with features, or bootstrap new applications.
+
+Every template is designed to be practical, self-contained, and easy to modify.
+
+---
+
+# What are Templates?
+
+A template is a ready-to-run example that showcases a specific BindAI feature or workflow.
+
+Templates include:
+
+- working source code
+- configuration files
+- comments and documentation
+- recommended project structure
+
+You can run a template immediately and use it as the foundation for your own project.
+
+---
+
+# Why Use Templates?
+
+Templates help you:
+
+- learn BindAI faster
+- understand best practices
+- explore framework features
+- avoid repetitive setup
+- bootstrap production projects
+
+Rather than reading documentation and writing everything from scratch, you can begin with working examples.
+
+---
+
+# Template Categories
+
+BindAI templates cover many common scenarios.
+
+Examples include:
+
+- Agent Basics
+- Prompt Management
+- Tool Calling
+- Memory
+- Knowledge Retrieval (RAG)
+- Workflows
+- Conditional Execution
+- Loops
+- Parallel Execution
+- Human Approval
+- Retry Policies
+- Scheduling
+- Multi-Agent Systems
+- API Integrations
+
+Each template focuses on a single concept while remaining fully functional.
+
+---
+
+# Template Structure
+
+A typical template looks like this.
+
+```text
+template-name/
+
+├── main.py
+├── agent.yaml
+├── workflow.yaml
+├── tools.py
+├── requirements.txt
+└── README.md
+```
+
+Some templates include additional files depending on the demonstrated feature.
+
+---
+
+# Running a Template
+
+Templates can be executed directly.
+
+```bash
+python templates/agent-basic/main.py
+```
+
+If the template requires API credentials, configure your environment variables before running it.
+
+Example:
+
+```text
+OPENAI_API_KEY=your_api_key
+```
+
+---
+
+# Learning by Example
+
+The recommended learning path is:
+
+```text
+Read Documentation
+
+↓
+
+Run Template
+
+↓
+
+Modify Template
+
+↓
+
+Build Your Own Project
+```
+
+Experimenting with working code is often the fastest way to understand a feature.
+
+---
+
+# Agent Templates
+
+Agent templates demonstrate how to build AI assistants with different capabilities.
+
+Examples include:
+
+- basic assistant
+- structured output
+- streaming responses
+- multiple tools
+- conversation memory
+- retrieval-augmented generation
+
+These templates focus on individual agent behavior.
+
+---
+
+# Workflow Templates
+
+Workflow templates demonstrate orchestration between multiple execution steps.
+
+Examples include:
+
+- sequential execution
+- conditional branching
+- loops
+- parallel execution
+- human approval
+- retries
+- scheduled workflows
+
+These examples show how to automate more complex business processes.
+
+---
+
+# Tool Templates
+
+Tool templates demonstrate how agents interact with external systems.
+
+Examples include:
+
+- calculators
+- weather APIs
+- file readers
+- database queries
+- HTTP requests
+- custom business logic
+
+They illustrate both tool creation and automatic tool calling.
+
+---
+
+# Knowledge Templates
+
+Knowledge templates demonstrate Retrieval-Augmented Generation (RAG).
+
+Typical examples include:
+
+- document search
+- PDF retrieval
+- Markdown knowledge bases
+- semantic search
+- vector databases
+
+These templates show how agents answer questions using external information.
+
+---
+
+# Production Templates
+
+Some templates demonstrate production-ready architecture.
+
+These may include:
+
+- logging
+- middleware
+- configuration management
+- project organization
+- dependency injection
+- monitoring
+
+They provide a starting point for larger applications.
+
+---
+
+# Modifying Templates
+
+Templates are intended to be customized.
+
+Typical modifications include:
+
+- changing the language model
+- updating prompts
+- replacing tools
+- adding workflows
+- connecting different providers
+- integrating business logic
+
+They are starting points rather than fixed solutions.
+
+---
+
+# Best Practices
+
+When working with templates:
+
+- Start with the simplest example.
+- Run the template before modifying it.
+- Change one feature at a time.
+- Compare different templates to understand framework patterns.
+- Use templates as references for new projects.
+- Keep your customized versions under version control.
+
+---
+
+# Summary
+
+Templates provide complete, runnable examples for nearly every BindAI feature.
+
+They are the fastest way to learn the framework, explore new capabilities, and bootstrap production-ready AI applications with proven project structures and best practices.

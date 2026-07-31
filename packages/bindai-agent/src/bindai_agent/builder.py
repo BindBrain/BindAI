@@ -7,7 +7,10 @@ from bindai_config.runtime import ProjectRuntime
 from bindai_config.tool_loader import ToolLoader
 from bindai_core.events import EventBus
 from bindai_prompts import Prompt
-from bindai_providers import ProviderRegistry
+from bindai_providers import (
+    ProviderConfiguration,
+    ProviderRegistry,
+)
 from bindai_tool.function_tool import FunctionTool
 from dotenv import load_dotenv
 
@@ -76,9 +79,17 @@ class AgentBuilder:
             provider,
             str,
         ):
+
+            configuration = ProviderConfiguration(
+                api_key=kwargs.get("api_key"),
+                endpoint=kwargs.get("endpoint"),
+                organization=kwargs.get("organization"),
+                model=kwargs.get("model"),
+            )
+
             self._provider = ProviderRegistry.create(
                 provider,
-                **kwargs,
+                configuration=configuration,
             )
 
         else:
