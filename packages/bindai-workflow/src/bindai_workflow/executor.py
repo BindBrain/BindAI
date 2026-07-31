@@ -10,7 +10,7 @@ from .instance import WorkflowInstance
 from .result import WorkflowResult
 
 if TYPE_CHECKING:
-    from .history_store import WorkflowHistoryStore
+    from .history_store_protocol import WorkflowHistoryStore
     from .node import WorkflowNode
     from .store import WorkflowStore
 

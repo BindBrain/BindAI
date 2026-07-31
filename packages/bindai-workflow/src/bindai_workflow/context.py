@@ -9,6 +9,8 @@ from bindai_core.context import Variables
 if TYPE_CHECKING:
     from .instance import WorkflowInstance
 
+from .retry import RetryPolicy
+from .timeout import TimeoutPolicy
 
 class WorkflowContext:
     """
@@ -83,9 +85,9 @@ class WorkflowContext:
 
         self.retry_attempt = 0
 
-        self.retry_policy: object | None = None
+        self.retry_policy: RetryPolicy | None = None
 
-        self.timeout_policy: object | None = None
+        self.timeout_policy: TimeoutPolicy | None = None
 
         #
         # Dependency Injection

@@ -15,7 +15,7 @@ from .conversation import Conversation
 from .execution.data import ExecutionData
 from .execution.engine import AgentExecutionEngine
 from .result import AgentResult
-
+from .state import AgentState
 
 class Agent(Executable):
     """
@@ -54,15 +54,17 @@ class Agent(Executable):
 
         self.configuration = AgentConfiguration()
 
+        self.state = AgentState.IDLE
+
         self.executor = AgentExecutionEngine(
             self,
         )
 
-        self.middleware = []
+        self.middleware: list = []
 
-        self.hooks = []
+        self.hooks: list = []
 
-        self.callbacks = {
+        self.callbacks: dict[str, list] = {
             "before_run": [],
             "after_run": [],
             "error": [],
@@ -70,8 +72,7 @@ class Agent(Executable):
 
     @property
     def instructions(self) -> str:
-
-        return self.prompt.system
+        return self.prompt.system or ""
 
     @instructions.setter
     def instructions(
@@ -119,7 +120,7 @@ class Agent(Executable):
             context,
         )
 
-    def stream(
+    def stream_chat(
         self,
         message: str,
         output: type | None = None,
@@ -138,6 +139,17 @@ class Agent(Executable):
             "output_type",
             output,
         )
+
+        return self.executor.stream(
+            self,
+            context,
+        )
+
+
+    def stream(
+        self,
+        context: ExecutionContext,
+    ):
 
         return self.executor.stream(
             self,

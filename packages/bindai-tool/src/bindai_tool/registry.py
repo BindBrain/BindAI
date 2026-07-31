@@ -7,9 +7,15 @@ from bindai_tool.function_tool import FunctionTool
 from .exceptions import ToolAlreadyRegistered, ToolNotFound
 from .tool import Tool
 
+from dataclasses import dataclass
+
+from typing import Any
+
+PublicTool: Any
+
 try:
     from bindai.tool import Tool as PublicTool
-except Exception:
+except ImportError:
     PublicTool = None
 
 
@@ -133,3 +139,11 @@ class ToolRegistry:
         return len(
             self._tools,
         )
+
+    @dataclass(slots=True)
+    class ExecutionResult:
+        success: bool
+
+        value: Any = None
+
+        error: str | None = None

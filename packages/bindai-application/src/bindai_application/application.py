@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bindai_agent import Agent
+from bindai_agent import Agent, create_agent
 
 from .configuration import ApplicationConfiguration
 
@@ -87,11 +87,7 @@ class Application:
         message: str,
     ):
 
-        return self.agent(
-            agent,
-        ).stream(
-            message,
-        )
+        return self.agent(agent).stream_chat(message)
 
     #
     # Python Helpers

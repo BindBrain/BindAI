@@ -101,7 +101,10 @@ class WorkflowLoader:
 
         nodes = {}
 
+        from typing import Any
+
         for item in config.nodes:
+            node: Any
             if item.type == "start":
                 node = StartNode(item.id)
 
@@ -109,6 +112,12 @@ class WorkflowLoader:
                 node = EndNode(item.id)
 
             elif item.type == "agent":
+
+                if item.agent is None:
+                    raise ValueError(
+                        f"Agent node '{item.id}' is missing an agent."
+                    )
+
                 AgentRegistry.get(item.agent)
 
                 node = AgentNode(

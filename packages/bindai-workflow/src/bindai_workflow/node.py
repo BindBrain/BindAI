@@ -4,8 +4,9 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from bindai_core.context import ExecutionContext
-
+    from .context import WorkflowContext
+from typing import cast
+from .context import WorkflowContext
 
 class WorkflowNode(ABC):
     """
@@ -27,8 +28,8 @@ class WorkflowNode(ABC):
     @abstractmethod
     def execute(
         self,
-        context: ExecutionContext,
-    ) -> None: ...
+        context: WorkflowContext,
+    ) -> WorkflowContext: ...
 
     #
     # Serialization
@@ -52,11 +53,12 @@ class WorkflowNode(ABC):
         data: dict[str, object],
     ) -> None:
 
-        self.next_nodes = list(
+        self.next_nodes = cast(
+            list[str],
             data.get(
                 "next_nodes",
                 [],
-            )
+            ),
         )
 
     @property

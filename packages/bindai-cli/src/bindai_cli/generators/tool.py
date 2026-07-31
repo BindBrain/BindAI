@@ -1,6 +1,8 @@
-from bindai_tool import tool
+from pathlib import Path
 
 
-@tool
-def weather(city: str):
-    return f"Weather for {city}"
+def generate_tool(
+    root: Path,
+    name: str,
+) -> None:
+    pass

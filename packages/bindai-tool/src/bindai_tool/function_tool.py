@@ -54,14 +54,10 @@ class FunctionTool(Tool):
     def execute(
         self,
         context: ExecutionContext,
-        **overrides,
     ) -> ToolResult:
+
         try:
             kwargs = context.variables.as_dict()
-
-            kwargs.update(
-                overrides,
-            )
 
             result = self.function(
                 **kwargs,

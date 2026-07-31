@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from bindai_core.schema import ResponseSchema
 
 if TYPE_CHECKING:
-    from bindai_core.tool.definition import ToolDefinition
+    from bindai_tool.definition import ToolDefinition
 
 from .message import Message
 

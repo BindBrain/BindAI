@@ -4,7 +4,7 @@ from .execution.finish_step import FinishStep
 from .execution.knowledge_step import KnowledgeStep
 from .execution.memory_step import MemoryStep
 from .execution.prompt_builder import PromptBuilder
-from .execution.tool_executor import ToolExecutor
+from .execution.tool_execution_step import ToolExecutionStep
 
 
 def register_agent_services(
@@ -27,8 +27,8 @@ def register_agent_services(
     )
 
     container.register(
-        ToolExecutor,
-        ToolExecutor(),
+        ToolExecutionStep,
+        ToolExecutionStep(),
     )
 
     container.register(

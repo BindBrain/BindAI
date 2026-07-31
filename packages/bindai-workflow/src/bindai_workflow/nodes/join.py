@@ -29,7 +29,7 @@ class JoinNode(WorkflowNode):
     def execute(
         self,
         context: WorkflowContext,
-    ) -> None:
+    ) -> WorkflowContext:
 
         current = context.join_state.get(
             self.id,
@@ -46,8 +46,7 @@ class JoinNode(WorkflowNode):
 
         if current < self.expected:
             context.waiting = True
-
-            return
+            return context
 
         #
         # Reset state for future executions.
@@ -59,3 +58,5 @@ class JoinNode(WorkflowNode):
         )
 
         context.waiting = False
+
+        return context

@@ -266,9 +266,6 @@ class AgentExecutor:
             )
         )
 
-        if agent.memory is not None:
-            messages.extend(agent.memory.messages())
-
         messages.extend(agent.conversation.messages)
 
         return ModelRequest(
@@ -330,10 +327,8 @@ class AgentExecutor:
 
             output = ""
 
-            if result.output is not None:
-                output = str(
-                    result.output,
-                )
+            if result.value is not None:
+                output = str(result.value)
 
             elif result.error is not None:
                 output = result.error
@@ -360,15 +355,19 @@ class AgentExecutor:
 
         for message in messages:
             if message.role == MessageRole.ASSISTANT:
-                agent.conversation.add_assistant(
-                    message.content,
-                    tool_calls=message.tool_calls,
-                )
+                if message.tool_calls:
+                    agent.conversation.add_assistant_tool_call(
+                        message.tool_calls,
+                    )
+                else:
+                    agent.conversation.add_assistant(
+                        message.content,
+                    )
 
             elif message.role == MessageRole.TOOL:
                 agent.conversation.add_tool(
-                    tool_call_id=message.tool_call_id,
-                    text=message.content,
+                    tool_call_id=message.tool_call_id or "",
+                    content=message.content,
                 )
 
             elif message.role == MessageRole.USER:
@@ -390,5 +389,9 @@ class AgentExecutor:
 
         agent.conversation.add_assistant(
             response.content,
-            tool_calls=response.tool_calls,
         )
+
+        if response.tool_calls:
+            agent.conversation.add_assistant_tool_call(
+                response.tool_calls,
+            )

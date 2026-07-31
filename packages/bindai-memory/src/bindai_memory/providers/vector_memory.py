@@ -19,7 +19,7 @@ class VectorMemoryProvider(MemoryProvider):
             embedding,
         )()
 
-        self.records = []
+        self.records: list[MemoryRecord] = []
 
     def set(
         self,
@@ -109,7 +109,7 @@ class VectorMemoryProvider(MemoryProvider):
             scored.append(record)
 
         scored.sort(
-            key=lambda r: r.score,
+            key=lambda r: r.score if r.score is not None else 0.0,
             reverse=True,
         )
 

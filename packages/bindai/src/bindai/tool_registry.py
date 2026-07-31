@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from builtins import list as builtin_list
+
 from .tool import Tool
 
 
@@ -32,21 +34,28 @@ class ToolRegistry:
 
         return self._tools.get(name)
 
-    def list(self) -> list[Tool]:
+    #
+    # Primary API
+    #
+
+    def all_tools(self) -> list[Tool]:
         return list(self._tools.values())
 
+    #
     # Backward compatibility
-    def all(self) -> list[Tool]:
-        return self.list()
+    #
 
-    def names(self) -> list[str]:
+    def list(self):
+        return self.all_tools()
 
+    def all(self) -> builtin_list[Tool]:
+        return self.all_tools()
+
+    def names(self) -> builtin_list[str]:
         return list(self._tools.keys())
 
     def __contains__(self, name: str):
-
         return name in self._tools
 
     def __len__(self):
-
         return len(self._tools)

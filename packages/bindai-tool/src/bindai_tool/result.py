@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import Any
-
+from bindai_core.executable.result import ExecutionResult
 
 @dataclass(slots=True)
-class ToolResult:
+class ToolResult(ExecutionResult):
     success: bool
 
     value: Any = None

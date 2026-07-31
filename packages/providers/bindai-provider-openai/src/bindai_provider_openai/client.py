@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bindai_providers import ProviderConfiguration
+from bindai_core import ProviderConfiguration
 from openai import OpenAI
 
 
@@ -15,10 +15,8 @@ class OpenAIClient:
     def __init__(
         self,
         configuration: ProviderConfiguration,
-    ):
-
+    ) -> None:
         self._configuration = configuration
-
         self._client: OpenAI | None = None
 
     @property

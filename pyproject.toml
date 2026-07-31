@@ -6,11 +6,11 @@ requires-python = ">=3.12"
 
 dependencies = [
     "bindai",
-
     "openai>=2.47.0",
     "pypdf>=6.14.2",
     "python-dotenv>=1.2.2",
     "pyyaml>=6.0.3",
+    "typer>=0.27.0",
 ]
 
 [build-system]
@@ -150,3 +150,9 @@ module = [
     "bindai_provider_ollama.*",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "bindai_cli.scaffolds.*",
+]
+ignore_errors = true

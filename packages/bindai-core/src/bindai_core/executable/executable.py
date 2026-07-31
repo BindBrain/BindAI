@@ -6,7 +6,12 @@ from typing import Generic, TypeVar
 from bindai_core.context import ExecutionContext
 from bindai_core.runnable import Runnable
 
-TResult = TypeVar("TResult")
+from bindai_core.executable.result import ExecutionResult
+
+TResult = TypeVar(
+    "TResult",
+    bound=ExecutionResult,
+)
 
 
 class Executable(

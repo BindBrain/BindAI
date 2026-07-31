@@ -8,7 +8,7 @@ from .builder import AgentBuilder
 from .loader import AgentLoader
 
 
-def Agent(
+def create_agent(
     *,
     model: str | None = None,
     provider: str | None = None,
@@ -89,4 +89,5 @@ def Agent(
 # Convenience loader
 #
 
-Agent.from_yaml = AgentLoader.from_yaml
+def create_agent_from_yaml(path):
+    return AgentLoader.from_yaml(path)

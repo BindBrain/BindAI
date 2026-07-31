@@ -1,9 +1,8 @@
-from bindai_agent import AgentBuilder
+from pathlib import Path
 
-agent = (
-    AgentBuilder()
-    .name("Research")
-    .instructions("Research assistant.")
-    .model("openai:gpt-4.1-mini")
-    .build()
-)
+
+def generate_agent(
+    root: Path,
+    name: str,
+) -> None:
+    pass

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from bindai_core.runnable import Runnable
+from bindai_core.executable import Executable
 
 from .executable_node import ExecutableNode
 
@@ -20,7 +20,7 @@ class RunnableNode(
     def __init__(
         self,
         node_id: str,
-        runnable: Runnable,
+        runnable: Executable,
         name: str | None = None,
     ):
 
@@ -34,6 +34,6 @@ class RunnableNode(
     def get_executable(
         self,
         context: WorkflowContext,
-    ) -> Runnable:
+    ) -> Executable[Any]:
 
         return self.runnable
