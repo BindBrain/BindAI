@@ -1,5 +1,6 @@
 from bindai import (
     Agent,
+    AgentBuilder,
     Application,
     Memory,
     Tool,
@@ -7,8 +8,9 @@ from bindai import (
 )
 
 
-def test_bindai_public_exports():
+def test_bindai_public_api_exports():
     assert Agent
+    assert AgentBuilder
     assert Application
     assert Memory
     assert Tool
