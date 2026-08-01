@@ -5,7 +5,7 @@ from .step import ExecutionStep
 
 
 class PipelineBuilder:
-    def __init__(self):
+    def __init__(self) -> None:
         self._steps: list[ExecutionStep] = []
 
     def add(
@@ -15,9 +15,7 @@ class PipelineBuilder:
         self._steps.append(step)
         return self
 
-    def build(
-        self,
-    ) -> ExecutionPipeline:
+    def build(self) -> ExecutionPipeline:
         return ExecutionPipeline(
             self._steps,
         )

@@ -20,7 +20,6 @@ class Task(Executable):
         agent: Agent,
         expected_output: str | None = None,
     ):
-
         self.description = description
 
         self.agent = agent
@@ -43,7 +42,10 @@ class Task(Executable):
                 self.description,
             )
 
-            output = response.output if hasattr(response, "output") else response
+            if hasattr(response, "output"):
+                output = str(response.output)
+            else:
+                output = str(response)
 
             self.result = TaskResult(
                 success=True,

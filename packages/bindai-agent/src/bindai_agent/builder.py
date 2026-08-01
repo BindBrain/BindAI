@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 from bindai_config.runtime import ProjectRuntime
 from bindai_config.tool_loader import ToolLoader
@@ -23,27 +24,27 @@ from .registry import AgentRegistry
 class AgentBuilder:
     def __init__(self):
 
-        self._provider = None
+        self._provider: ModelProvider | None = None
 
-        self._name = "assistant"
+        self._name: str = "assistant"
 
-        self._prompt = Prompt()
+        self._prompt: Prompt = Prompt()
 
-        self._tools = []
+        self._tools: list[FunctionTool] = []
 
-        self._memory = None
+        self._memory: Any | None = None
 
-        self._retriever = None
+        self._retriever: Any | None = None
 
-        self._knowledge = None
+        self._knowledge: Any | None = None
 
-        self._middleware = []
+        self._middleware: list[Any] = []
 
-        self._hooks = []
+        self._hooks: list[Any] = []
 
-        self._configuration = AgentConfiguration()
+        self._configuration: AgentConfiguration = AgentConfiguration()
 
-        self._events = EventBus()
+        self._events: EventBus = EventBus()
 
     #
     # Providers
@@ -52,7 +53,7 @@ class AgentBuilder:
     def openai(
         self,
         model: str,
-    ):
+    ) -> AgentBuilder:
 
         load_dotenv()
 
@@ -78,16 +79,15 @@ class AgentBuilder:
         endpoint: str | None = None,
         organization: str | None = None,
         model: str | None = None,
-    ):
-
+    ) -> AgentBuilder:
         """
-    Configure the provider.
+        Configure the provider.
 
-    Accepts either:
+        Accepts either:
 
-    - a registered provider name (e.g. "openai", "anthropic", "ollama")
-    - an instantiated ModelProvider
-    """
+        - a registered provider name (e.g. "openai", "anthropic", "ollama")
+        - an instantiated ModelProvider
+        """
 
         if isinstance(
             provider,
@@ -117,7 +117,7 @@ class AgentBuilder:
     def name(
         self,
         value: str,
-    ):
+    ) -> AgentBuilder:
 
         self._name = value
 
@@ -126,7 +126,7 @@ class AgentBuilder:
     def instructions(
         self,
         value: str,
-    ):
+    ) -> AgentBuilder:
 
         self._prompt.system = value
 
@@ -139,7 +139,7 @@ class AgentBuilder:
     def temperature(
         self,
         value: float,
-    ):
+    ) -> AgentBuilder:
 
         self._configuration.temperature = value
 
@@ -148,7 +148,7 @@ class AgentBuilder:
     def max_tokens(
         self,
         value: int,
-    ):
+    ) -> AgentBuilder:
 
         self._configuration.max_tokens = value
 
@@ -157,7 +157,7 @@ class AgentBuilder:
     def max_tool_iterations(
         self,
         value: int,
-    ):
+    ) -> AgentBuilder:
 
         self._configuration.max_tool_iterations = value
 
@@ -169,8 +169,8 @@ class AgentBuilder:
 
     def memory(
         self,
-        memory,
-    ):
+        memory: Any,
+    ) -> AgentBuilder:
 
         self._memory = memory
 
@@ -178,8 +178,8 @@ class AgentBuilder:
 
     def retriever(
         self,
-        retriever,
-    ):
+        retriever: Any,
+    ) -> AgentBuilder:
 
         self._retriever = retriever
 
@@ -187,8 +187,8 @@ class AgentBuilder:
 
     def knowledge(
         self,
-        knowledge,
-    ):
+        knowledge: Any,
+    ) -> AgentBuilder:
 
         self._knowledge = knowledge
 
@@ -196,8 +196,8 @@ class AgentBuilder:
 
     def middleware(
         self,
-        middleware,
-    ):
+        middleware: Any,
+    ) -> AgentBuilder:
 
         self._middleware.append(
             middleware,
@@ -207,8 +207,8 @@ class AgentBuilder:
 
     def hook(
         self,
-        hook,
-    ):
+        hook: Any,
+    ) -> AgentBuilder:
 
         self._hooks.append(
             hook,
@@ -222,7 +222,7 @@ class AgentBuilder:
 
     def build(
         self,
-    ):
+    ) -> AssistantAgent:
 
         if self._provider is None:
             runtime = ProjectRuntime(
@@ -235,7 +235,7 @@ class AgentBuilder:
 
         agent = AssistantAgent(
             name=self._name,
-            instructions=self._prompt.system,
+            instructions=self._prompt.system or "",
             provider=self._provider,
         )
 
@@ -303,7 +303,7 @@ class AgentBuilder:
     def events(
         self,
         events: EventBus,
-    ):
+    ) -> AgentBuilder:
 
         self._events = events
 
@@ -311,8 +311,8 @@ class AgentBuilder:
 
     def tools(
         self,
-        *tools,
-    ):
+        *tools: Any,
+    ) -> AgentBuilder:
 
         for tool in tools:
             if callable(tool) and not isinstance(tool, FunctionTool):
@@ -325,7 +325,7 @@ class AgentBuilder:
     def model(
         self,
         value: str,
-    ):
+    ) -> AgentBuilder:
         """
         Configure the provider from a ``"<provider>:<model>"`` string.
 
@@ -345,20 +345,14 @@ class AgentBuilder:
             )
         except ValueError as exc:
             raise ValueError(
-                "Model must be in the format "
-                "'<provider>:<model>'. "
-                "Example: 'openai:gpt-5'."
+                "Model must be in the format '<provider>:<model>'. Example: 'openai:gpt-5'."
             ) from exc
 
         if not provider:
-            raise ValueError(
-                "Provider name cannot be empty."
-            )
+            raise ValueError("Provider name cannot be empty.")
 
         if not model:
-            raise ValueError(
-                "Model name cannot be empty."
-            )
+            raise ValueError("Model name cannot be empty.")
 
         if provider == "openai":
             return self.openai(model)
@@ -371,7 +365,7 @@ class AgentBuilder:
     def from_project(
         self,
         root: str | Path = ".",
-    ):
+    ) -> AgentBuilder:
 
         runtime = ProjectRuntime(
             Path(root),

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+
+from .result import ExecutionResult
 
 if TYPE_CHECKING:
     from bindai_core.context import ExecutionContext
@@ -19,7 +21,7 @@ class ExecutionStep(ABC):
         self,
         agent: Agent,
         context: ExecutionContext,
-    ) -> Any:
+    ) -> ExecutionResult:
         """
         Execute the step.
 

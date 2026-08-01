@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .agent import Agent
 
 
@@ -8,7 +10,6 @@ class AssistantAgent(Agent):
 
     @staticmethod
     def builder():
-
         from .builder import AgentBuilder
 
         return AgentBuilder()

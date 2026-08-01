@@ -1,5 +1,4 @@
 import pytest
-
 from bindai import AgentBuilder
 
 

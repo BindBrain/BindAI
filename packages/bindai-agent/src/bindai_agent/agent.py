@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from bindai_core.context import ExecutionContext
 from bindai_core.events import EventBus, ToolExecutedEvent
 from bindai_core.executable import Executable
 from bindai_core.tool import ToolRegistry
-from bindai_memory import (
-    InMemoryProvider,
-    Memory,
-)
+from bindai_memory import InMemoryProvider, Memory
 from bindai_prompts import Prompt
 
 from .configuration import AgentConfiguration
@@ -33,43 +33,42 @@ class Agent(Executable):
         prompt: Prompt | None = None,
     ):
 
-        self.name = name
+        self.name: str = name
+
         if isinstance(provider, str):
             self.provider = resolve_provider(provider)
         else:
             self.provider = provider
 
-        self.prompt = prompt or Prompt()
+        self.prompt: Prompt = prompt or Prompt()
 
         if instructions:
             self.prompt.system = instructions
 
-        self.events = EventBus()
+        self.events: EventBus = EventBus()
 
-        self.retriever = None
-        self.knowledge = None
+        self.retriever: Any | None = None
+        self.knowledge: Any | None = None
 
-        self.conversation = Conversation()
+        self.conversation: Conversation = Conversation()
 
-        self.memory = Memory(
+        self.memory: Memory = Memory(
             InMemoryProvider(),
         )
 
-        self.tools = ToolRegistry()
+        self.tools: ToolRegistry = ToolRegistry()
 
-        self.configuration = AgentConfiguration()
+        self.configuration: AgentConfiguration = AgentConfiguration()
 
-        self.state = AgentState.IDLE
+        self.state: AgentState = AgentState.IDLE
 
-        self.executor = AgentExecutionEngine(
-            self,
-        )
+        self.executor: AgentExecutionEngine = AgentExecutionEngine(self)
 
-        self.middleware: list = []
+        self.middleware: list[Any] = []
 
-        self.hooks: list = []
+        self.hooks: list[Any] = []
 
-        self.callbacks: dict[str, list] = {
+        self.callbacks: dict[str, list[Callable[..., Any]]] = {
             "before_run": [],
             "after_run": [],
             "error": [],
@@ -113,7 +112,7 @@ class Agent(Executable):
         self,
         message: str,
         output: type | None = None,
-    ):
+    ) -> AgentResult:
         """
         Primary execution entry point.
         """
@@ -127,7 +126,7 @@ class Agent(Executable):
         self,
         message: str,
         output: type | None = None,
-    ):
+    ) -> AgentResult:
 
         return self.execute(
             self._create_context(
@@ -162,7 +161,7 @@ class Agent(Executable):
 
     def tool(
         self,
-        tool,
+        tool: Any,
     ) -> Agent:
 
         self.tools.register(
@@ -184,7 +183,7 @@ class Agent(Executable):
     def execute_tool(
         self,
         name: str,
-        **kwargs,
+        **kwargs: Any,
     ):
 
         result = self.tools.execute(
@@ -202,7 +201,7 @@ class Agent(Executable):
 
     def use_middleware(
         self,
-        middleware,
+        middleware: Any,
     ) -> Agent:
 
         self.middleware.append(
@@ -213,7 +212,7 @@ class Agent(Executable):
 
     def use_memory(
         self,
-        memory,
+        memory: Memory,
     ) -> Agent:
 
         self.memory = memory
@@ -222,7 +221,7 @@ class Agent(Executable):
 
     def use_retriever(
         self,
-        retriever,
+        retriever: Any,
     ) -> Agent:
 
         self.retriever = retriever
@@ -231,7 +230,7 @@ class Agent(Executable):
 
     def use_knowledge(
         self,
-        knowledge,
+        knowledge: Any,
     ) -> Agent:
 
         self.knowledge = knowledge
@@ -240,7 +239,7 @@ class Agent(Executable):
 
     def hook(
         self,
-        hook,
+        hook: Callable[..., Any],
     ) -> Agent:
 
         self.hooks.append(
@@ -289,7 +288,7 @@ class Agent(Executable):
     def on(
         self,
         event: str,
-        callback,
+        callback: Callable[..., Any],
     ) -> Agent:
 
         self.callbacks.setdefault(
@@ -304,7 +303,7 @@ class Agent(Executable):
     def emit(
         self,
         event: str,
-        *args,
+        *args: Any,
     ) -> None:
 
         for callback in self.callbacks.get(

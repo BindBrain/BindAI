@@ -12,7 +12,8 @@ from .initialization_step import InitializationStep
 from .knowledge_step import KnowledgeStep
 from .memory_step import MemoryStep
 from .model_generation_step import ModelGenerationStep
-from .pipeline import ExecutionPipeline
+from .model_stream_step import ModelStreamStep
+from .pipeline_builder import PipelineBuilder
 from .state import ExecutionState
 from .tool_execution_step import ToolExecutionStep
 
@@ -28,30 +29,25 @@ class AgentExecutionEngine:
     ):
         self.agent = agent
 
-        self.pipeline = ExecutionPipeline()
-
-        self.pipeline.add(
-            InitializationStep(),
+        self.pipeline = (
+            PipelineBuilder()
+            .add(InitializationStep())
+            .add(KnowledgeStep())
+            .add(MemoryStep())
+            .add(ModelGenerationStep())
+            .add(ToolExecutionStep())
+            .add(FinishStep())
+            .build()
         )
 
-        self.pipeline.add(
-            KnowledgeStep(),
-        )
 
-        self.pipeline.add(
-            MemoryStep(),
-        )
-
-        self.pipeline.add(
-            ModelGenerationStep(),
-        )
-
-        self.pipeline.add(
-            ToolExecutionStep(),
-        )
-
-        self.pipeline.add(
-            FinishStep(),
+        self.streaming_pipeline = (
+            PipelineBuilder()
+            .add(InitializationStep())
+            .add(KnowledgeStep())
+            .add(MemoryStep())
+            .add(ModelStreamStep())
+            .build()
         )
 
     def execute(
@@ -70,15 +66,15 @@ class AgentExecutionEngine:
             AgentStartedEvent(),
         )
 
-        #
-        # Lifecycle
-        #
-
-        agent.before_run(
-            context,
-        )
-
         try:
+            #
+            # Lifecycle
+            #
+
+            agent.before_run(
+                context,
+            )
+
             #
             # before middleware
             #
@@ -114,6 +110,8 @@ class AgentExecutionEngine:
                 result,
             )
 
+            return result
+
         except Exception as ex:
             agent.on_error(
                 context,
@@ -122,15 +120,14 @@ class AgentExecutionEngine:
 
             raise
 
-        #
-        # Agent finished
-        #
+        finally:
+            #
+            # Agent finished
+            #
 
-        agent.events.publish(
-            AgentFinishedEvent(),
-        )
-
-        return result
+            agent.events.publish(
+                AgentFinishedEvent(),
+            )
 
     def stream(
         self,
@@ -140,10 +137,6 @@ class AgentExecutionEngine:
         """
         Stream tokens directly from the provider.
         """
-
-        #
-        # initialize execution state
-        #
 
         context.data = ExecutionState(
             streaming=True,
@@ -158,33 +151,10 @@ class AgentExecutionEngine:
         )
 
         try:
-            InitializationStep().execute(
+
+            return self.streaming_pipeline.execute(
                 agent,
                 context,
-            )
-
-            #
-            # optional knowledge
-            #
-
-            KnowledgeStep().execute(
-                agent,
-                context,
-            )
-
-            #
-            # optional memory
-            #
-
-            MemoryStep().execute(
-                agent,
-                context,
-            )
-
-            state = context.data
-
-            return agent.provider.stream(
-                state.request,
             )
 
         except Exception as ex:

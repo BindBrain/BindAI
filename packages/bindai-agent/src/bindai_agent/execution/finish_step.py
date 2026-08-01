@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import cast
 
 from bindai_memory import MemoryRecord
@@ -20,7 +21,7 @@ class FinishStep(
         self,
         agent,
         context,
-    ):
+    ) -> AgentResult:
 
         state = cast(
             ExecutionState,
@@ -44,11 +45,11 @@ class FinishStep(
 
             if output_type is not None:
                 try:
-                    import json
-
                     data = json.loads(response)
 
-                    structured = output_type(**data)
+                    structured = output_type(
+                        **data,
+                    )
 
                 except Exception:
                     structured = None
@@ -72,7 +73,11 @@ class FinishStep(
 
         result = AgentResult(
             success=True,
-            output=structured if structured is not None else response,
+            output=(
+                structured
+                if structured is not None
+                else response
+            ),
         )
 
         #
