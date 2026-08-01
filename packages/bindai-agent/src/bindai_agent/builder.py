@@ -6,6 +6,7 @@ from pathlib import Path
 from bindai_config.runtime import ProjectRuntime
 from bindai_config.tool_loader import ToolLoader
 from bindai_core.events import EventBus
+from bindai_core.provider import ModelProvider
 from bindai_prompts import Prompt
 from bindai_providers import (
     ProviderConfiguration,
@@ -71,19 +72,32 @@ class AgentBuilder:
 
     def provider(
         self,
-        provider,
-        **kwargs,
+        provider: str | ModelProvider,
+        *,
+        api_key: str | None = None,
+        endpoint: str | None = None,
+        organization: str | None = None,
+        model: str | None = None,
     ):
+
+        """
+    Configure the provider.
+
+    Accepts either:
+
+    - a registered provider name (e.g. "openai", "anthropic", "ollama")
+    - an instantiated ModelProvider
+    """
 
         if isinstance(
             provider,
             str,
         ):
             configuration = ProviderConfiguration(
-                api_key=kwargs.get("api_key"),
-                endpoint=kwargs.get("endpoint"),
-                organization=kwargs.get("organization"),
-                model=kwargs.get("model"),
+                api_key=api_key,
+                endpoint=endpoint,
+                organization=organization,
+                model=model,
             )
 
             self._provider = ProviderRegistry.create(
@@ -152,15 +166,6 @@ class AgentBuilder:
     #
     # Components
     #
-
-    def tool(
-        self,
-        tool,
-    ):
-
-        self._tools.append(tool)
-
-        return self
 
     def memory(
         self,
@@ -246,10 +251,6 @@ class AgentBuilder:
         #
 
         for tool in self._tools:
-            # Only wrap raw Python functions.
-            if callable(tool) and not isinstance(tool, FunctionTool):
-                tool = FunctionTool(tool)
-
             agent.tool(tool)
 
         #
@@ -312,8 +313,12 @@ class AgentBuilder:
         self,
         *tools,
     ):
+
         for tool in tools:
-            self.tool(tool)
+            if callable(tool) and not isinstance(tool, FunctionTool):
+                tool = FunctionTool(tool)
+
+            self._tools.append(tool)
 
         return self
 
@@ -344,61 +349,6 @@ class AgentBuilder:
             model=model,
         )
 
-    def with_tools(
-        self,
-        *tools,
-    ):
-
-        for tool in tools:
-            self.tool(tool)
-
-        return self
-
-    def with_memory(
-        self,
-        memory,
-    ):
-
-        return self.memory(
-            memory,
-        )
-
-    def with_knowledge(
-        self,
-        knowledge,
-    ):
-
-        return self.knowledge(
-            knowledge,
-        )
-
-    def with_retriever(
-        self,
-        retriever,
-    ):
-
-        return self.retriever(
-            retriever,
-        )
-
-    def use(
-        self,
-        middleware,
-    ):
-
-        return self.middleware(
-            middleware,
-        )
-
-    def on(
-        self,
-        hook,
-    ):
-
-        return self.hook(
-            hook,
-        )
-
     def from_project(
         self,
         root: str | Path = ".",
@@ -410,12 +360,15 @@ class AgentBuilder:
 
         config = runtime.config
 
-        for tool in ToolLoader.load(
-            Path(root),
-        ):
-            self.tool(tool)
+        self.tools(
+            *ToolLoader.load(
+                Path(root),
+            ),
+        )
 
-        self.model(f"{config.provider}:{config.model}")
+        self.model(
+            f"{config.provider}:{config.model}",
+        )
 
         self.temperature(
             config.temperature,

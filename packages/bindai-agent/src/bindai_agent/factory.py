@@ -64,17 +64,17 @@ def create_agent(
     #
 
     if tools:
-        builder.with_tools(
+        builder.tools(
             *tools,
         )
 
     if memory:
-        builder.with_memory(
+        builder.memory(
             memory,
         )
 
     if knowledge:
-        builder.with_knowledge(
+        builder.knowledge(
             knowledge,
         )
 

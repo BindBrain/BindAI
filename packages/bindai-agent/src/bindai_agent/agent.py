@@ -87,6 +87,28 @@ class Agent(Executable):
 
         self.prompt.system = value
 
+    def _create_context(
+        self,
+        message: str,
+        output: type | None = None,
+    ) -> ExecutionContext:
+
+        context = ExecutionContext()
+
+        context.data = ExecutionData()
+
+        context.variables.set(
+            "input",
+            message,
+        )
+
+        context.variables.set(
+            "output_type",
+            output,
+        )
+
+        return context
+
     def run(
         self,
         message: str,
@@ -107,22 +129,11 @@ class Agent(Executable):
         output: type | None = None,
     ):
 
-        context = ExecutionContext()
-
-        context.data = ExecutionData()
-
-        context.variables.set(
-            "input",
-            message,
-        )
-
-        context.variables.set(
-            "output_type",
-            output,
-        )
-
         return self.execute(
-            context,
+            self._create_context(
+                message,
+                output,
+            ),
         )
 
     def stream_chat(
@@ -131,23 +142,12 @@ class Agent(Executable):
         output: type | None = None,
     ):
 
-        context = ExecutionContext()
-
-        context.data = ExecutionData()
-
-        context.variables.set(
-            "input",
-            message,
-        )
-
-        context.variables.set(
-            "output_type",
-            output,
-        )
-
         return self.executor.stream(
             self,
-            context,
+            self._create_context(
+                message,
+                output,
+            ),
         )
 
     def stream(
