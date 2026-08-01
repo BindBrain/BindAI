@@ -70,12 +70,6 @@ class Knowledge:
             filters=options.filters,
         )
 
-        return self.provider.search(
-            query,
-            limit,
-            filters,
-        )
-
     def search_with_scores(
         self,
         query: str,

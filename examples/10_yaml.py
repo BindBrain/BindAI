@@ -1,4 +1,4 @@
-from bindai_config import YamlLoader
+from bindai_config.yaml_loader import YamlLoader
 
 
 print("=" * 60)

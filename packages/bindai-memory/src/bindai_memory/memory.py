@@ -23,7 +23,9 @@ class Memory:
             provider,
             str,
         ):
-            provider = (MemoryRegistry.provider(provider))()
+            provider = (
+                MemoryRegistry.provider(provider)
+            )()
 
         self.provider = provider
 
@@ -92,3 +94,36 @@ class Memory:
         return self.provider.clear(
             namespace,
         )
+
+    def close(self) -> None:
+        """
+        Close underlying provider if it supports closing.
+        """
+
+        close = getattr(
+            self.provider,
+            "close",
+            None,
+        )
+
+        if callable(close):
+            close()
+
+    def __enter__(self):
+        """
+        Support context manager usage.
+        """
+
+        return self
+
+    def __exit__(
+        self,
+        exc_type,
+        exc_value,
+        traceback,
+    ):
+        """
+        Automatically close provider.
+        """
+
+        self.close()

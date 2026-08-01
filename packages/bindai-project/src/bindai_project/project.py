@@ -40,7 +40,7 @@ class Project:
         # Workflows
         #
 
-        self.workflows = WorkflowRegistry
+        self.workflows = WorkflowRegistry()
 
         self.scheduler = WorkflowScheduler()
 
@@ -68,7 +68,7 @@ class Project:
     def add_application(
         self,
         application: Application,
-    ):
+    ) -> Project:
 
         self.applications[application.name] = application
 
@@ -88,7 +88,7 @@ class Project:
     def add_tool(
         self,
         tool,
-    ):
+    ) -> Project:
 
         self.tools.register(
             tool,
@@ -103,7 +103,7 @@ class Project:
     def add_workflow(
         self,
         workflow,
-    ):
+    ) -> Project:
 
         self.workflows.register(
             workflow,
@@ -180,7 +180,7 @@ class Project:
     def add_schedule(
         self,
         schedule,
-    ):
+    ) -> Project:
 
         self.scheduler.add(
             schedule,

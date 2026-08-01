@@ -1,45 +1,38 @@
-from bindai_memory import (
-    Memory,
-    MemoryRecord,
-    MemoryRegistry,
-)
-from bindai_memory.providers import (
-    InMemoryProvider,
-    SQLiteMemoryProvider,
-)
+from bindai_memory.memory import Memory
+from bindai_memory.record import MemoryRecord
+from bindai_memory.providers.sqlite import SQLiteMemoryProvider
 
 
-def test_default_memory():
+def test_memory_default_provider():
 
     memory = Memory()
 
-    assert isinstance(
-        memory.provider,
-        InMemoryProvider,
+    record = MemoryRecord(
+        namespace="test",
+        key="hello",
+        value="world",
     )
 
+    result = memory.set(record)
 
-def test_registry():
+    assert result.success
 
-    provider = MemoryRegistry.provider(
-        "memory",
+    result = memory.get(
+        "hello",
+        "test",
     )
 
-    assert provider is InMemoryProvider
-
-    provider = MemoryRegistry.provider(
-        "sqlite",
-    )
-
-    assert provider is SQLiteMemoryProvider
+    assert result.success
+    assert result.value.value == "world"
 
 
-def test_set_get():
+def test_memory_set_get():
 
     memory = Memory()
 
     memory.set(
         MemoryRecord(
+            namespace="test",
             key="name",
             value="BindAI",
         )
@@ -47,92 +40,161 @@ def test_set_get():
 
     result = memory.get(
         "name",
+        "test",
     )
 
     assert result.success
-
     assert result.value.value == "BindAI"
 
 
-def test_exists():
+def test_memory_exists_delete():
 
     memory = Memory()
 
     memory.set(
         MemoryRecord(
-            key="language",
-            value="Python",
-        )
-    )
-
-    assert memory.exists(
-        "language",
-    )
-
-
-def test_delete():
-
-    memory = Memory()
-
-    memory.set(
-        MemoryRecord(
-            key="temp",
-            value="123",
-        )
-    )
-
-    memory.delete(
-        "temp",
-    )
-
-    assert not memory.exists(
-        "temp",
-    )
-
-
-def test_clear():
-
-    memory = Memory()
-
-    memory.set(
-        MemoryRecord(
-            key="a",
-            value="1",
-        )
-    )
-
-    memory.set(
-        MemoryRecord(
-            key="b",
-            value="2",
-        )
-    )
-
-    memory.clear()
-
-    assert not memory.exists("a")
-    assert not memory.exists("b")
-
-
-def test_sqlite_provider():
-
-    memory = Memory(
-        SQLiteMemoryProvider(
-            ":memory:",
-        )
-    )
-
-    memory.set(
-        MemoryRecord(
+            namespace="test",
             key="framework",
             value="BindAI",
         )
     )
 
-    result = memory.get(
+    assert memory.exists(
         "framework",
+        "test",
+    )
+
+    result = memory.delete(
+        "framework",
+        "test",
     )
 
     assert result.success
 
-    assert result.value.value == "BindAI"
+    assert not memory.exists(
+        "framework",
+        "test",
+    )
+
+
+def test_memory_clear():
+
+    memory = Memory()
+
+    memory.set(
+        MemoryRecord(
+            namespace="test",
+            key="a",
+            value="123",
+        )
+    )
+
+    memory.set(
+        MemoryRecord(
+            namespace="test",
+            key="b",
+            value="456",
+        )
+    )
+
+    result = memory.clear(
+        "test",
+    )
+
+    assert result.success
+
+    assert not memory.exists(
+        "a",
+        "test",
+    )
+
+    assert not memory.exists(
+        "b",
+        "test",
+    )
+
+
+def test_sqlite_provider():
+
+    provider = SQLiteMemoryProvider(
+        ":memory:",
+    )
+
+    memory = Memory(
+        provider
+    )
+
+    try:
+
+        result = memory.set(
+            MemoryRecord(
+                key="framework",
+                value="BindAI",
+            )
+        )
+
+        assert result.success
+
+        result = memory.get(
+            "framework",
+        )
+
+        assert result.success
+        assert result.value.value == "BindAI"
+
+        assert memory.exists(
+            "framework",
+        )
+
+        result = memory.delete(
+            "framework",
+        )
+
+        assert result.success
+
+        assert not memory.exists(
+            "framework",
+        )
+
+    finally:
+        provider.close()
+
+
+def test_sqlite_provider_search():
+
+    provider = SQLiteMemoryProvider(
+        ":memory:",
+    )
+
+    memory = Memory(
+        provider
+    )
+
+    try:
+
+        memory.set(
+            MemoryRecord(
+                namespace="test",
+                key="language",
+                value="Python",
+            )
+        )
+
+        memory.set(
+            MemoryRecord(
+                namespace="test",
+                key="framework",
+                value="BindAI",
+            )
+        )
+
+        results = memory.search(
+            "Python",
+            "test",
+        )
+
+        assert len(results) == 1
+        assert results[0].value == "Python"
+
+    finally:
+        provider.close()

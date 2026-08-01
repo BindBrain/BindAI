@@ -20,7 +20,22 @@ class MemoryRegistry:
         provider: type[MemoryProvider],
     ) -> None:
 
-        cls._providers[name] = provider
+        if not name:
+            raise ValueError(
+                "Provider name cannot be empty."
+            )
+
+        if not issubclass(
+            provider,
+            MemoryProvider,
+        ):
+            raise TypeError(
+                "Provider must inherit from MemoryProvider."
+            )
+
+        cls._providers[
+            name.strip().lower()
+        ] = provider
 
     @classmethod
     def provider(
@@ -28,18 +43,42 @@ class MemoryRegistry:
         name: str,
     ) -> type[MemoryProvider]:
 
+        key = name.strip().lower()
+
         try:
-            return cls._providers[name]
+            return cls._providers[key]
 
         except KeyError as exc:
-            raise ValueError(f"Unknown memory provider '{name}'.") from exc
+            raise ValueError(
+                f"Unknown memory provider '{name}'."
+            ) from exc
 
     @classmethod
     def providers(
         cls,
     ) -> dict[str, type[MemoryProvider]]:
 
-        return dict(cls._providers)
+        return dict(
+            cls._providers,
+        )
+
+    @classmethod
+    def unregister(
+        cls,
+        name: str,
+    ) -> None:
+
+        cls._providers.pop(
+            name.strip().lower(),
+            None,
+        )
+
+    @classmethod
+    def clear(
+        cls,
+    ) -> None:
+
+        cls._providers.clear()
 
 
 #
@@ -49,6 +88,7 @@ class MemoryRegistry:
 from .providers.in_memory import InMemoryProvider
 from .providers.sqlite import SQLiteMemoryProvider
 from .providers.vector_memory import VectorMemoryProvider
+
 
 MemoryRegistry.register(
     "memory",

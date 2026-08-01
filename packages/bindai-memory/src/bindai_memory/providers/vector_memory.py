@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import math
 
 from bindai_memory.provider import MemoryProvider
@@ -8,6 +9,10 @@ from bindai_memory.result import MemoryResult
 
 
 class VectorMemoryProvider(MemoryProvider):
+    """
+    In-memory vector based memory provider.
+    """
+
     def __init__(
         self,
         embedding: str = "random",
@@ -30,6 +35,19 @@ class VectorMemoryProvider(MemoryProvider):
             str(record.value),
         )
 
+        record.updated_at = datetime.now(
+            timezone.utc,
+        )
+
+        self.records = [
+            existing
+            for existing in self.records
+            if not (
+                existing.key == record.key
+                and existing.namespace == record.namespace
+            )
+        ]
+
         self.records.append(
             record,
         )
@@ -43,10 +61,15 @@ class VectorMemoryProvider(MemoryProvider):
         self,
         key: str,
         namespace: str = "default",
-    ):
+    ) -> MemoryResult:
 
         for record in self.records:
-            if record.key == key and record.namespace == namespace:
+
+            if (
+                record.key == key
+                and record.namespace == namespace
+            ):
+
                 return MemoryResult(
                     success=True,
                     value=record,
@@ -60,43 +83,78 @@ class VectorMemoryProvider(MemoryProvider):
         self,
         key: str,
         namespace: str = "default",
-    ):
+    ) -> MemoryResult:
 
-        self.records = [r for r in self.records if not (r.key == key and r.namespace == namespace)]
+        self.records = [
+            record
+            for record in self.records
+            if not (
+                record.key == key
+                and record.namespace == namespace
+            )
+        ]
 
-        return MemoryResult(success=True)
+        return MemoryResult(
+            success=True,
+        )
 
     def exists(
         self,
         key: str,
         namespace: str = "default",
-    ):
+    ) -> bool:
 
-        return any(r.key == key and r.namespace == namespace for r in self.records)
+        return any(
+            record.key == key
+            and record.namespace == namespace
+            for record in self.records
+        )
 
     def clear(
         self,
         namespace: str = "default",
-    ):
+    ) -> MemoryResult:
 
-        self.records = [r for r in self.records if r.namespace != namespace]
+        self.records = [
+            record
+            for record in self.records
+            if record.namespace != namespace
+        ]
 
-        return MemoryResult(success=True)
+        return MemoryResult(
+            success=True,
+        )
 
     def search(
         self,
         query: str,
         namespace: str = "default",
         limit: int = 10,
-        metadata=None,
-    ):
+        metadata: dict | None = None,
+    ) -> list[MemoryRecord]:
 
-        query_embedding = self.embedding.embed(query)
+        query_embedding = self.embedding.embed(
+            query,
+        )
 
-        scored = []
+        scored: list[MemoryRecord] = []
 
         for record in self.records:
+
             if record.namespace != namespace:
+                continue
+
+            if metadata:
+
+                matches = all(
+                    record.metadata.get(key) == value
+                    for key, value in metadata.items()
+                )
+
+                if not matches:
+                    continue
+
+            if not record.embedding:
                 continue
 
             score = self._cosine(
@@ -104,12 +162,28 @@ class VectorMemoryProvider(MemoryProvider):
                 record.embedding,
             )
 
-            record.score = score
+            result = MemoryRecord(
+                key=record.key,
+                value=record.value,
+                namespace=record.namespace,
+                type=record.type,
+                metadata=record.metadata,
+                embedding=record.embedding,
+                score=score,
+                created_at=record.created_at,
+                updated_at=record.updated_at,
+            )
 
-            scored.append(record)
+            scored.append(
+                result,
+            )
 
         scored.sort(
-            key=lambda r: r.score if r.score is not None else 0.0,
+            key=lambda record: (
+                record.score
+                if record.score is not None
+                else 0.0
+            ),
             reverse=True,
         )
 
@@ -117,15 +191,28 @@ class VectorMemoryProvider(MemoryProvider):
 
     def _cosine(
         self,
-        a,
-        b,
-    ):
+        a: list[float],
+        b: list[float],
+    ) -> float:
 
-        dot = sum(x * y for x, y in zip(a, b))
+        dot = sum(
+            x * y
+            for x, y in zip(a, b)
+        )
 
-        na = math.sqrt(sum(x * x for x in a))
+        na = math.sqrt(
+            sum(
+                x * x
+                for x in a
+            )
+        )
 
-        nb = math.sqrt(sum(x * x for x in b))
+        nb = math.sqrt(
+            sum(
+                x * x
+                for x in b
+            )
+        )
 
         if na == 0 or nb == 0:
             return 0.0

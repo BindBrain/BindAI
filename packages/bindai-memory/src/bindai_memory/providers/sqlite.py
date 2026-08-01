@@ -16,18 +16,18 @@ class SQLiteMemoryProvider(MemoryProvider):
         self,
         database: str = "bindai.db",
     ):
-
-        self._connection = sqlite3.connect(
+        self._connection: sqlite3.Connection | None = sqlite3.connect(
             database,
+            check_same_thread=False,
         )
 
         self._connection.execute(
             """
             CREATE TABLE IF NOT EXISTS memory(
-                namespace TEXT,
-                key TEXT,
-                value TEXT,
-                type TEXT,
+                namespace TEXT NOT NULL,
+                key TEXT NOT NULL,
+                value TEXT NOT NULL,
+                type TEXT NOT NULL,
                 PRIMARY KEY(namespace, key)
             )
             """
@@ -35,16 +35,49 @@ class SQLiteMemoryProvider(MemoryProvider):
 
         self._connection.commit()
 
+    def _ensure_connection(self) -> sqlite3.Connection:
+        """
+        Return active SQLite connection.
+        """
+
+        if self._connection is None:
+            raise RuntimeError(
+                "SQLiteMemoryProvider is closed"
+            )
+
+        return self._connection
+
+    def close(self) -> None:
+        """
+        Close SQLite database connection.
+        """
+
+        if self._connection is not None:
+            self._connection.close()
+            self._connection = None
+
     def set(
         self,
         record: MemoryRecord,
     ) -> MemoryResult:
 
-        self._connection.execute(
+        connection = self._ensure_connection()
+
+        connection.execute(
             """
-            INSERT OR REPLACE INTO memory
-            (namespace,key,value,type)
-            VALUES (?,?,?,?)
+            INSERT INTO memory
+            (
+                namespace,
+                key,
+                value,
+                type
+            )
+            VALUES (?, ?, ?, ?)
+
+            ON CONFLICT(namespace,key)
+            DO UPDATE SET
+                value=excluded.value,
+                type=excluded.type
             """,
             (
                 record.namespace,
@@ -54,7 +87,7 @@ class SQLiteMemoryProvider(MemoryProvider):
             ),
         )
 
-        self._connection.commit()
+        connection.commit()
 
         return MemoryResult(
             success=True,
@@ -67,11 +100,14 @@ class SQLiteMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> MemoryResult:
 
-        row = self._connection.execute(
+        connection = self._ensure_connection()
+
+        row = connection.execute(
             """
-            SELECT key,value,type
+            SELECT key, value, type
             FROM memory
-            WHERE namespace=? AND key=?
+            WHERE namespace=? 
+            AND key=?
             """,
             (
                 namespace,
@@ -99,11 +135,13 @@ class SQLiteMemoryProvider(MemoryProvider):
         namespace: str = "default",
         limit: int = 10,
         metadata: dict | None = None,
-    ):
+    ) -> list[MemoryRecord]:
 
-        rows = self._connection.execute(
+        connection = self._ensure_connection()
+
+        rows = connection.execute(
             """
-            SELECT key,value,type
+            SELECT key, value, type
             FROM memory
             WHERE namespace=?
             AND value LIKE ?
@@ -131,10 +169,13 @@ class SQLiteMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> MemoryResult:
 
-        self._connection.execute(
+        connection = self._ensure_connection()
+
+        connection.execute(
             """
             DELETE FROM memory
-            WHERE namespace=? AND key=?
+            WHERE namespace=?
+            AND key=?
             """,
             (
                 namespace,
@@ -142,7 +183,7 @@ class SQLiteMemoryProvider(MemoryProvider):
             ),
         )
 
-        self._connection.commit()
+        connection.commit()
 
         return MemoryResult(
             success=True,
@@ -154,11 +195,14 @@ class SQLiteMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> bool:
 
-        row = self._connection.execute(
+        connection = self._ensure_connection()
+
+        row = connection.execute(
             """
             SELECT 1
             FROM memory
-            WHERE namespace=? AND key=?
+            WHERE namespace=?
+            AND key=?
             """,
             (
                 namespace,
@@ -173,7 +217,9 @@ class SQLiteMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> MemoryResult:
 
-        self._connection.execute(
+        connection = self._ensure_connection()
+
+        connection.execute(
             """
             DELETE FROM memory
             WHERE namespace=?
@@ -181,7 +227,7 @@ class SQLiteMemoryProvider(MemoryProvider):
             (namespace,),
         )
 
-        self._connection.commit()
+        connection.commit()
 
         return MemoryResult(
             success=True,

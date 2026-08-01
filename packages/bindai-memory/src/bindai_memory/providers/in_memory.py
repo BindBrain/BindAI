@@ -11,7 +11,6 @@ class InMemoryProvider(MemoryProvider):
     """
 
     def __init__(self):
-
         self._storage: dict[
             str,
             dict[str, MemoryRecord],
@@ -40,7 +39,12 @@ class InMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> MemoryResult:
 
-        record = self._storage.get(namespace, {}).get(key)
+        record = self._storage.get(
+            namespace,
+            {},
+        ).get(
+            key,
+        )
 
         return MemoryResult(
             success=record is not None,
@@ -53,26 +57,37 @@ class InMemoryProvider(MemoryProvider):
         namespace: str = "default",
         limit: int = 10,
         metadata: dict | None = None,
-    ):
+    ) -> list[MemoryRecord]:
+
+        if limit <= 0:
+            return []
 
         query = query.lower()
 
-        results = []
+        results: list[MemoryRecord] = []
 
-        for record in self._storage.get(namespace, {}).values():
+        records = self._storage.get(
+            namespace,
+            {},
+        ).values()
+
+        for record in records:
+
             if metadata:
-                ok = True
+                record_metadata = record.metadata or {}
 
-                for key, value in metadata.items():
-                    if record.metadata.get(key) != value:
-                        ok = False
-                        break
+                matches = all(
+                    record_metadata.get(key) == value
+                    for key, value in metadata.items()
+                )
 
-                if not ok:
+                if not matches:
                     continue
 
             if query in str(record.value).lower():
-                results.append(record)
+                results.append(
+                    record,
+                )
 
                 if len(results) >= limit:
                     break
@@ -85,15 +100,11 @@ class InMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> MemoryResult:
 
-        storage = self._storage.get(
-            namespace,
-            {},
-        )
-
-        storage.pop(
-            key,
-            None,
-        )
+        if namespace in self._storage:
+            self._storage[namespace].pop(
+                key,
+                None,
+            )
 
         return MemoryResult(
             success=True,

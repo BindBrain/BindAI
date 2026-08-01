@@ -10,7 +10,9 @@ from bindai_providers import (
 )
 
 
-def resolve_provider(provider):
+def resolve_provider(
+    provider: str | object,
+):
     """
     Resolves either:
 

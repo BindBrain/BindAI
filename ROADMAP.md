@@ -4,6 +4,14 @@ This roadmap outlines the planned direction for BindAI. Priorities may change as
 
 ---
 
+Vision
+
+BindAI aims to become the open-source platform for building AI-powered business applications.
+
+Rather than focusing solely on AI agents, BindAI provides a modular foundation for creating complete business solutions using agents, workflows, tools, memory, knowledge, automation, and integrations.
+
+---
+
 # Version 1.0
 
 ## Core Framework

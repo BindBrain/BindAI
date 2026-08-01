@@ -13,22 +13,12 @@ from .registry import MemoryRegistry
 from .result import MemoryResult
 
 #
-# Register aliases
+# Provider aliases
 #
-
-MemoryRegistry.register(
-    "memory",
-    InMemoryProvider,
-)
 
 MemoryRegistry.register(
     "in_memory",
     InMemoryProvider,
-)
-
-MemoryRegistry.register(
-    "sqlite",
-    SQLiteMemoryProvider,
 )
 
 #

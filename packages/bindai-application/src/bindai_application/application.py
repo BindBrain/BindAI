@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bindai_agent import Agent, create_agent
+from bindai_agent import Agent
 
 from .configuration import ApplicationConfiguration
 
@@ -50,7 +50,7 @@ class Application:
     def add_agent(
         self,
         agent: Agent,
-    ):
+    ) -> Application:
 
         self.agents[agent.name] = agent
 
