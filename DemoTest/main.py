@@ -6,7 +6,6 @@ def main():
     print("BindAI Project")
 
     while True:
-
         message = input("You: ")
 
         if message.lower() == "exit":

@@ -1,5 +1,3 @@
 from bindai import Agent
 
-agent = Agent(
-    instructions="You are helpful."
-)
+agent = Agent(instructions="You are helpful.")
