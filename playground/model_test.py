@@ -4,9 +4,7 @@ from bindai_core import (
     ModelRequest,
 )
 
-request = ModelRequest(
-    messages=[Message(role=MessageRole.USER, content="Hello BindAI")]
-)
+request = ModelRequest(messages=[Message(role=MessageRole.USER, content="Hello BindAI")])
 
 print(request.messages[0].role.value)
 print(request.messages[0].content)

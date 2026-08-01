@@ -1,13 +1,11 @@
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from bindai_agent import Agent
-
 from bindai_workflow import WorkflowBuilder
 from bindai_workflow.nodes import (
     HumanTaskNode,
 )
+from dotenv import load_dotenv
 
 BASE = Path(__file__).parent
 
@@ -70,7 +68,6 @@ print("First Execution")
 print("----------------------------------------")
 
 if instance.context.waiting:
-
     print("Workflow paused.")
 
     print()
@@ -80,7 +77,6 @@ if instance.context.waiting:
     print(instance.context.task)
 
 else:
-
     print(result.output)
 
 

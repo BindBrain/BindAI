@@ -1,6 +1,6 @@
 from bindai_core import (
-    ExecutionPipeline,
     ExecutionContext,
+    ExecutionPipeline,
 )
 
 

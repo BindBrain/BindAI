@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from bindai import Agent
+from dotenv import load_dotenv
 
 from tools import current_time
 
@@ -20,7 +19,6 @@ print("BindAI Tool Agent")
 print("Type 'exit' to quit.\n")
 
 while True:
-
     message = input("You: ")
 
     if message.lower() in {"exit", "quit"}:

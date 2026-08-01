@@ -136,14 +136,9 @@ Or install individual packages during development.
 ```python
 from bindai import Agent
 
-agent = Agent(
-    name="assistant",
-    instructions="You are a helpful AI assistant."
-)
+agent = Agent(name="assistant", instructions="You are a helpful AI assistant.")
 
-response = agent.run(
-    "Explain what BindAI is."
-)
+response = agent.run("Explain what BindAI is.")
 
 print(response.output)
 ```

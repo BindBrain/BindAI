@@ -1,9 +1,9 @@
+from bindai_core.context import ExecutionContext
 from bindai_core.workflow import (
     Workflow,
-    WorkflowNode,
     WorkflowExecutor,
+    WorkflowNode,
 )
-from bindai_core.context import ExecutionContext
 
 
 class Step1:

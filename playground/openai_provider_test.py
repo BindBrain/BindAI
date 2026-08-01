@@ -4,9 +4,7 @@ from bindai_core import (
     ModelRequest,
     ProviderConfiguration,
 )
-
 from bindai_provider_openai import OpenAIProvider
-
 
 configuration = ProviderConfiguration(
     api_key="YOUR_API_KEY",

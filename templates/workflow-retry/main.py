@@ -1,8 +1,7 @@
 from bindai_workflow import (
-    WorkflowBuilder,
     RetryPolicy,
+    WorkflowBuilder,
 )
-
 from bindai_workflow.node import WorkflowNode
 
 
@@ -27,9 +26,7 @@ class RetryNode(WorkflowNode):
         print(f"Attempt {self.calls}")
 
         if self.calls < 3:
-            raise RuntimeError(
-                "Temporary failure."
-            )
+            raise RuntimeError("Temporary failure.")
 
         context.set(
             "result",

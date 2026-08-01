@@ -1,7 +1,7 @@
 from bindai_core import (
     Tool,
-    ToolResult,
     ToolRegistry,
+    ToolResult,
 )
 
 

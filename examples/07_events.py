@@ -1,7 +1,7 @@
 from bindai import AgentBuilder
 from bindai_core.events import (
-    AgentStartedEvent,
     AgentFinishedEvent,
+    AgentStartedEvent,
     ToolExecutedEvent,
 )
 from bindai_core.tool import tool
@@ -16,9 +16,7 @@ def add(a: int, b: int):
 agent = (
     AgentBuilder()
     .name("Assistant")
-    .instructions(
-        "Always use the add tool for addition."
-    )
+    .instructions("Always use the add tool for addition.")
     .openai(
         model="gpt-5",
     )
@@ -31,6 +29,7 @@ agent = (
 # Event Handlers
 #
 
+
 def on_agent_started(event: AgentStartedEvent):
     print("Agent Started")
 
@@ -40,9 +39,7 @@ def on_agent_finished(event: AgentFinishedEvent):
 
 
 def on_tool(event: ToolExecutedEvent):
-    print(
-        f"Tool Executed: {event.tool_name}"
-    )
+    print(f"Tool Executed: {event.tool_name}")
 
 
 #
@@ -82,9 +79,7 @@ agent.execute_tool(
 
 print("\nRunning Agent")
 
-result = agent.chat(
-    "What is 100 + 50?"
-)
+result = agent.chat("What is 100 + 50?")
 
 print(result.response)
 

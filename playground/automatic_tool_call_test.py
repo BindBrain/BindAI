@@ -4,8 +4,8 @@ from bindai_core import (
     ModelProvider,
     ModelResponse,
     TokenUsage,
-    ToolCall,
     Tool,
+    ToolCall,
 )
 
 

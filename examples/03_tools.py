@@ -1,10 +1,10 @@
 from bindai import AgentBuilder
 from bindai_core.tool import tool
 
-
 #
 # Create a tool
 #
+
 
 @tool()
 def add(a: int, b: int):
@@ -83,9 +83,7 @@ print()
 
 print("=== LLM Tool Calling ===")
 
-response = agent.chat(
-    "What is 24891 + 91742?"
-)
+response = agent.chat("What is 24891 + 91742?")
 
 print("Success:", response.success)
 print("Iterations:", response.iterations)

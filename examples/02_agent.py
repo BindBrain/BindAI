@@ -12,9 +12,11 @@ Learn how to:
 """
 
 from bindai import AgentBuilder
-
+from bindai_agent import (
+    Agent,
+    AgentResult,
+)
 from bindai_core.context import ExecutionContext
-
 from bindai_core.model import (
     Message,
     MessageRole,
@@ -23,12 +25,6 @@ from bindai_core.model import (
     ModelResponse,
     ProviderCapabilities,
 )
-
-from bindai_agent import (
-    Agent,
-    AgentResult,
-)
-
 
 # ==========================================================
 # Example 1 — AgentBuilder
@@ -41,9 +37,7 @@ print("=" * 60)
 assistant = (
     AgentBuilder()
     .name("Assistant")
-    .instructions(
-        "You are a helpful assistant."
-    )
+    .instructions("You are a helpful assistant.")
     .openai(
         model="gpt-4.1-mini",
     )
@@ -114,7 +108,6 @@ print("=" * 60)
 
 
 class DemoProvider(ModelProvider):
-
     @property
     def name(self):
         return "demo"
@@ -150,7 +143,6 @@ print("=" * 60)
 
 
 class HelloAgent(Agent):
-
     def execute(
         self,
         context,

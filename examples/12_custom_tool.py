@@ -8,15 +8,8 @@ def add(a: int, b: int) -> int:
     return a + b
 
 
-agent = (
-    AgentBuilder()
-    .openai("gpt-5")
-    .tool(add)
-    .build()
-)
+agent = AgentBuilder().openai("gpt-5").tool(add).build()
 
-result = agent.chat(
-    "What is 12 + 30?"
-)
+result = agent.chat("What is 12 + 30?")
 
 print(result.response)

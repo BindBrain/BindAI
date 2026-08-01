@@ -1,6 +1,5 @@
 from bindai_core import Conversation
 
-
 conversation = Conversation()
 
 conversation.add_system("You are helpful.")

@@ -3,7 +3,6 @@ from bindai_core import (
     PromptBuilder,
 )
 
-
 conversation = Conversation()
 
 conversation.add_user("Hello")

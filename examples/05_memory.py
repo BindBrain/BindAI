@@ -80,9 +80,7 @@ results = memory.search(
 )
 
 for item in results:
-    print(
-        f"- {item.key}: {item.value}"
-    )
+    print(f"- {item.key}: {item.value}")
 
 #
 # Delete

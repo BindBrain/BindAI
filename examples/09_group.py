@@ -4,7 +4,6 @@ from bindai import (
     Task,
 )
 
-
 #
 # Agents
 #
@@ -12,9 +11,7 @@ from bindai import (
 researcher = (
     AgentBuilder()
     .name("Researcher")
-    .instructions(
-        "Research the requested topic."
-    )
+    .instructions("Research the requested topic.")
     .openai(
         model="gpt-5",
     )
@@ -24,9 +21,7 @@ researcher = (
 writer = (
     AgentBuilder()
     .name("Writer")
-    .instructions(
-        "Write a concise summary."
-    )
+    .instructions("Write a concise summary.")
     .openai(
         model="gpt-5",
     )

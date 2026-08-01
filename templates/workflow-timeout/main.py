@@ -1,10 +1,9 @@
 import time
 
 from bindai_workflow import (
-    WorkflowBuilder,
     TimeoutPolicy,
+    WorkflowBuilder,
 )
-
 from bindai_workflow.node import WorkflowNode
 
 
@@ -61,11 +60,9 @@ print("Workflow Result")
 print("----------------------------------------")
 
 if result.success:
-
     print(result.output)
 
 else:
-
     print(result.error)
 
 print()
@@ -75,4 +72,3 @@ print("Variables")
 print(
     instance.context.variables.as_dict(),
 )
-

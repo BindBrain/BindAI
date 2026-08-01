@@ -1,7 +1,6 @@
-from dotenv import load_dotenv
-
 from bindai import Agent
 from bindai_provider_openai import OpenAIProvider
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -16,7 +15,6 @@ You are a helpful assistant.
 )
 
 while True:
-
     message = input("You: ")
 
     if message.lower() in {

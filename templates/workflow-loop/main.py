@@ -1,12 +1,11 @@
 from pathlib import Path
 
 from bindai_agent import Agent, AgentRegistry
-
 from bindai_workflow import WorkflowBuilder
 from bindai_workflow.nodes import (
-    LoopNode,
     AgentNode,
     EndNode,
+    LoopNode,
 )
 
 BASE = Path(__file__).parent
@@ -27,12 +26,16 @@ AgentRegistry.register(
 # Loop condition
 #
 
+
 def should_continue(ctx):
 
-    return ctx.get(
-        "counter",
-        0,
-    ) < 3
+    return (
+        ctx.get(
+            "counter",
+            0,
+        )
+        < 3
+    )
 
 
 builder = WorkflowBuilder(

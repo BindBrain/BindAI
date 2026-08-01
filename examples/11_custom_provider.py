@@ -37,11 +37,7 @@ ProviderRegistry.register(
 )
 
 
-agent = (
-    AgentBuilder()
-    .provider("echo")
-    .build()
-)
+agent = AgentBuilder().provider("echo").build()
 
 result = agent.chat(
     "Hello custom provider!",

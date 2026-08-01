@@ -1,14 +1,12 @@
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from bindai import Agent
-
 from bindai_knowledge import (
-    Knowledge,
-    InMemoryKnowledgeProvider,
     DirectoryLoader,
+    InMemoryKnowledgeProvider,
+    Knowledge,
 )
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -34,7 +32,6 @@ print("BindAI RAG Chat")
 print("Type 'exit' to quit.\n")
 
 while True:
-
     message = input("You: ")
 
     if message.lower() in {"exit", "quit"}:

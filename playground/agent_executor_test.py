@@ -1,6 +1,6 @@
 from bindai_core import (
-    AssistantAgent,
     AgentExecutor,
+    AssistantAgent,
     ExecutionContext,
     ModelProvider,
     ModelResponse,

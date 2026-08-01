@@ -1,7 +1,7 @@
 from bindai_core import (
-    ProviderRegistry,
     ModelProvider,
     ModelResponse,
+    ProviderRegistry,
     TokenUsage,
 )
 

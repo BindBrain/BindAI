@@ -1,6 +1,7 @@
-from dotenv import load_dotenv
-from bindai import Agent
 from pathlib import Path
+
+from bindai import Agent
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -14,7 +15,6 @@ print("BindAI Basic Chat")
 print("Type 'exit' to quit.\n")
 
 while True:
-
     message = input("You: ")
 
     if message.lower() in {"exit", "quit"}:

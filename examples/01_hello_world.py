@@ -10,8 +10,6 @@ agent = (
     .build()
 )
 
-result = agent.chat(
-    "What is BindAI?"
-)
+result = agent.chat("What is BindAI?")
 
 print(result.response)

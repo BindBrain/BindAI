@@ -1,18 +1,15 @@
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from bindai_agent import Agent
-
 from bindai_workflow import Workflow
-
 from bindai_workflow.nodes import (
-    StartNode,
-    EndNode,
-    ParallelNode,
-    JoinNode,
     AgentNode,
+    EndNode,
+    JoinNode,
+    ParallelNode,
+    StartNode,
 )
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -92,10 +89,12 @@ workflow.start_node = start.id
 
 start.next_nodes.append(parallel.id)
 
-parallel.next_nodes.extend([
-    branch_a.id,
-    branch_b.id,
-])
+parallel.next_nodes.extend(
+    [
+        branch_a.id,
+        branch_b.id,
+    ]
+)
 
 branch_a.next_nodes.append(join.id)
 branch_b.next_nodes.append(join.id)

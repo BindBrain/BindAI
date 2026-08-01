@@ -1,6 +1,5 @@
 from bindai_config.yaml_loader import YamlLoader
 
-
 print("=" * 60)
 print("YAML Configuration")
 print("=" * 60)

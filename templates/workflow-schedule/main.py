@@ -5,7 +5,6 @@ from bindai_workflow import (
     WorkflowSchedule,
     WorkflowScheduler,
 )
-
 from bindai_workflow.node import WorkflowNode
 
 
@@ -21,9 +20,7 @@ class PrintNode(WorkflowNode):
         context,
     ):
 
-        print(
-            "Scheduled workflow executed."
-        )
+        print("Scheduled workflow executed.")
 
         context.set(
             "result",
@@ -74,10 +71,7 @@ print("Checking schedules...")
 print("----------------------------------------")
 
 for item in scheduler.due():
-
-    print(
-        f"Running workflow: {item.workflow_id}"
-    )
+    print(f"Running workflow: {item.workflow_id}")
 
     instance = workflow.create_instance()
 

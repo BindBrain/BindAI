@@ -1,7 +1,7 @@
 from bindai_core import (
     ModelProvider,
-    ModelResponse,
     ModelRequest,
+    ModelResponse,
     TokenUsage,
 )
 

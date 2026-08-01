@@ -1,10 +1,8 @@
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from bindai_agent import Agent
-from bindai_core.context import ExecutionContext
 from bindai_workflow import WorkflowBuilder
+from dotenv import load_dotenv
 
 BASE = Path(__file__).parent
 
@@ -14,11 +12,7 @@ agent = Agent.from_yaml(
     BASE / "agent.yaml",
 )
 
-workflow = (
-    WorkflowBuilder("basic")
-    .agent(agent)
-    .build()
-)
+workflow = WorkflowBuilder("basic").agent(agent).build()
 
 instance = workflow.create_instance()
 

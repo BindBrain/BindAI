@@ -74,9 +74,7 @@ result = knowledge.search(
 )
 
 for document in result.value:
-    print(
-        f"- {document.title}"
-    )
+    print(f"- {document.title}")
 
 #
 # Search With Scores
@@ -89,9 +87,7 @@ result = knowledge.search_with_scores(
 )
 
 for score, document in result.value:
-    print(
-        f"{score:>2} | {document.title}"
-    )
+    print(f"{score:>2} | {document.title}")
 
 #
 # Retrieve Context

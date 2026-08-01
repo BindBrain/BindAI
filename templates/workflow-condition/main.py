@@ -1,10 +1,7 @@
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from bindai import Agent
 from bindai_agent import AgentRegistry
-
 from bindai_workflow import Workflow
 from bindai_workflow.nodes import (
     AgentNode,
@@ -12,6 +9,7 @@ from bindai_workflow.nodes import (
     EndNode,
     StartNode,
 )
+from dotenv import load_dotenv
 
 load_dotenv()
 
