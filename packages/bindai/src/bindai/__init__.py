@@ -9,6 +9,16 @@ from bindai_group import (
     GroupBuilder,
     Task,
 )
+from bindai_memory import (
+    Memory,
+    MemoryManager,
+    MemoryRecord,
+    MemoryRegistry,
+)
+from bindai_workflow import (
+    Workflow,
+    WorkflowBuilder,
+)
 
 from .application import (
     Application,
@@ -38,22 +48,40 @@ __all__ = [
     "Application",
     "ApplicationConfiguration",
     "ApplicationState",
+
     #
     # Agent
     #
     "Agent",
     "AssistantAgent",
     "AgentBuilder",
+
     #
     # Group
     #
     "Group",
     "GroupBuilder",
     "Task",
+
+    #
+    # Memory
+    #
+    "Memory",
+    "MemoryManager",
+    "MemoryRecord",
+    "MemoryRegistry",
+
+    #
+    # Workflow
+    #
+    "Workflow",
+    "WorkflowBuilder",
+
     #
     # Configuration
     #
     "YamlLoader",
+
     #
     # Tooling
     #
@@ -62,11 +90,13 @@ __all__ = [
     "ToolRegistry",
     "ToolExecutor",
     "tool",
+
     #
     # LLM
     #
     "LLMProvider",
     "LLMResult",
+
     #
     # Messages
     #
