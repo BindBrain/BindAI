@@ -43,9 +43,7 @@ class ProviderBuilder:
         )
 
         if not provider:
-            raise ValueError(
-                "BINDAI_PROVIDER is not configured."
-            )
+            raise ValueError("BINDAI_PROVIDER is not configured.")
 
         return ProviderRegistry.create(
             provider,

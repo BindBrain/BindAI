@@ -79,7 +79,6 @@ class AgentBuilder:
             provider,
             str,
         ):
-
             configuration = ProviderConfiguration(
                 api_key=kwargs.get("api_key"),
                 endpoint=kwargs.get("endpoint"),

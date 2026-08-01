@@ -8,10 +8,9 @@ from bindai_core.executable.result import ExecutionResult
 if TYPE_CHECKING:
     from .task import Task
 
+
 @dataclass(slots=True)
 class GroupResult(ExecutionResult):
     output: str | None = None
 
     tasks: list[Task] = field(default_factory=list)
-
-

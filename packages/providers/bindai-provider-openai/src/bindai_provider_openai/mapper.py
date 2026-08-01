@@ -7,7 +7,6 @@ from bindai_core import (
     MessageRole,
     ToolCall,
 )
-
 from bindai_tool import ToolDefinition
 from openai.types.chat import ChatCompletionMessage
 

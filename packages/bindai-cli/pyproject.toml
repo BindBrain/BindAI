@@ -1,9 +1,7 @@
 [project]
 name = "bindai-cli"
 version = "0.1.0"
-
 description = "BindAI Command Line Interface"
-
 requires-python = ">=3.11"
 
 dependencies = [
@@ -17,3 +15,6 @@ bindai = "bindai_cli.__main__:main"
 [build-system]
 requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

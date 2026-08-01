@@ -4,9 +4,8 @@ from abc import abstractmethod
 from typing import Generic, TypeVar
 
 from bindai_core.context import ExecutionContext
-from bindai_core.runnable import Runnable
-
 from bindai_core.executable.result import ExecutionResult
+from bindai_core.runnable import Runnable
 
 TResult = TypeVar(
     "TResult",

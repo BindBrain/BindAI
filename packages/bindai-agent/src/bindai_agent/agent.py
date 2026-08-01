@@ -14,9 +14,10 @@ from .configuration import AgentConfiguration
 from .conversation import Conversation
 from .execution.data import ExecutionData
 from .execution.engine import AgentExecutionEngine
+from .provider_resolver import resolve_provider
 from .result import AgentResult
 from .state import AgentState
-from .provider_resolver import resolve_provider
+
 
 class Agent(Executable):
     """
@@ -148,7 +149,6 @@ class Agent(Executable):
             self,
             context,
         )
-
 
     def stream(
         self,

@@ -6,7 +6,6 @@ from .history import WorkflowHistory
 
 
 class WorkflowHistoryStore(Protocol):
-
     def add(
         self,
         history: WorkflowHistory,

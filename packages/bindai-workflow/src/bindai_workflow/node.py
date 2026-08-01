@@ -5,6 +5,7 @@ from typing import cast
 
 from .context import WorkflowContext
 
+
 class WorkflowNode(ABC):
     """
     Base workflow node.

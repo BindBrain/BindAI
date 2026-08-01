@@ -1,5 +1,5 @@
-from bindai_prompts.prompt import Prompt
 from .prompt import Prompt
+
 
 class PromptRegistry:
     _prompts: dict[str, Prompt] = {}

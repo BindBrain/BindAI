@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
-from bindai_tool import Tool
+
 
 class ToolLoader:
     @staticmethod
