@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import math
+from datetime import UTC, datetime
 
 from bindai_memory.provider import MemoryProvider
 from bindai_memory.record import MemoryRecord
@@ -31,21 +31,23 @@ class VectorMemoryProvider(MemoryProvider):
         record: MemoryRecord,
     ) -> MemoryResult:
 
-        record.embedding = self.embedding.embed(
-            str(record.value),
+        now = datetime.now(
+            UTC,
         )
 
-        record.updated_at = datetime.now(
-            timezone.utc,
+        if record.created_at is None:
+            record.created_at = now
+
+        record.updated_at = now
+
+        record.embedding = self.embedding.embed(
+            str(record.value),
         )
 
         self.records = [
             existing
             for existing in self.records
-            if not (
-                existing.key == record.key
-                and existing.namespace == record.namespace
-            )
+            if not (existing.key == record.key and existing.namespace == record.namespace)
         ]
 
         self.records.append(
@@ -64,11 +66,17 @@ class VectorMemoryProvider(MemoryProvider):
     ) -> MemoryResult:
 
         for record in self.records:
+            if record.key == key and record.namespace == namespace:
+                if self._expired(
+                    record,
+                ):
+                    continue
 
-            if (
-                record.key == key
-                and record.namespace == namespace
-            ):
+                record.last_accessed = datetime.now(
+                    UTC,
+                )
+
+                record.access_count += 1
 
                 return MemoryResult(
                     success=True,
@@ -88,10 +96,7 @@ class VectorMemoryProvider(MemoryProvider):
         self.records = [
             record
             for record in self.records
-            if not (
-                record.key == key
-                and record.namespace == namespace
-            )
+            if not (record.key == key and record.namespace == namespace)
         ]
 
         return MemoryResult(
@@ -104,22 +109,14 @@ class VectorMemoryProvider(MemoryProvider):
         namespace: str = "default",
     ) -> bool:
 
-        return any(
-            record.key == key
-            and record.namespace == namespace
-            for record in self.records
-        )
+        return any(record.key == key and record.namespace == namespace for record in self.records)
 
     def clear(
         self,
         namespace: str = "default",
     ) -> MemoryResult:
 
-        self.records = [
-            record
-            for record in self.records
-            if record.namespace != namespace
-        ]
+        self.records = [record for record in self.records if record.namespace != namespace]
 
         return MemoryResult(
             success=True,
@@ -140,16 +137,16 @@ class VectorMemoryProvider(MemoryProvider):
         scored: list[MemoryRecord] = []
 
         for record in self.records:
-
             if record.namespace != namespace:
                 continue
 
-            if metadata:
+            if self._expired(
+                record,
+            ):
+                continue
 
-                matches = all(
-                    record.metadata.get(key) == value
-                    for key, value in metadata.items()
-                )
+            if metadata:
+                matches = all(record.metadata.get(key) == value for key, value in metadata.items())
 
                 if not matches:
                     continue
@@ -157,21 +154,55 @@ class VectorMemoryProvider(MemoryProvider):
             if not record.embedding:
                 continue
 
-            score = self._cosine(
+            semantic_score = self._cosine(
                 query_embedding,
                 record.embedding,
             )
+
+            importance_bonus = record.importance * 0.10
+
+            usage_bonus = min(
+                record.access_count * 0.01,
+                0.10,
+            )
+
+            decay_penalty = 0.0
+
+            if record.last_accessed is not None:
+                age_days = (
+                    datetime.now(
+                        UTC,
+                    )
+                    - record.last_accessed
+                ).days
+
+                decay_penalty = min(
+                    age_days * 0.002,
+                    0.10,
+                )
+
+            score = semantic_score + importance_bonus + usage_bonus - decay_penalty
+
+            record.last_accessed = datetime.now(
+                UTC,
+            )
+
+            record.access_count += 1
 
             result = MemoryRecord(
                 key=record.key,
                 value=record.value,
                 namespace=record.namespace,
                 type=record.type,
-                metadata=record.metadata,
-                embedding=record.embedding,
-                score=score,
+                metadata=record.metadata.copy(),
+                importance=record.importance,
+                access_count=record.access_count,
                 created_at=record.created_at,
                 updated_at=record.updated_at,
+                last_accessed=record.last_accessed,
+                expires_at=record.expires_at,
+                embedding=record.embedding,
+                score=score,
             )
 
             scored.append(
@@ -179,15 +210,26 @@ class VectorMemoryProvider(MemoryProvider):
             )
 
         scored.sort(
-            key=lambda record: (
-                record.score
-                if record.score is not None
-                else 0.0
-            ),
+            key=lambda record: record.score if record.score is not None else 0.0,
             reverse=True,
         )
 
         return scored[:limit]
+
+    def _expired(
+        self,
+        record: MemoryRecord,
+    ) -> bool:
+
+        if record.expires_at is None:
+            return False
+
+        return (
+            datetime.now(
+                UTC,
+            )
+            >= record.expires_at
+        )
 
     def _cosine(
         self,
@@ -195,24 +237,11 @@ class VectorMemoryProvider(MemoryProvider):
         b: list[float],
     ) -> float:
 
-        dot = sum(
-            x * y
-            for x, y in zip(a, b)
-        )
+        dot = sum(x * y for x, y in zip(a, b))
 
-        na = math.sqrt(
-            sum(
-                x * x
-                for x in a
-            )
-        )
+        na = math.sqrt(sum(x * x for x in a))
 
-        nb = math.sqrt(
-            sum(
-                x * x
-                for x in b
-            )
-        )
+        nb = math.sqrt(sum(x * x for x in b))
 
         if na == 0 or nb == 0:
             return 0.0

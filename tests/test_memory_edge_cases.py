@@ -83,7 +83,6 @@ def test_vector_search_limit():
     )
 
     for i in range(5):
-
         memory.set(
             MemoryRecord(
                 key=str(i),

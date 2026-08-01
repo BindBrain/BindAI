@@ -1,3 +1,5 @@
+from bindai_memory.manager import MemoryManager
+
 from .memory import Memory
 from .provider import MemoryProvider
 from .providers import (
@@ -27,6 +29,7 @@ MemoryRegistry.register(
 
 __all__ = [
     "Memory",
+    "MemoryManager",
     "MemoryProvider",
     "MemoryRegistry",
     "MemoryRecord",

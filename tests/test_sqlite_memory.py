@@ -5,9 +5,7 @@ from bindai_memory.record import MemoryRecord
 def test_sqlite_memory_set_get(tmp_path):
     db = tmp_path / "memory.db"
 
-    provider = SQLiteMemoryProvider(
-        str(db)
-    )
+    provider = SQLiteMemoryProvider(str(db))
 
     record = MemoryRecord(
         namespace="test",
@@ -33,9 +31,7 @@ def test_sqlite_memory_set_get(tmp_path):
 def test_sqlite_memory_exists_delete_clear(tmp_path):
     db = tmp_path / "memory.db"
 
-    provider = SQLiteMemoryProvider(
-        str(db)
-    )
+    provider = SQLiteMemoryProvider(str(db))
 
     provider.set(
         MemoryRecord(

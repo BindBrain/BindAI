@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import sqlite3
+from datetime import UTC, datetime
 
 from bindai_memory.provider import MemoryProvider
 from bindai_memory.record import MemoryRecord
@@ -26,14 +28,53 @@ class SQLiteMemoryProvider(MemoryProvider):
             CREATE TABLE IF NOT EXISTS memory(
                 namespace TEXT NOT NULL,
                 key TEXT NOT NULL,
+
                 value TEXT NOT NULL,
                 type TEXT NOT NULL,
-                PRIMARY KEY(namespace, key)
+
+                metadata TEXT NOT NULL,
+
+                importance REAL NOT NULL,
+
+                access_count INTEGER NOT NULL,
+
+                created_at TEXT,
+                updated_at TEXT,
+                last_accessed TEXT,
+                expires_at TEXT,
+
+                PRIMARY KEY(namespace,key)
             )
             """
         )
 
         self._connection.commit()
+
+        connection = self._ensure_connection()
+
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(memory)")}
+
+        required = {
+            "metadata": "TEXT NOT NULL DEFAULT '{}'",
+            "importance": "REAL NOT NULL DEFAULT 1.0",
+            "access_count": "INTEGER NOT NULL DEFAULT 0",
+            "created_at": "TEXT",
+            "updated_at": "TEXT",
+            "last_accessed": "TEXT",
+            "expires_at": "TEXT",
+        }
+
+        for column, definition in required.items():
+            if column not in columns:
+                connection.execute(
+                    f"""
+                    ALTER TABLE memory
+                    ADD COLUMN {column}
+                    {definition}
+                    """
+                )
+
+        connection.commit()
 
     def _ensure_connection(self) -> sqlite3.Connection:
         """
@@ -41,9 +82,7 @@ class SQLiteMemoryProvider(MemoryProvider):
         """
 
         if self._connection is None:
-            raise RuntimeError(
-                "SQLiteMemoryProvider is closed"
-            )
+            raise RuntimeError("SQLiteMemoryProvider is closed")
 
         return self._connection
 
@@ -63,6 +102,15 @@ class SQLiteMemoryProvider(MemoryProvider):
 
         connection = self._ensure_connection()
 
+        now = datetime.now(
+            UTC,
+        )
+
+        if record.created_at is None:
+            record.created_at = now
+
+        record.updated_at = now
+
         connection.execute(
             """
             INSERT INTO memory
@@ -70,20 +118,46 @@ class SQLiteMemoryProvider(MemoryProvider):
                 namespace,
                 key,
                 value,
-                type
+                type,
+                metadata,
+                importance,
+                access_count,
+                created_at,
+                updated_at,
+                last_accessed,
+                expires_at
             )
-            VALUES (?, ?, ?, ?)
+            VALUES
+            (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
 
             ON CONFLICT(namespace,key)
             DO UPDATE SET
+
                 value=excluded.value,
-                type=excluded.type
+                type=excluded.type,
+                metadata=excluded.metadata,
+                importance=excluded.importance,
+                access_count=excluded.access_count,
+                updated_at=excluded.updated_at,
+                last_accessed=excluded.last_accessed,
+                expires_at=excluded.expires_at
             """,
             (
                 record.namespace,
                 record.key,
                 str(record.value),
                 record.type.value,
+                json.dumps(
+                    record.metadata,
+                ),
+                record.importance,
+                record.access_count,
+                record.created_at.isoformat() if record.created_at else None,
+                record.updated_at.isoformat() if record.updated_at else None,
+                record.last_accessed.isoformat() if record.last_accessed else None,
+                record.expires_at.isoformat() if record.expires_at else None,
             ),
         )
 
@@ -104,9 +178,22 @@ class SQLiteMemoryProvider(MemoryProvider):
 
         row = connection.execute(
             """
-            SELECT key, value, type
+            SELECT
+
+                key,
+                value,
+                type,
+                metadata,
+                importance,
+                access_count,
+                created_at,
+                updated_at,
+                last_accessed,
+                expires_at
+
             FROM memory
-            WHERE namespace=? 
+
+            WHERE namespace=?
             AND key=?
             """,
             (
@@ -126,6 +213,15 @@ class SQLiteMemoryProvider(MemoryProvider):
                 key=row[0],
                 value=row[1],
                 namespace=namespace,
+                metadata=json.loads(
+                    row[3],
+                ),
+                importance=row[4],
+                access_count=row[5],
+                created_at=(datetime.fromisoformat(row[6]) if row[6] else datetime.now(UTC)),
+                updated_at=(datetime.fromisoformat(row[7]) if row[7] else datetime.now(UTC)),
+                last_accessed=(datetime.fromisoformat(row[8]) if row[8] else None),
+                expires_at=(datetime.fromisoformat(row[9]) if row[9] else None),
             ),
         )
 
@@ -141,10 +237,24 @@ class SQLiteMemoryProvider(MemoryProvider):
 
         rows = connection.execute(
             """
-            SELECT key, value, type
+            SELECT
+
+                key,
+                value,
+                type,
+                metadata,
+                importance,
+                access_count,
+                created_at,
+                updated_at,
+                last_accessed,
+                expires_at
+
             FROM memory
+
             WHERE namespace=?
             AND value LIKE ?
+
             LIMIT ?
             """,
             (
@@ -154,14 +264,35 @@ class SQLiteMemoryProvider(MemoryProvider):
             ),
         ).fetchall()
 
-        return [
-            MemoryRecord(
+        results: list[MemoryRecord] = []
+
+        for row in rows:
+            record = MemoryRecord(
                 key=row[0],
                 value=row[1],
                 namespace=namespace,
+                metadata=json.loads(
+                    row[3],
+                ),
+                importance=row[4],
+                access_count=row[5],
+                created_at=(datetime.fromisoformat(row[6]) if row[6] else datetime.now(UTC)),
+                updated_at=(datetime.fromisoformat(row[7]) if row[7] else datetime.now(UTC)),
+                last_accessed=(datetime.fromisoformat(row[8]) if row[8] else None),
+                expires_at=(datetime.fromisoformat(row[9]) if row[9] else None),
             )
-            for row in rows
-        ]
+
+            if metadata:
+                matches = all(record.metadata.get(key) == value for key, value in metadata.items())
+
+                if not matches:
+                    continue
+
+            results.append(
+                record,
+            )
+
+        return results
 
     def delete(
         self,

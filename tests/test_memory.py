@@ -1,6 +1,6 @@
 from bindai_memory.memory import Memory
-from bindai_memory.record import MemoryRecord
 from bindai_memory.providers.sqlite import SQLiteMemoryProvider
+from bindai_memory.record import MemoryRecord
 
 
 def test_memory_default_provider():
@@ -120,12 +120,9 @@ def test_sqlite_provider():
         ":memory:",
     )
 
-    memory = Memory(
-        provider
-    )
+    memory = Memory(provider)
 
     try:
-
         result = memory.set(
             MemoryRecord(
                 key="framework",
@@ -166,12 +163,9 @@ def test_sqlite_provider_search():
         ":memory:",
     )
 
-    memory = Memory(
-        provider
-    )
+    memory = Memory(provider)
 
     try:
-
         memory.set(
             MemoryRecord(
                 namespace="test",

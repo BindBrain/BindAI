@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from bindai_memory.manager import MemoryManager
+
 from .provider import MemoryProvider
 from .record import MemoryRecord
 from .registry import MemoryRegistry
@@ -23,11 +25,13 @@ class Memory:
             provider,
             str,
         ):
-            provider = (
-                MemoryRegistry.provider(provider)
+            provider = MemoryRegistry.provider(
+                provider,
             )()
 
         self.provider = provider
+
+        self.manager = MemoryManager()
 
     def set(
         self,
@@ -44,10 +48,36 @@ class Memory:
         namespace: str = "default",
     ) -> MemoryResult:
 
-        return self.provider.get(
+        result = self.provider.get(
             key,
             namespace,
         )
+
+        if result.success and result.value is not None:
+            self.manager.touch(
+                result.value,
+            )
+
+            self.manager.reinforce(
+                result.value,
+            )
+
+            #
+            # Persist updated lifecycle state
+            #
+            self.provider.set(
+                result.value,
+            )
+
+            #
+            # Return a fresh copy from storage
+            #
+            result = self.provider.get(
+                key,
+                namespace,
+            )
+
+        return result
 
     def search(
         self,
@@ -95,7 +125,9 @@ class Memory:
             namespace,
         )
 
-    def close(self) -> None:
+    def close(
+        self,
+    ) -> None:
         """
         Close underlying provider if it supports closing.
         """
@@ -106,10 +138,14 @@ class Memory:
             None,
         )
 
-        if callable(close):
+        if callable(
+            close,
+        ):
             close()
 
-    def __enter__(self):
+    def __enter__(
+        self,
+    ):
         """
         Support context manager usage.
         """
