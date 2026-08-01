@@ -327,19 +327,38 @@ class AgentBuilder:
         value: str,
     ):
         """
-        Accepts either:
+        Configure the provider from a ``"<provider>:<model>"`` string.
 
-        openai:gpt-4.1-mini
-        openai:gpt-5
-        anthropic:claude-sonnet-4
-        ollama:llama3
-        lmstudio:qwen3
+        Examples:
+
+        - ``openai:gpt-5``
+        - ``openai:gpt-4.1-mini``
+        - ``anthropic:claude-sonnet-4``
+        - ``ollama:llama3``
+        - ``lmstudio:qwen3``
         """
 
-        provider, model = value.split(
-            ":",
-            1,
-        )
+        try:
+            provider, model = value.split(
+                ":",
+                1,
+            )
+        except ValueError as exc:
+            raise ValueError(
+                "Model must be in the format "
+                "'<provider>:<model>'. "
+                "Example: 'openai:gpt-5'."
+            ) from exc
+
+        if not provider:
+            raise ValueError(
+                "Provider name cannot be empty."
+            )
+
+        if not model:
+            raise ValueError(
+                "Model name cannot be empty."
+            )
 
         if provider == "openai":
             return self.openai(model)
