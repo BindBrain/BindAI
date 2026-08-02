@@ -17,7 +17,7 @@ class PromptBuilder:
 
         state = context.data
 
-        request = agent.conversation.to_request()
+        request: ModelRequest = agent.conversation.to_request()
 
         request.tools = agent.tools.definitions()
 

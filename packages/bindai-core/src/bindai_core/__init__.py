@@ -19,6 +19,7 @@ from .conversation import (
     Conversation,
     ConversationMessage,
 )
+from .embeddings import EmbeddingProvider
 
 # Events
 from .events import (
@@ -134,4 +135,5 @@ __all__ = [
     "ProviderRegistry",
     # Toolcall
     "ToolCall",
+    "EmbeddingProvider",
 ]

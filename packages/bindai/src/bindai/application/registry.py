@@ -8,3 +8,7 @@ class ApplicationRegistry:
         self.models = ModelRegistry()
 
         self.agents = AgentRegistry()
+
+    @property
+    def providers(self):
+        return self.models

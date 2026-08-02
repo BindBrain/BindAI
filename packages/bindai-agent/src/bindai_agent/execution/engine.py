@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from bindai_core.context import ExecutionContext
 from bindai_core.events import (
     AgentFinishedEvent,
@@ -88,9 +90,12 @@ class AgentExecutionEngine:
             # run pipeline
             #
 
-            result: AgentResult = self.pipeline.execute(
-                agent,
-                context,
+            result = cast(
+                AgentResult,
+                self.pipeline.execute(
+                    agent,
+                    context,
+                ),
             )
 
             #

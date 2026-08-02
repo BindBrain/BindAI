@@ -8,6 +8,7 @@ dependencies = [
     "bindai-prompts",
     "bindai-providers",
     "bindai-provider-openai",
+    "python-dotenv>=1.2.2",
 ]
 
 [build-system]

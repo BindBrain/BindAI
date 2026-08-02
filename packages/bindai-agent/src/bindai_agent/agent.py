@@ -170,6 +170,18 @@ class Agent(Executable):
 
         return self
 
+    def add_tool(
+        self,
+        tool: Any,
+    ) -> Agent:
+        """
+        Backwards-compatible alias for tool().
+        """
+
+        return self.tool(
+            tool,
+        )
+
     def execute(
         self,
         context: ExecutionContext,

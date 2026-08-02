@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from bindai_core.context import ExecutionContext
 from bindai_core.events.agent_events import AgentFinishedEvent
 from bindai_core.model import (
@@ -229,8 +231,13 @@ class AgentExecutor:
         request: ModelRequest,
     ) -> ModelResponse:
 
-        return agent.provider.generate(
+        response = agent.provider.generate(
             request,
+        )
+
+        return cast(
+            ModelResponse,
+            response,
         )
 
     def _publish_finished_event(

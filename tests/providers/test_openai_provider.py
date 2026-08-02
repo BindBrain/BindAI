@@ -14,29 +14,65 @@ from bindai_core import (
     ModelRequest,
     ProviderConfiguration,
 )
+from bindai_core.context import ExecutionContext
 from bindai_core.tool import (
     Tool,
     ToolResult,
 )
 from bindai_provider_openai import OpenAIProvider
+from bindai_tool.definition import ToolDefinition
 
 
 class AddTool(Tool):
     @property
-    def name(self):
+    def name(self) -> str:
         return "add"
 
     @property
-    def description(self):
+    def description(self) -> str:
         return "Add two integers."
+
+    @property
+    def definition(self) -> ToolDefinition:
+        return ToolDefinition(
+            name=self.name,
+            description=self.description,
+            parameters={
+                "type": "object",
+                "properties": {
+                    "a": {
+                        "type": "integer",
+                    },
+                    "b": {
+                        "type": "integer",
+                    },
+                },
+                "required": [
+                    "a",
+                    "b",
+                ],
+            },
+        )
 
     def execute(
         self,
-        a: int,
-        b: int,
-    ):
+        context: ExecutionContext,
+    ) -> ToolResult:
+
+        data = context.data
+
+        if not isinstance(data, dict):
+            return ToolResult(
+                success=False,
+                error="Missing tool arguments",
+            )
+
+        a = data["a"]
+        b = data["b"]
+
         return ToolResult(
-            output=a + b,
+            success=True,
+            value=a + b,
         )
 
 
@@ -106,7 +142,7 @@ def test_tool_call():
             )
         ],
         tools=[
-            tool.definition(),
+            tool.definition,
         ],
     )
 

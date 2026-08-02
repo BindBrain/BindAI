@@ -29,13 +29,20 @@ class ProjectRuntime:
         )
 
     @property
-    def project(self):
-        return self.config.project
+    def project(self) -> ProjectConfig:
+        return self.config
 
     @property
-    def default(self):
-        return self.config.default
+    def default(self) -> ProjectConfig:
+        return self.config
 
     @property
-    def paths(self):
-        return self.config.paths
+    def paths(self) -> dict[str, str]:
+        return {
+            "memory": self.config.memory,
+            "knowledge": self.config.knowledge,
+            "templates": self.config.templates,
+            "workflows": self.config.workflows,
+            "agents": self.config.agents,
+            "tools": self.config.tools,
+        }

@@ -1,5 +1,6 @@
 from bindai_agent import AssistantAgent
 from bindai_core.model import (
+    ModelRequest,
     ModelResponse,
     TokenUsage,
 )
@@ -13,7 +14,7 @@ from bindai_knowledge import (
 class CaptureProvider:
     def __init__(self):
 
-        self.last_request = None
+        self.last_request: ModelRequest | None = None
 
     def generate(
         self,
@@ -58,8 +59,9 @@ def test_knowledge_is_injected():
 
     agent.chat("What is BindAI?")
 
+    assert provider.last_request is not None
+
     conversation = "\n".join(message.content for message in provider.last_request.messages)
 
     assert "Relevant knowledge:" in conversation
-
     assert "BindAI is an AI framework." in conversation

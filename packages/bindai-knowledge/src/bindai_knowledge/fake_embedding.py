@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .embedding import EmbeddingProvider
+from bindai_core.embeddings import EmbeddingProvider
 
 
 class FakeEmbeddingProvider(EmbeddingProvider):

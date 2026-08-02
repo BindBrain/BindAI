@@ -20,11 +20,10 @@ class MemoryType(Enum):
     def __str__(
         self,
     ) -> str:
-
         return self.value
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, init=False)
 class MemoryRecord:
     """
     A single memory entry.
@@ -64,45 +63,69 @@ class MemoryRecord:
         default_factory=dict,
     )
 
-    #
-    # Legacy API compatibility
-    #
-
     related_keys: list[str] = field(
         default_factory=list,
     )
 
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(
-            UTC,
-        ),
+        default_factory=lambda: datetime.now(UTC),
     )
 
     updated_at: datetime = field(
-        default_factory=lambda: datetime.now(
-            UTC,
-        ),
+        default_factory=lambda: datetime.now(UTC),
     )
 
-    def __post_init__(
+    def __init__(
         self,
+        key: str,
+        value: Any,
+        namespace: str = "default",
+        type: MemoryType | str = MemoryType.LONG_TERM,
+        metadata: dict[str, Any] | None = None,
+        importance: float = 0.5,
+        access_count: int = 0,
+        last_accessed: datetime | None = None,
+        expires_at: datetime | None = None,
+        embedding: list[float] | None = None,
+        score: float | None = None,
+        tags: list[str] | None = None,
+        source: str | None = None,
+        relationships: dict[str, list[str]] | None = None,
+        related_keys: list[str] | None = None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None,
     ) -> None:
 
-        if self.metadata is None:
-            self.metadata = {}
+        self.key = key
+        self.value = value
+        self.namespace = namespace
 
-        if self.tags is None:
-            self.tags = []
+        if isinstance(type, str):
+            self.type = MemoryType(type)
+        else:
+            self.type = type
 
-        if self.relationships is None:
-            self.relationships = {}
+        self.metadata = metadata or {}
 
-        if self.related_keys is None:
-            self.related_keys = []
+        self.importance = importance
+        self.access_count = access_count
 
-        #
-        # Keep legacy and new APIs synchronized.
-        #
+        self.last_accessed = last_accessed
+        self.expires_at = expires_at
+
+        self.embedding = embedding
+        self.score = score
+
+        self.tags = tags or []
+
+        self.source = source
+
+        self.relationships = relationships or {}
+
+        self.related_keys = related_keys or []
+
+        self.created_at = created_at or datetime.now(UTC)
+        self.updated_at = updated_at or datetime.now(UTC)
 
         if not self.related_keys and "related" in self.relationships:
             self.related_keys = list(
@@ -118,9 +141,7 @@ class MemoryRecord:
         self,
     ) -> None:
 
-        self.updated_at = datetime.now(
-            UTC,
-        )
+        self.updated_at = datetime.now(UTC)
 
     #
     # Tags
@@ -132,9 +153,7 @@ class MemoryRecord:
     ) -> None:
 
         if tag not in self.tags:
-            self.tags.append(
-                tag,
-            )
+            self.tags.append(tag)
 
     def remove_tag(
         self,
@@ -142,9 +161,7 @@ class MemoryRecord:
     ) -> None:
 
         if tag in self.tags:
-            self.tags.remove(
-                tag,
-            )
+            self.tags.remove(tag)
 
     def has_tag(
         self,
@@ -169,14 +186,10 @@ class MemoryRecord:
         )
 
         if target not in self.relationships[relation]:
-            self.relationships[relation].append(
-                target,
-            )
+            self.relationships[relation].append(target)
 
         if relation == "related" and target not in self.related_keys:
-            self.related_keys.append(
-                target,
-            )
+            self.related_keys.append(target)
 
     def get_relationships(
         self,
@@ -191,7 +204,7 @@ class MemoryRecord:
         )
 
     #
-    # Legacy compatibility API
+    # Legacy compatibility
     #
 
     def add_relation(
@@ -210,14 +223,10 @@ class MemoryRecord:
     ) -> None:
 
         if key in self.related_keys:
-            self.related_keys.remove(
-                key,
-            )
+            self.related_keys.remove(key)
 
         if "related" in self.relationships and key in self.relationships["related"]:
-            self.relationships["related"].remove(
-                key,
-            )
+            self.relationships["related"].remove(key)
 
     def has_relation(
         self,
@@ -225,6 +234,10 @@ class MemoryRecord:
     ) -> bool:
 
         return key in self.related_keys
+
+    #
+    # Serialization
+    #
 
     def to_dict(
         self,
@@ -244,16 +257,10 @@ class MemoryRecord:
             "expires_at": (self.expires_at.isoformat() if self.expires_at else None),
             "embedding": self.embedding,
             "score": self.score,
-            "tags": list(
-                self.tags,
-            ),
+            "tags": list(self.tags),
             "source": self.source,
-            "relationships": dict(
-                self.relationships,
-            ),
-            "related_keys": list(
-                self.related_keys,
-            ),
+            "relationships": dict(self.relationships),
+            "related_keys": list(self.related_keys),
         }
 
     @classmethod
@@ -267,21 +274,13 @@ class MemoryRecord:
             MemoryType.LONG_TERM.value,
         )
 
-        if isinstance(
-            memory_type,
-            MemoryType,
-        ):
-            record_type = memory_type
-        else:
-            record_type = MemoryType(
-                memory_type,
-            )
+        record_type = (
+            memory_type if isinstance(memory_type, MemoryType) else MemoryType(memory_type)
+        )
 
         return cls(
             key=data["key"],
-            value=data.get(
-                "value",
-            ),
+            value=data.get("value"),
             namespace=data.get(
                 "namespace",
                 "default",
@@ -300,60 +299,30 @@ class MemoryRecord:
                 0,
             ),
             created_at=(
-                datetime.fromisoformat(
-                    data["created_at"],
-                )
-                if data.get(
-                    "created_at",
-                )
-                else datetime.now(
-                    UTC,
-                )
+                datetime.fromisoformat(data["created_at"])
+                if data.get("created_at")
+                else datetime.now(UTC)
             ),
             updated_at=(
-                datetime.fromisoformat(
-                    data["updated_at"],
-                )
-                if data.get(
-                    "updated_at",
-                )
-                else datetime.now(
-                    UTC,
-                )
+                datetime.fromisoformat(data["updated_at"])
+                if data.get("updated_at")
+                else datetime.now(UTC)
             ),
             last_accessed=(
-                datetime.fromisoformat(
-                    data["last_accessed"],
-                )
-                if data.get(
-                    "last_accessed",
-                )
-                else None
+                datetime.fromisoformat(data["last_accessed"]) if data.get("last_accessed") else None
             ),
             expires_at=(
-                datetime.fromisoformat(
-                    data["expires_at"],
-                )
-                if data.get(
-                    "expires_at",
-                )
-                else None
+                datetime.fromisoformat(data["expires_at"]) if data.get("expires_at") else None
             ),
-            embedding=data.get(
-                "embedding",
-            ),
-            score=data.get(
-                "score",
-            ),
+            embedding=data.get("embedding"),
+            score=data.get("score"),
             tags=list(
                 data.get(
                     "tags",
                     [],
                 )
             ),
-            source=data.get(
-                "source",
-            ),
+            source=data.get("source"),
             relationships=dict(
                 data.get(
                     "relationships",

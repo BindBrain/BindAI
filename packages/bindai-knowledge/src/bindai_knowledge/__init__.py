@@ -1,3 +1,5 @@
+from bindai_core.embeddings import EmbeddingProvider
+
 from .chunk import KnowledgeChunk
 from .chunkers import (
     DocumentChunker,
@@ -5,7 +7,7 @@ from .chunkers import (
     RecursiveChunker,
 )
 from .document import KnowledgeDocument
-from .embedding import Embedding, EmbeddingProvider
+from .embedding import Embedding
 from .fake_embedding import FakeEmbeddingProvider
 from .knowledge import Knowledge
 from .loaders.base import DocumentLoader

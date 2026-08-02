@@ -33,6 +33,9 @@ class ModelGenerationStep(
         # Publish request event.
         #
 
+        if state.request is None:
+            return None
+
         agent.events.publish(
             ModelRequestEvent(
                 request=state.request,

@@ -31,6 +31,8 @@ class ModelStreamStep(ExecutionStep):
         ):
             return iter(())
 
-        return agent.provider.stream(
+        stream: Iterator = agent.provider.stream(
             state.request,
         )
+
+        return stream

@@ -54,9 +54,16 @@ class FunctionTool(Tool):
     def execute(
         self,
         context: ExecutionContext,
+        **kwargs: Any,
     ) -> ToolResult:
 
         try:
+            for key, value in kwargs.items():
+                context.variables.set(
+                    key,
+                    value,
+                )
+
             kwargs = context.variables.as_dict()
 
             result = self.function(

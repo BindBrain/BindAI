@@ -32,6 +32,7 @@ def test_unknown_tool():
     result = executor.execute("missing")
 
     assert not result.success
+    assert result.error is not None
     assert "Unknown tool" in result.error
 
 

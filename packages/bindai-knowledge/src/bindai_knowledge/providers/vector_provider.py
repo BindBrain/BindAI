@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from bindai_core.embeddings import EmbeddingProvider
+
 from ..document import KnowledgeDocument
-from ..embedding import EmbeddingProvider
 from ..result import KnowledgeResult
 from ..similarity import cosine_similarity
 from ..vector_store import VectorRecord

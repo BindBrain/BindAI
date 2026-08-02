@@ -30,7 +30,7 @@ class BindRuntime:
 
         self.state = RuntimeState.RUNNING
 
-        result = executable.execute(context)
+        result: ExecutionResult = executable.execute(context)
 
         self.state = RuntimeState.STOPPED
 

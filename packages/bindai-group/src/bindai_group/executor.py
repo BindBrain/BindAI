@@ -16,7 +16,9 @@ class GroupExecutor:
         context: ExecutionContext,
     ) -> GroupResult:
 
-        return group.process.execute(
+        result: GroupResult = group.process.execute(
             group,
             context,
         )
+
+        return result

@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from bindai_core.embeddings import EmbeddingProvider
 
-
-class EmbeddingProvider(ABC):
-    @abstractmethod
-    def embed(
-        self,
-        text: str,
-    ) -> list[float]: ...
+__all__ = [
+    "EmbeddingProvider",
+]

@@ -14,9 +14,11 @@ dependencies = [
     "typer>=0.27.0",
 ]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[project.optional-dependencies]
+fastapi = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+]
 
 [tool.uv]
 package = false
@@ -119,6 +121,16 @@ indent-style = "space"
 [tool.mypy]
 python_version = "3.12"
 explicit_package_bases = true
+ignore_missing_imports = true
+
+exclude = "(templates/|playground/|demo/|Demo.*/|MyProject/)"
+
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+show_error_codes = true
 
 mypy_path = [
     "packages/bindai/src",
@@ -150,7 +162,6 @@ module = [
     "bindai_provider_anthropic.*",
     "bindai_provider_ollama.*",
 ]
-ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = [
