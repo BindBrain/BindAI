@@ -8,6 +8,9 @@ on:
 
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
 
@@ -20,10 +23,13 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -34,13 +40,17 @@ jobs:
         run: |
           uv sync --all-extras
 
-      - name: Ruff
+      - name: Ruff lint
         run: |
           uv run ruff check .
 
+      - name: Ruff format check
+        run: |
+          uv run ruff format --check .
+
       - name: MyPy
         run: |
-          uv run mypy packages
+          uv run mypy packages examples
 
       - name: Run tests
         run: |
