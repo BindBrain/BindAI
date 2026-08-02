@@ -1,4 +1,4 @@
-from bindai_agent import AgentBuilder
+from bindai import AgentBuilder
 from bindai_tool import tool
 
 
@@ -8,8 +8,8 @@ def add(a: int, b: int) -> int:
     return a + b
 
 
-agent = AgentBuilder().openai("gpt-5").tool(add).build()
+agent = AgentBuilder().openai("gpt-5").tools(add).build()
 
 result = agent.chat("What is 12 + 30?")
 
-print(result.response)
+print(result.output)

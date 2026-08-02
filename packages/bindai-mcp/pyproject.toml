@@ -1,0 +1,23 @@
+[build-system]
+requires = [
+    "setuptools>=68",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "bindai-mcp"
+version = "0.1.0"
+description = "MCP integration package for BindAI"
+requires-python = ">=3.11"
+
+dependencies = [
+    "httpx"
+]
+
+
+[tool.setuptools.packages.find]
+where = [
+    "src"
+]

@@ -36,7 +36,6 @@ class ToolStep(ExecutionStep):
             return None
 
         for tool_call in response.tool_calls:
-
             try:
                 result: Any = agent.tools.execute(
                     tool_call.name,

@@ -14,6 +14,7 @@ from bindai_providers import (
     ProviderRegistry,
 )
 from bindai_tool.function_tool import FunctionTool
+from bindai_tool.tool import Tool
 from dotenv import load_dotenv
 
 from .assistant import AssistantAgent
@@ -315,7 +316,7 @@ class AgentBuilder:
     ) -> AgentBuilder:
 
         for tool in tools:
-            if callable(tool) and not isinstance(tool, FunctionTool):
+            if not isinstance(tool, Tool):
                 tool = FunctionTool(tool)
 
             self._tools.append(tool)

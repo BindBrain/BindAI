@@ -42,10 +42,7 @@ class ExecutionPipeline:
         context: ExecutionContext,
     ) -> ExecutionResult:
         if len(self.steps) < 3:
-            raise RuntimeError(
-                "ExecutionPipeline requires at least "
-                "model, tool and finish steps."
-            )
+            raise RuntimeError("ExecutionPipeline requires at least model, tool and finish steps.")
 
         initialization = self.steps[:-3]
 
@@ -73,19 +70,13 @@ class ExecutionPipeline:
                 context.data,
             )
 
-            if (
-                state.response is None
-                or not state.response.tool_calls
-            ):
+            if state.response is None or not state.response.tool_calls:
                 return finish_step.execute(
                     agent,
                     context,
                 )
 
-            if (
-                state.iterations
-                >= agent.configuration.max_tool_iterations
-            ):
+            if state.iterations >= agent.configuration.max_tool_iterations:
                 return finish_step.execute(
                     agent,
                     context,

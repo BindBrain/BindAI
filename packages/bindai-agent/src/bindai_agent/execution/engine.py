@@ -40,7 +40,6 @@ class AgentExecutionEngine:
             .build()
         )
 
-
         self.streaming_pipeline = (
             PipelineBuilder()
             .add(InitializationStep())
@@ -151,7 +150,6 @@ class AgentExecutionEngine:
         )
 
         try:
-
             return self.streaming_pipeline.execute(
                 agent,
                 context,

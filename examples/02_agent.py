@@ -25,6 +25,7 @@ from bindai_core.model import (
     ModelResponse,
     ProviderCapabilities,
 )
+from bindai_core.provider.configuration import ProviderConfiguration
 
 # ==========================================================
 # Example 1 — AgentBuilder
@@ -124,8 +125,20 @@ class DemoProvider(ModelProvider):
             content="Hello from DemoProvider!",
         )
 
+    def stream(
+        self,
+        request,
+    ):
+        yield ModelResponse(
+            content="Hello from DemoProvider!",
+        )
 
-provider = DemoProvider()
+
+provider = DemoProvider(
+    ProviderConfiguration(
+        model="demo",
+    )
+)
 
 response = provider.generate(request)
 

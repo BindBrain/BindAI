@@ -1,42 +1,78 @@
+"""
+08_workflow.py
+
+Learn how to:
+
+- Create a workflow
+- Create custom workflow nodes
+- Connect workflow nodes
+- Execute a workflow
+"""
+
 from bindai_core.context import ExecutionContext
-from bindai_core.workflow import (
-    Workflow,
-    WorkflowExecutor,
-    WorkflowNode,
-)
+from bindai_workflow import Workflow
+from bindai_workflow.node import WorkflowNode
+
+# ==========================================================
+# Workflow Nodes
+# ==========================================================
 
 
-class Step1:
+class Step1Node(WorkflowNode):
+    def __init__(self):
+        super().__init__("step1", "Step 1")
+
     def execute(self, context):
         print("Step 1")
 
+        context.variables.set(
+            "message",
+            "Hello from Step 1",
+        )
 
-class Step2:
+        return context
+
+
+class Step2Node(WorkflowNode):
+    def __init__(self):
+        super().__init__("step2", "Step 2")
+
     def execute(self, context):
         print("Step 2")
 
+        print(
+            "Message:",
+            context.variables.get("message"),
+        )
+
+        return context
+
+
+# ==========================================================
+# Build Workflow
+# ==========================================================
 
 workflow = Workflow("Demo Workflow")
 
-workflow.add_node(
-    WorkflowNode(
-        id="step1",
-        executable=Step1(),
-    )
-)
+step1 = Step1Node()
+step2 = Step2Node()
 
-workflow.add_node(
-    WorkflowNode(
-        id="step2",
-        executable=Step2(),
-    )
-)
+step1.next_nodes.append("step2")
 
-executor = WorkflowExecutor()
+workflow.add_node(step1)
+workflow.add_node(step2)
 
-result = executor.execute(
-    workflow,
+
+# ==========================================================
+# Execute
+# ==========================================================
+
+print("=" * 60)
+print("Workflow")
+print("=" * 60)
+
+result = workflow.run(
     ExecutionContext(),
 )
 
-print(result.success)
+print("\nWorkflow Success:", result.success)

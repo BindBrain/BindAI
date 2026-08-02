@@ -27,7 +27,6 @@ Instead, report vulnerabilities privately.
 You can:
 
 - Open a private security advisory through GitHub.
-- Contact the maintainers through the official BindAI communication channels.
 
 When reporting a vulnerability, please include:
 

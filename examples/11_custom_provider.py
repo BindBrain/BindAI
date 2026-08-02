@@ -1,4 +1,4 @@
-from bindai_agent import AgentBuilder
+from bindai import AgentBuilder
 from bindai_core import (
     ModelProvider,
     ModelRequest,

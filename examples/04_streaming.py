@@ -12,7 +12,7 @@ agent = (
 
 print("Streaming:\n")
 
-for chunk in agent.stream("Explain BindAI in one paragraph."):
+for chunk in agent.stream_chat("Explain BindAI in one paragraph."):
     print(chunk.delta, end="", flush=True)
 
 print("\n\nFinished.")

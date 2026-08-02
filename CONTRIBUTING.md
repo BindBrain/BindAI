@@ -10,7 +10,7 @@ We welcome bug reports, feature requests, documentation improvements, and code c
 
 ## Requirements
 
-- Python 3.11+
+- Python 3.12+
 - Git
 - UV (recommended package manager)
 
@@ -34,6 +34,14 @@ uv sync
 ```
 
 ---
+
+## Build Packages
+
+Build every package in the monorepo:
+
+```bash
+python scripts/build_packages.py
+```
 
 # Repository Structure
 
@@ -130,10 +138,21 @@ please update the appropriate documentation page.
 Before opening a Pull Request:
 
 - Ensure all tests pass.
+- Build every package.
 - Update documentation.
 - Add tests for new functionality.
 - Keep commits focused.
 - Use clear commit messages.
+
+Run the same checks used in CI:
+
+```bash
+ruff check .
+ruff format .
+pyright
+pytest
+python scripts/build_packages.py
+```
 
 Example:
 

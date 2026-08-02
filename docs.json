@@ -98,7 +98,8 @@
             "docs/08. templates/08.5 workflow-human",
             "docs/08. templates/08.6 workflow-retry",
             "docs/08. templates/08.7 workflow-timeout",
-            "docs/08. templates/08.8 workflow-schedule"
+            "docs/08. templates/08.8 workflow-schedule",
+			"docs/08. templates/08.9 template-overview"
           ]
         },
         {

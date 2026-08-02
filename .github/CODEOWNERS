@@ -1,0 +1,17 @@
+# Default owners
+* @BindBrain
+
+# Documentation
+/docs/ @BindBrain
+
+# GitHub workflows
+/.github/ @BindBrain
+
+# CLI
+/packages/bindai-cli/ @BindBrain
+
+# Core
+/packages/bindai-core/ @BindBrain
+
+# Workflows
+/packages/bindai-workflow/ @BindBrain

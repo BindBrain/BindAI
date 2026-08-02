@@ -39,10 +39,10 @@ class SequentialProcess(Process):
                     tasks=group.tasks,
                 )
 
-            if result.response:
+            if result.output:
                 outputs.append(
                     str(
-                        result.response,
+                        result.output,
                     )
                 )
 
@@ -117,7 +117,7 @@ class SequentialProcess(Process):
                         previous.agent.name,
                         "",
                         str(
-                            previous.result.response,
+                            previous.result.output,
                         ),
                     ]
                 )

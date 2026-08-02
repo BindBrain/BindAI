@@ -1,5 +1,4 @@
-from bindai import AgentBuilder
-from bindai_core.tool import tool
+from bindai import AgentBuilder, tool
 
 #
 # Create a tool
@@ -22,7 +21,6 @@ print("=== Tool Metadata ===")
 
 print(add.name)
 print(add.description)
-print(add.parameters)
 
 print()
 
@@ -33,12 +31,12 @@ print()
 
 print("=== Direct Execution ===")
 
-result = add.execute(
+result = add(
     a=10,
     b=20,
 )
 
-print(result.output)
+print(result)
 
 print()
 
@@ -57,7 +55,7 @@ agent = (
         Always use the add tool whenever the user asks for addition.
         """
     )
-    .tool(add)
+    .tools(add.function)
     .openai(
         model="gpt-4.1-mini",
     )
@@ -72,7 +70,7 @@ tool_result = agent.execute_tool(
     b=35,
 )
 
-print(tool_result.output)
+print(tool_result.value)
 
 print()
 
@@ -86,6 +84,5 @@ print("=== LLM Tool Calling ===")
 response = agent.chat("What is 24891 + 91742?")
 
 print("Success:", response.success)
-print("Iterations:", response.iterations)
 print("Response:")
-print(response.response)
+print(response.output)

@@ -73,11 +73,7 @@ class FinishStep(
 
         result = AgentResult(
             success=True,
-            output=(
-                structured
-                if structured is not None
-                else response
-            ),
+            output=(structured if structured is not None else response),
         )
 
         #

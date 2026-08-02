@@ -2,9 +2,10 @@ from bindai import AgentBuilder
 from bindai_core.events import (
     AgentFinishedEvent,
     AgentStartedEvent,
+    Event,
     ToolExecutedEvent,
 )
-from bindai_core.tool import tool
+from bindai_tool import tool
 
 
 @tool()
@@ -18,9 +19,9 @@ agent = (
     .name("Assistant")
     .instructions("Always use the add tool for addition.")
     .openai(
-        model="gpt-5",
+        model="gpt-4.1-mini",
     )
-    .tool(add)
+    .tools(add)
     .build()
 )
 
@@ -30,16 +31,18 @@ agent = (
 #
 
 
-def on_agent_started(event: AgentStartedEvent):
+def on_agent_started(event: Event):
     print("Agent Started")
 
 
-def on_agent_finished(event: AgentFinishedEvent):
-    print("Agent Finished")
+def on_agent_finished(event: Event):
+    if isinstance(event, AgentFinishedEvent):
+        print("Agent Finished")
 
 
-def on_tool(event: ToolExecutedEvent):
-    print(f"Tool Executed: {event.tool_name}")
+def on_tool(event: Event):
+    if isinstance(event, ToolExecutedEvent):
+        print(f"Tool Executed: {event.tool_name}")
 
 
 #
@@ -81,7 +84,7 @@ print("\nRunning Agent")
 
 result = agent.chat("What is 100 + 50?")
 
-print(result.response)
+print(result.output)
 
 #
 # Unsubscribe

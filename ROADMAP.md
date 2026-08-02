@@ -34,7 +34,7 @@ Rather than focusing solely on AI agents, BindAI provides a modular foundation f
 
 # Version 1.1
 
-## Providers
+## Next Release
 
 - Azure OpenAI
 - Anthropic
@@ -67,7 +67,7 @@ Rather than focusing solely on AI agents, BindAI provides a modular foundation f
 
 # Version 1.2
 
-## Runtime
+## Planned
 
 - Distributed Workflow Execution
 - Background Workers
@@ -91,7 +91,7 @@ Rather than focusing solely on AI agents, BindAI provides a modular foundation f
 
 # Version 2.0
 
-## Studio
+## Long-Term Vision
 
 Visual workflow designer.
 

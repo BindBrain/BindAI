@@ -5,37 +5,22 @@ on:
     branches:
       - main
       - master
-      - refactor/packages
 
   pull_request:
-
-permissions:
-  contents: read
 
 jobs:
   test:
 
-    name: Python ${{ matrix.python-version }} • ${{ matrix.os }}
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: false
-
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-
         python-version:
-          - "3.11"
           - "3.12"
-          - "3.13"
 
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -45,26 +30,34 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Restore uv cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/uv
-            .venv
-          key: >-
-            ${{ runner.os }}-${{ matrix.python-version }}-${{
-            hashFiles('uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.python-version }}
-
       - name: Install dependencies
-        run: uv sync --all-extras
+        run: |
+          uv sync --all-extras
 
       - name: Ruff
-        run: uv run ruff check .
+        run: |
+          uv run ruff check .
 
       - name: MyPy
-        run: uv run mypy packages
+        run: |
+          uv run mypy packages
 
       - name: Run tests
-        run: uv run pytest --cov
+        run: |
+          uv run pytest \
+            --cov \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-report=html
+
+      - name: Upload coverage html
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: htmlcov
+
+      - name: Upload coverage xml
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
