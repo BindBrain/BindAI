@@ -1,7 +1,0 @@
-name: Workflow Assistant
-
-model: openai:gpt-4.1-mini
-
-instructions: |
-  You are a helpful AI assistant.
-  Keep your answers short and helpful.
