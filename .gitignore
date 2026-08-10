@@ -53,3 +53,11 @@ Thumbs.db
 
 # Python version managers
 .python-version
+
+# Local development/test projects
+my-project/
+test-instructions/
+test-instructions-2/
+
+# Local package builds
+wheelhouse/
