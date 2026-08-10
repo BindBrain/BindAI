@@ -1,45 +1,20 @@
-<p align="center">
-  <a href="https://bindai.dev">
-    <img src="logo/light.png" alt="BindAI Logo" width="220">
-  </a>
-</p>
-
-<h1 align="center">BindAI</h1>
-
-<p align="center">
-  <strong>Build production-ready AI applications with agents, workflows, memory, knowledge retrieval, and tools.</strong>
-</p>
-
-<p align="center">
-  A modular, provider-agnostic Python framework for developing intelligent applications—from AI assistants to enterprise automation platforms.
-</p>
-
-<p align="center">
-  <a href="https://docs.bindai.dev"><strong>Documentation</strong></a> •
-  <a href="https://bindai.dev"><strong>Website</strong></a> •
-  <a href="https://pypi.org/project/bindai/"><strong>PyPI</strong></a> •
-  <a href="https://github.com/BindBrain/BindAI"><strong>GitHub</strong></a>
-</p>
-
----
-
 # Build AI Software, Not Just AI Demos
 
 Modern AI applications require far more than a single LLM call.
 
 BindAI provides a unified architecture for building complete AI systems with reusable components for:
 
-- 🤖 AI Agents
-- 🔄 Workflows
-- 🛠 Tools
-- 🧠 Memory
-- 📚 Knowledge & RAG
-- 📄 Prompt Management
-- 🔌 Model Providers
-- 🏗 Projects
-- ⚙ Enterprise Automation
+* 🤖 AI Agents
+* 🔄 Workflows
+* 🛠 Tools
+* 🧠 Memory
+* 📚 Knowledge & RAG
+* 📄 Prompt Management
+* 🔌 Model Providers
+* 🏗 Projects
+* ⚙ Enterprise Automation
 
-Whether you're creating an AI assistant, document processing pipeline, internal business automation, or a distributed multi-agent platform, BindAI provides the building blocks to scale from prototype to production.
+Whether you're creating an AI assistant, document processing pipeline, internal business automation, or a multi-agent platform, BindAI provides the building blocks to scale from prototype to production-oriented applications.
 
 ---
 
@@ -55,9 +30,7 @@ Or clone the repository for development:
 
 ```bash
 git clone https://github.com/BindBrain/BindAI.git
-
 cd BindAI
-
 pip install -e .
 ```
 
@@ -70,51 +43,55 @@ from bindai import Agent
 
 agent = Agent(
     name="assistant",
-    instructions="You are a helpful AI assistant."
+    instructions="You are a helpful AI assistant.",
 )
 
 response = agent.run(
-    "Explain what BindAI is."
+    "Explain what BindAI is.",
 )
 
 print(response.output)
 ```
 
-As your application grows you can incrementally add:
+As your application grows, you can incrementally add:
 
-- Memory
-- Tools
-- Knowledge Retrieval
-- Workflows
-- Human Approval
-- Scheduling
-- Multiple AI Providers
+* Memory
+* Tools
+* Knowledge Retrieval
+* Workflows
+* Human Approval
+* Scheduling
+* Multiple AI Providers
 
-without changing your application's architecture.
+without changing the overall application architecture.
 
 ---
 
 # Why BindAI?
 
-Most AI frameworks focus on a single part of the problem.
+Most AI frameworks focus on a single part of the application stack.
 
-BindAI is designed as a complete application framework where every component works together through a consistent architecture.
+BindAI is designed as a modular AI application framework where agents, workflows, tools, memory, knowledge, providers, and projects can work together through a consistent architecture.
 
 ## Python First
 
-Write clean Python without excessive abstractions.
+Write clean Python without unnecessary abstractions.
 
 ## Modular
 
-Every component can be used independently or combined into larger systems.
+Use individual components independently or combine them into larger systems.
 
 ## Provider Agnostic
 
-Switch between OpenAI, Anthropic, Ollama, Azure OpenAI, and future providers without rewriting application logic.
+Integrate different model providers without rewriting application-level logic.
 
-## Production Ready
+## Workflow Orchestration
 
-Designed for real-world software with retries, workflows, scheduling, memory, logging, and extensibility.
+Build workflows that support sequential execution, conditions, loops, parallel branches, retries, timeouts, human tasks, and scheduled execution.
+
+## Extensible
+
+The package-based architecture allows individual components to evolve independently while remaining part of the larger BindAI ecosystem.
 
 ---
 
@@ -122,51 +99,57 @@ Designed for real-world software with retries, workflows, scheduling, memory, lo
 
 ## 🤖 AI Agents
 
-- Intelligent agent execution
-- Conversation management
-- Prompt management
-- Tool calling
-- Structured outputs
-- Streaming responses
+* Intelligent agent execution
+* Conversation management
+* Prompt management
+* Tool calling
+* Structured outputs
+* Streaming responses
 
 ## 🔄 Workflows
 
-- Sequential execution
-- Conditional branching
-- Loops
-- Parallel execution
-- Retry policies
-- Timeouts
-- Human approval
-- Scheduling
+BindAI workflows provide an execution engine for coordinating multiple nodes and sharing state through a workflow context.
+
+Supported workflow patterns include:
+
+* Sequential execution
+* Conditional branching
+* Loops
+* Parallel execution
+* Human tasks
+* Retry policies
+* Timeouts
+* Scheduling
+
+These patterns can be combined to build more complex business automation.
 
 ## 🛠 Tools
 
-- Automatic tool registration
-- Function schema generation
-- Metadata support
-- Context-aware execution
+* Automatic tool registration
+* Function schema generation
+* Metadata support
+* Context-aware execution
 
 ## 🧠 Memory
 
-- Conversation memory
-- Pluggable memory providers
-- Long-term context
+* Conversation memory
+* Pluggable memory providers
+* Long-term context
 
 ## 📚 Knowledge & RAG
 
-- Document ingestion
-- Embeddings
-- Vector search
-- Retrieval-Augmented Generation
+* Document ingestion
+* Embeddings
+* Vector search
+* Retrieval-Augmented Generation
 
 ## 🔌 AI Providers
 
-- OpenAI
-- Anthropic
-- Ollama
-- Azure OpenAI
-- Custom Providers
+* OpenAI
+* Anthropic
+* Ollama
+* Azure OpenAI
+* Custom providers
 
 ## 🏗 Projects
 
@@ -176,67 +159,63 @@ Organize applications, workflows, tools, prompts, memory, and knowledge into reu
 
 # Package Ecosystem
 
-BindAI is built as a modular ecosystem.
+BindAI is built as a modular package ecosystem.
 
-| Package | Purpose |
-|----------|----------|
-| bindai | Main framework |
-| bindai-agent | AI Agents |
-| bindai-application | Applications |
-| bindai-cli | Command Line Interface |
-| bindai-config | Configuration |
-| bindai-core | Core Framework |
-| bindai-embeddings | Embedding Providers |
-| bindai-group | Agent Groups |
-| bindai-host | Hosting |
-| bindai-knowledge | Knowledge & RAG |
-| bindai-memory | Memory |
-| bindai-model | AI Models |
-| bindai-project | Project Management |
-| bindai-prompts | Prompt System |
-| bindai-prompt-builder | Prompt Builder |
-| bindai-providers | Provider Interface |
-| bindai-provider-openai | OpenAI Provider |
-| bindai-retrieval | Retrieval |
-| bindai-runtime | Runtime |
-| bindai-task | Tasks |
-| bindai-tool | Tool System |
-| bindai-workflow | Workflow Engine |
+| Package                  | Purpose                |
+| ------------------------ | ---------------------- |
+| `bindai`                 | Main framework         |
+| `bindai-agent`           | AI agents              |
+| `bindai-application`     | Applications           |
+| `bindai-cli`             | Command-line interface |
+| `bindai-config`          | Configuration          |
+| `bindai-core`            | Core framework         |
+| `bindai-embeddings`      | Embedding providers    |
+| `bindai-group`           | Agent groups           |
+| `bindai-host`            | Hosting                |
+| `bindai-knowledge`       | Knowledge and RAG      |
+| `bindai-memory`          | Memory                 |
+| `bindai-model`           | AI models              |
+| `bindai-project`         | Project management     |
+| `bindai-prompts`         | Prompt system          |
+| `bindai-prompt-builder`  | Prompt builder         |
+| `bindai-providers`       | Provider interfaces    |
+| `bindai-provider-openai` | OpenAI provider        |
+| `bindai-retrieval`       | Retrieval              |
+| `bindai-runtime`         | Runtime                |
+| `bindai-task`            | Tasks                  |
+| `bindai-tool`            | Tool system            |
+| `bindai-workflow`        | Workflow engine        |
 
-Each package can evolve independently while remaining fully compatible with the BindAI ecosystem.
+Each package can evolve independently while remaining part of the BindAI ecosystem.
 
 ---
 
 # Architecture
 
 ```text
-                 User
-                   │
-                   ▼
-                Project
-                   │
-         ┌─────────┴─────────┐
-         ▼                   ▼
-    Applications        Workflows
-         │                   │
-         └─────────┬─────────┘
-                   ▼
-                 Agents
-                   │
-        ┌──────────┼──────────┐
-        ▼          ▼          ▼
-     Memory    Knowledge    Tools
-        │          │          │
-        └──────────┼──────────┘
-                   ▼
-             Model Providers
-                   │
-      ┌────────────┼────────────┐
-      ▼            ▼            ▼
-   OpenAI     Anthropic      Ollama
+                         User
+                           │
+                           ▼
+                        Project
+                           │
+                ┌──────────┴──────────┐
+                ▼                     ▼
+          Applications           Workflows
+                                      │
+                     ┌────────────────┼────────────────┐
+                     ▼                ▼                ▼
+                  Agents          Conditions        Loops
+                     │
+             ┌───────┼────────┬──────────┐
+             ▼       ▼        ▼          ▼
+          Memory  Knowledge  Tools    Providers
+                                      │
+                         ┌────────────┼────────────┐
+                         ▼            ▼            ▼
+                      OpenAI      Anthropic      Ollama
 ```
 
-Every component has a single responsibility, making applications easier to extend, test, and maintain.
+Workflows provide orchestration around agents and other workflow nodes, while the surrounding components provide the capabilities used by those workflows.
 
 ---
 
@@ -244,7 +223,7 @@ Every component has a single responsibility, making applications easier to exten
 
 ```text
 BindAI/
-
+│
 ├── packages/
 │   ├── bindai/
 │   ├── bindai-agent/
@@ -271,38 +250,51 @@ BindAI/
 
 Complete documentation is available at:
 
-**https://docs.bindai.dev**
+[BindAI Documentation](https://docs.bindai.dev)
 
-Documentation includes:
+The documentation covers:
 
-- Getting Started
-- Installation
-- Core Concepts
-- Agents
-- Tools
-- Memory
-- Knowledge & RAG
-- Workflows
-- Projects
-- Templates
-- API Reference
+* Getting Started
+* Installation
+* Core Concepts
+* Agents
+* Tools
+* Memory
+* Knowledge & RAG
+* Workflows
+* Projects
+* Templates
+* API Reference
+
+The workflow documentation covers the current execution patterns:
+
+* Workflow Basic
+* Workflow Condition
+* Workflow Loop
+* Workflow Parallel
+* Workflow Human
+* Workflow Retry
+* Workflow Timeout
+* Workflow Schedule
+
+The Templates section provides dedicated documentation for these patterns and an overview of how templates are organized.
 
 ---
 
 # Roadmap
 
-Upcoming milestones include:
+Planned and ongoing work includes:
 
-- Additional AI providers
-- Advanced workflow engine
-- Enhanced memory systems
-- Improved RAG architecture
-- MCP integration
-- Enterprise integrations
-- Monitoring & Observability
-- Visual workflow editor
-- Plugin ecosystem
-- Template marketplace
+* Additional AI providers
+* Advanced workflow capabilities
+* Enhanced memory systems
+* Improved RAG architecture
+* MCP integration
+* Enterprise integrations
+* Monitoring and observability
+* Visual workflow editor
+* Plugin ecosystem
+* Template marketplace
 
 ---
 
@@ -324,8 +316,8 @@ Bug reports, documentation improvements, and feature suggestions are always appr
 
 # Community
 
-- Documentation — https://docs.bindai.dev
-- GitHub Issues — https://github.com/BindBrain/BindAI/issues
+* Documentation — [docs.bindai.dev](https://docs.bindai.dev)
+* GitHub — [BindAI on GitHub](https://github.com/BindBrain/BindAI)
 
 Community discussions, templates, and additional resources will be introduced as the ecosystem grows.
 
@@ -343,21 +335,17 @@ BindAI aims to become a complete open-source ecosystem for AI software developme
 
 The long-term vision includes:
 
-- Production-ready AI framework
-- Enterprise automation platform
-- Modular package ecosystem
-- AI application templates
-- Visual workflow designer
-- Complete developer platform
+* Production-oriented AI framework
+* Enterprise automation platform
+* Modular package ecosystem
+* AI application templates
+* Visual workflow designer
+* Complete developer platform
 
 ---
-
-<p align="center">
 
 **Build AI Software. Scale Everywhere.**
 
 Made with ❤️ by **BindBrain**
 
-https://bindai.dev
-
-</p>
+[bindai.dev](https://bindai.dev)

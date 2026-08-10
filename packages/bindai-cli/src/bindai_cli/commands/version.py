@@ -1,5 +1,7 @@
 import typer
 
+from bindai_cli import __version__
+
 app = typer.Typer(
     invoke_without_command=True,
 )
@@ -10,4 +12,4 @@ def version():
     """
     Show installed BindAI version.
     """
-    typer.echo("BindAI CLI 0.1.0")
+    typer.echo(f"BindAI CLI {__version__}")

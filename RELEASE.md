@@ -8,7 +8,7 @@ Release checklist
 
 [ ] bindai init
 
-[ ] bindai new DemoProject
+[ ] bindai new my-project
 
 [ ] Build docs
 

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import shutil
 from pathlib import Path
@@ -8,7 +8,6 @@ def copy_scaffold(
     scaffold: Path,
     destination: Path,
 ) -> None:
-
     shutil.copytree(
         scaffold,
         destination,
@@ -32,8 +31,7 @@ def copy_scaffold(
 def replace_placeholders(
     root: Path,
     project_name: str,
-):
-
+) -> None:
     for file in root.rglob("*"):
         if not file.is_file():
             continue
@@ -49,6 +47,11 @@ def replace_placeholders(
 
         text = file.read_text(
             encoding="utf-8",
+        )
+
+        text = text.replace(
+            "{{ project_name }}",
+            project_name,
         )
 
         text = text.replace(

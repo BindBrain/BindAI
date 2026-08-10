@@ -2,6 +2,7 @@
 name = "bindai-workspace"
 version = "0.1.0"
 description = "BindAI development workspace"
+readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
@@ -123,7 +124,7 @@ python_version = "3.12"
 explicit_package_bases = true
 ignore_missing_imports = true
 
-exclude = "(templates/|playground/|demo/|Demo.*/|MyProject/)"
+exclude = "(templates/|playground/|demo/)"
 
 check_untyped_defs = true
 warn_return_any = true

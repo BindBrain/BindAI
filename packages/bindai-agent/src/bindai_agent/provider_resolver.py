@@ -8,20 +8,16 @@ from bindai_providers import (
     ProviderConfiguration,
     ProviderRegistry,
 )
+from dotenv import load_dotenv
 
 
 def resolve_provider(
     provider: str | object,
 ):
-    """
-    Resolves either:
-
-    - an already constructed provider
-    - or a provider name ("openai")
-    """
-
     if not isinstance(provider, str):
         return provider
+
+    load_dotenv()
 
     project = ProjectRuntime(
         Path.cwd(),

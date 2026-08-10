@@ -8,25 +8,26 @@ from .models import Template
 
 class TemplateRegistry:
     def __init__(self):
-
-        current = Path(__file__).resolve()
-
-        while current.name != "bindai":
-            current = current.parent
-
-        self.root = current / "templates"
+        self.root = Path(__file__).resolve().parent
 
     def list(self) -> list[Template]:
+        templates: list[Template] = []
 
-        templates = []
+        if not self.root.exists():
+            return templates
 
         for folder in sorted(self.root.iterdir()):
+            if not folder.is_dir():
+                continue
+
             metadata = folder / "template.json"
 
             if not metadata.exists():
                 continue
 
-            data = json.loads(metadata.read_text(encoding="utf-8"))
+            data = json.loads(
+                metadata.read_text(encoding="utf-8")
+            )
 
             templates.append(
                 Template(
@@ -36,8 +37,6 @@ class TemplateRegistry:
             )
 
         return templates
-
-    # <-- ADD THIS METHOD HERE
 
     def get(
         self,

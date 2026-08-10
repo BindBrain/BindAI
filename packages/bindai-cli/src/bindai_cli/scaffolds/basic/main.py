@@ -1,8 +1,11 @@
-from agents.assistant import agent
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from agents.assistant import agent  # noqa: E402
 
 
 def main():
-
     print("BindAI Project")
 
     while True:
@@ -13,7 +16,7 @@ def main():
 
         response = agent.run(message)
 
-        print(f"Assistant: {response}")
+        print(f"Assistant: {response.output}")
 
 
 if __name__ == "__main__":

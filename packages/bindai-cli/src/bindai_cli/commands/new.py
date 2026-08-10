@@ -30,7 +30,9 @@ def new(
     root = Path(name)
 
     if root.exists():
-        print(f"[red]Project '{name}' already exists.[/red]")
+        console.print(
+            f"[red]Project '{name}' already exists.[/red]"
+        )
         raise typer.Exit(1)
 
     scaffold = Path(__file__).parent.parent / "scaffolds" / "basic"
@@ -54,21 +56,19 @@ def new(
 
     print()
 
-    print(f"[green]✓ Project '{name}' created successfully.[/green]")
+    console.print(
+        f"[green]✓ Project '{name}' created successfully.[/green]"
+    )
 
-    print()
+    console.print()
 
-    print("[bold]Next steps:[/bold]")
+    console.print("[bold]Next steps:[/bold]")
 
-    print(f"  cd {name}")
-
-    print("  .venv\\Scripts\\activate")
-
-    print("  pip install -r requirements.txt")
-
-    print("  bindai doctor")
-
-    print("  python main.py")
+    console.print(f"  cd {name}")
+    console.print("  .venv\\Scripts\\activate")
+    console.print("  pip install -r requirements.txt")
+    console.print("  bindai doctor")
+    console.print("  python main.py")
 
     if install:
         subprocess.run(
