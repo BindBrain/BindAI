@@ -20,19 +20,71 @@ Whether you're creating an AI assistant, document processing pipeline, internal 
 
 # Installation
 
-Install the complete framework:
+## Install from PyPI
+
+The easiest way to install BindAI is from PyPI:
 
 ```bash
-pip install bindai
+python -m pip install bindai
 ```
 
-Or clone the repository for development:
+After installation, verify the CLI:
+
+```bash
+bindai version
+```
+
+> Note: `bindai --version` is not currently supported. Use `bindai version`.
+
+---
+
+## Install from GitHub for Development
+
+If you want to develop BindAI or work with the source code from the repository, clone the GitHub repository:
 
 ```bash
 git clone https://github.com/BindBrain/BindAI.git
 cd BindAI
-pip install -e .
 ```
+
+BindAI is organized as a multi-package **uv workspace**, so install the development workspace with:
+
+```bash
+python -m pip install uv
+uv sync
+```
+
+Activate the workspace environment.
+
+### Windows PowerShell
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+### macOS / Linux
+
+```bash
+source .venv/bin/activate
+```
+
+Verify the source installation:
+
+```bash
+python -c "import bindai; print('BindAI import OK')"
+bindai version
+```
+
+The repository root is a workspace containing multiple BindAI packages. Therefore, **do not use** `pip install -e .` from the repository root.
+
+Individual packages are located under:
+
+```text
+packages/
+```
+
+and are managed together through the workspace configuration.
+
 
 ---
 
@@ -161,30 +213,32 @@ Organize applications, workflows, tools, prompts, memory, and knowledge into reu
 
 BindAI is built as a modular package ecosystem.
 
-| Package                  | Purpose                |
-| ------------------------ | ---------------------- |
-| `bindai`                 | Main framework         |
-| `bindai-agent`           | AI agents              |
-| `bindai-application`     | Applications           |
-| `bindai-cli`             | Command-line interface |
-| `bindai-config`          | Configuration          |
-| `bindai-core`            | Core framework         |
-| `bindai-embeddings`      | Embedding providers    |
-| `bindai-group`           | Agent groups           |
-| `bindai-host`            | Hosting                |
-| `bindai-knowledge`       | Knowledge and RAG      |
-| `bindai-memory`          | Memory                 |
-| `bindai-model`           | AI models              |
-| `bindai-project`         | Project management     |
-| `bindai-prompts`         | Prompt system          |
-| `bindai-prompt-builder`  | Prompt builder         |
-| `bindai-providers`       | Provider interfaces    |
-| `bindai-provider-openai` | OpenAI provider        |
-| `bindai-retrieval`       | Retrieval              |
-| `bindai-runtime`         | Runtime                |
-| `bindai-task`            | Tasks                  |
-| `bindai-tool`            | Tool system            |
-| `bindai-workflow`        | Workflow engine        |
+| Package                     | Purpose                |
+| --------------------------- | ---------------------- |
+| `bindai`                    | Main framework         |
+| `bindai-agent`              | AI agents              |
+| `bindai-application`        | Applications           |
+| `bindai-cli`                | Command-line interface |
+| `bindai-config`             | Configuration          |
+| `bindai-core`               | Core framework         |
+| `bindai-embeddings`         | Embedding providers    |
+| `bindai-group`              | Agent groups           |
+| `bindai-host`               | Hosting                |
+| `bindai-knowledge`          | Knowledge and RAG      |
+| `bindai-memory`             | Memory                 |
+| `bindai-model`              | AI models              |
+| `bindai-project`            | Project management     |
+| `bindai-prompts`            | Prompt system          |
+| `bindai-prompt-builder`     | Prompt builder         |
+| `bindai-providers`          | Provider interfaces    |
+| `bindai-provider-openai`    | OpenAI provider        |
+| `bindai-provider-anthropic` | Anthropic provider     |
+| `bindai-provider-ollama`    | Ollama provider        |
+| `bindai-retrieval`          | Retrieval              |
+| `bindai-runtime`            | Runtime                |
+| `bindai-task`               | Tasks                  |
+| `bindai-tool`               | Tool system            |
+| `bindai-workflow`           | Workflow engine        |
 
 Each package can evolve independently while remaining part of the BindAI ecosystem.
 
