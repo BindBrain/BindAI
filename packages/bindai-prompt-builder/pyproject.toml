@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "bindai-prompt-builder"
 version = "0.1.0"
 description = "BindAI Prompt Builder"
+readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [
