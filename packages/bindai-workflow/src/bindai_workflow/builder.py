@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
+from bindai_agent.registry import AgentRegistry
+
 from .node import WorkflowNode
 from .nodes.agent import AgentNode
 from .nodes.condition import ConditionNode
@@ -95,6 +97,8 @@ class WorkflowBuilder:
     ):
 
         self._workflow.agents[agent.name] = agent
+
+        AgentRegistry.register(agent)
 
         node = AgentNode(
             node_id=agent.name,
