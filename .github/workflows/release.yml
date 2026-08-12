@@ -31,4 +31,4 @@ jobs:
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          uv publish dist/bindai_knowledge-0.1.3.tar.gz dist/bindai_knowledge-0.1.3-py3-none-any.whl
+          uv publish dist/*
