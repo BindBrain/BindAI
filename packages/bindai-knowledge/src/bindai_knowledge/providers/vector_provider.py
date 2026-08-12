@@ -9,12 +9,28 @@ from ..vector_store import VectorRecord
 from .in_memory import InMemoryKnowledgeProvider
 
 
+def _normalize_scores(
+    scores: list[float],
+) -> list[float]:
+    if not scores:
+        return []
+
+    maximum = max(scores)
+
+    if maximum <= 0:
+        return [0.0 for _ in scores]
+
+    return [
+        score / maximum
+        for score in scores
+    ]
+
+
 class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
     def __init__(
         self,
         embedding: EmbeddingProvider,
     ):
-
         super().__init__()
 
         self.embedding = embedding
@@ -75,7 +91,10 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
 
         return KnowledgeResult(
             success=result.success,
-            value=[document for _, document in result.value],
+            value=[
+                document
+                for _, document in result.value
+            ],
         )
 
     def search_with_scores(
@@ -89,13 +108,21 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             query,
         )
 
-        ranked: list[tuple[float, KnowledgeDocument]] = []
+        ranked: list[
+            tuple[
+                float,
+                KnowledgeDocument,
+            ]
+        ] = []
 
         for record in self._vectors.values():
             if filters:
                 metadata = record.document.metadata or {}
 
-                if not all(metadata.get(key) == value for key, value in filters.items()):
+                if not all(
+                    metadata.get(key) == value
+                    for key, value in filters.items()
+                ):
                     continue
 
             score = cosine_similarity(
@@ -127,19 +154,11 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
         filters: dict[str, object] | None = None,
     ) -> KnowledgeResult:
 
-        #
-        # Keyword ranking
-        #
-
         keyword = super().search_with_scores(
             query=query,
             limit=1000,
             filters=filters,
         )
-
-        #
-        # Vector ranking
-        #
 
         vector = self.search_with_scores(
             query=query,
@@ -147,48 +166,95 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             filters=filters,
         )
 
-        #
-        # Merge
-        #
+        keyword_scores = {
+            document.id: score
+            for score, document in keyword.value
+        }
 
-        merged: dict[
-            str,
+        vector_scores = {
+            document.id: score
+            for score, document in vector.value
+        }
+
+        keyword_normalized_values = _normalize_scores(
+            list(keyword_scores.values())
+        )
+
+        vector_normalized_values = _normalize_scores(
+            list(vector_scores.values())
+        )
+
+        normalized_keyword = dict(
+            zip(
+                keyword_scores,
+                keyword_normalized_values,
+            )
+        )
+
+        normalized_vector = dict(
+            zip(
+                vector_scores,
+                vector_normalized_values,
+            )
+        )
+
+        document_by_id = {
+            document.id: document
+            for _, document in keyword.value
+        }
+
+        document_by_id.update(
+            {
+                document.id: document
+                for _, document in vector.value
+            }
+        )
+
+        candidate_ids = set(
+            document_by_id
+        )
+
+        ranked: list[
             tuple[
                 float,
                 KnowledgeDocument,
-            ],
-        ] = {}
+            ]
+        ] = []
 
-        for score, document in keyword.value:
-            merged[document.id] = (
-                score * 0.4,
-                document,
+        for document_id in candidate_ids:
+            keyword_score = normalized_keyword.get(
+                document_id,
+                0.0,
             )
 
-        for score, document in vector.value:
-            if document.id in merged:
-                merged_score, _ = merged[document.id]
+            vector_score = normalized_vector.get(
+                document_id,
+                0.0,
+            )
 
-                merged[document.id] = (
-                    merged_score + score * 0.6,
-                    document,
+            score = (
+                keyword_score * 0.6
+                + vector_score * 0.4
+            )
+
+            ranked.append(
+                (
+                    score,
+                    document_by_id[document_id],
                 )
+            )
 
-            else:
-                merged[document.id] = (
-                    score * 0.6,
-                    document,
-                )
-
-        ranked = sorted(
-            merged.values(),
+        ranked.sort(
             key=lambda item: item[0],
             reverse=True,
         )
 
         return KnowledgeResult(
             success=True,
-            value=[document for _, document in ranked[:limit]],
+            value=[
+                document
+                for _, document in ranked[:limit]
+            ],
         )
 
     def delete(
