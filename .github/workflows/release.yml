@@ -7,14 +7,13 @@ on:
 
 jobs:
   publish:
-
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
+      id-token: write
 
     steps:
-
       - uses: actions/checkout@v4
 
       - uses: astral-sh/setup-uv@v5
@@ -28,7 +27,4 @@ jobs:
           uv build --package bindai-knowledge --no-sources --out-dir dist
 
       - name: Publish bindai-knowledge
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          uv publish dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1
