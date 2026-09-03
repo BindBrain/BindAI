@@ -1,0 +1,21 @@
+[project]
+name = "bindai-provider-anthropic"
+version = "0.1.0"
+description = "Anthropic provider for BindAI"
+requires-python = ">=3.11"
+
+dependencies = [
+    "anthropic>=1.3.0",
+    "bindai-core",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.entry-points."bindai.providers"]
+
+anthropic = "bindai_provider_anthropic:register"

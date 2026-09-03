@@ -6,7 +6,6 @@ from pathlib import Path
 REQUIRED_FILES = {
     "README.md",
     "main.py",
-    "template.json",
 }
 
 

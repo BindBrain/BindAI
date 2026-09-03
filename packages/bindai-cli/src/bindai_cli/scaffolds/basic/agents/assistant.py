@@ -1,7 +1,3 @@
-from bindai import Agent
+from bindai import AgentBuilder
 
-agent = Agent(
-    name="assistant",
-    provider="openai",
-    instructions="You are a helpful assistant built with BindAI.",
-)
+agent = AgentBuilder().from_project(".").build()

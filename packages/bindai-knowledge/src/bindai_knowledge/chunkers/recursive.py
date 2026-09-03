@@ -17,7 +17,7 @@ class RecursiveChunker(DocumentChunker):
     def __init__(
         self,
         chunk_size: int = 500,
-        overlap: int = 100,
+        overlap: int = 0,
     ):
         if chunk_size <= 0:
             raise ValueError("chunk_size must be greater than zero")

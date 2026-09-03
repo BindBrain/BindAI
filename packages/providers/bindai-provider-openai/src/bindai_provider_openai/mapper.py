@@ -20,8 +20,11 @@ class OpenAIMapper:
     def messages(
         messages: list[Message],
     ) -> list[dict]:
+        """
+        Convert BindAI messages into OpenAI messages.
+        """
 
-        result = []
+        result: list[dict] = []
 
         for message in messages:
             item: dict[str, object] = {
@@ -68,28 +71,65 @@ class OpenAIMapper:
         OpenAI function-calling schema.
         """
 
-        return [
-            {
-                "type": "function",
-                "function": {
-                    "name": tool.name,
-                    "description": tool.description,
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            key: {
-                                "type": value["type"],
-                            }
-                            for key, value in tool.parameters.items()
-                        },
-                        "required": [
-                            key for key, value in tool.parameters.items() if value.get("required")
-                        ],
+        result: list[dict] = []
+
+        for tool in tools:
+            parameters = tool.parameters
+
+            #
+            # BindAI ToolDefinition.parameters may already
+            # contain a complete JSON Schema.
+            #
+
+            if (
+                isinstance(parameters, dict)
+                and parameters.get("type") == "object"
+                and isinstance(parameters.get("properties"), dict)
+            ):
+                schema = parameters
+
+            else:
+                #
+                # Backwards-compatible parameter format:
+                #
+                # {
+                #     "a": {"type": "integer"},
+                #     "b": {"type": "integer"},
+                # }
+                #
+
+                properties: dict[str, dict] = {}
+                required: list[str] = []
+
+                for key, value in parameters.items():
+                    if not isinstance(value, dict):
+                        continue
+
+                    properties[key] = {
+                        "type": value.get("type", "string"),
+                    }
+
+                    if value.get("required"):
+                        required.append(key)
+
+                schema = {
+                    "type": "object",
+                    "properties": properties,
+                    "required": required,
+                }
+
+            result.append(
+                {
+                    "type": "function",
+                    "function": {
+                        "name": tool.name,
+                        "description": tool.description,
+                        "parameters": schema,
                     },
-                },
-            }
-            for tool in tools
-        ]
+                }
+            )
+
+        return result
 
     @staticmethod
     def tool_calls(
@@ -109,6 +149,7 @@ class OpenAIMapper:
                 continue
 
             function = getattr(call, "function", None)
+
             if function is None:
                 continue
 
@@ -116,7 +157,9 @@ class OpenAIMapper:
                 ToolCall(
                     id=call.id,
                     name=function.name,
-                    arguments=json.loads(function.arguments or "{}"),
+                    arguments=json.loads(
+                        function.arguments or "{}",
+                    ),
                 )
             )
 

@@ -1,15 +1,12 @@
-from bindai_providers import ProviderRegistry
+from bindai_core import ProviderFactory
 
 from .provider import OpenAIProvider
 
 
 def register():
-
-    ProviderRegistry.register(
+    ProviderFactory.register(
         "openai",
-        lambda configuration: OpenAIProvider(
-            configuration,
-        ),
+        OpenAIProvider,
     )
 
 

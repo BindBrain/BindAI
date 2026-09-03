@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
+
+from bindai_core import ProviderFactory
 
 
 class ProviderRegistry:
     """
-    Registry for provider implementations.
+    Compatibility facade over the canonical BindAI core provider registry.
     """
-
-    _providers: dict[str, Callable] = {}
 
     @classmethod
     def register(
@@ -16,21 +17,27 @@ class ProviderRegistry:
         name: str,
         builder: Callable,
     ) -> None:
-        cls._providers[name] = builder
+        ProviderFactory.register(
+            name,
+            builder,
+        )
 
     @classmethod
     def unregister(
         cls,
         name: str,
     ) -> None:
-        cls._providers.pop(name, None)
+        ProviderFactory._providers.pop(
+            name.lower(),
+            None,
+        )
 
     @classmethod
     def exists(
         cls,
         name: str,
     ) -> bool:
-        return name in cls._providers
+        return name.lower() in ProviderFactory._providers
 
     @classmethod
     def get(
@@ -38,29 +45,41 @@ class ProviderRegistry:
         name: str,
     ) -> Callable:
         try:
-            return cls._providers[name]
-
+            return ProviderFactory._providers[
+                name.lower()
+            ]
         except KeyError as exc:
-            raise ValueError(f"Unknown provider '{name}'.") from exc
+            raise ValueError(
+                f"Unknown provider '{name}'."
+            ) from exc
 
     @classmethod
     def create(
         cls,
         name: str,
-        **kwargs,
+        configuration=None,
+        **kwargs: Any,
     ):
-        builder = cls.get(name)
+        if kwargs:
+            return cls.get(name)(
+                **kwargs,
+            )
 
-        return builder(**kwargs)
+        return ProviderFactory.create(
+            name,
+            configuration,
+        )
 
     @classmethod
     def list(
         cls,
     ) -> list[str]:
-        return sorted(cls._providers.keys())
+        return list(
+            ProviderFactory.names(),
+        )
 
     @classmethod
     def clear(
         cls,
     ) -> None:
-        cls._providers.clear()
+        ProviderFactory._providers.clear()

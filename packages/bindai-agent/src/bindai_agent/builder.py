@@ -12,6 +12,7 @@ from bindai_prompts import Prompt
 from bindai_providers import (
     ProviderConfiguration,
     ProviderRegistry,
+    bootstrap,
 )
 from bindai_tool.function_tool import FunctionTool
 from bindai_tool.tool import Tool
@@ -94,6 +95,8 @@ class AgentBuilder:
             provider,
             str,
         ):
+            bootstrap()
+            
             configuration = ProviderConfiguration(
                 api_key=api_key,
                 endpoint=endpoint,

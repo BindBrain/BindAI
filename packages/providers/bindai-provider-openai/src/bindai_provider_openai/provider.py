@@ -112,6 +112,8 @@ class OpenAIProvider(ModelProvider):
                 response.choices[0].message,
             ),
             structured_output=structured_output,
+            finish_reason=response.choices[0].finish_reason,
+            model=response.model,
         )
 
     def stream(
@@ -144,4 +146,12 @@ class OpenAIProvider(ModelProvider):
 
     @property
     def capabilities(self) -> ProviderCapabilities:
-        return ProviderCapabilities()
+        return ProviderCapabilities(
+            chat=True,
+            streaming=True,
+            vision=True,
+            embeddings=False,
+            tool_calling=True,
+            structured_output=True,
+            reasoning=False,
+        )

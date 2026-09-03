@@ -36,7 +36,13 @@ class InitializationStep(
             user_input,
         )
 
-        state = ExecutionState()
+        state = context.data
+
+        if not isinstance(
+            state,
+            ExecutionState,
+        ):
+            state = ExecutionState()
 
         state.request = ModelRequest(
             messages=agent.conversation.messages,

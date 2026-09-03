@@ -1,14 +1,15 @@
 {
-	"name": "workflow-basic",
-	"title": "Workflow Basic",
-	"description": "Starter workflow project.",
-	"category": "workflow",
-	"author": "BindBrain",
-	"version": "1.0.0",
-	"status": "stable",
-	"tags": [
-	  "workflow",
-	  "automation",
-	  "beginner"
-	]
+    "name": "workflow-basic",
+    "title": "Workflow Basic",
+    "description": "Starter workflow project.",
+    "category": "workflow",
+    "author": "BindBrain",
+    "version": "1.0.0",
+    "status": "stable",
+    "tags": [
+      "workflow",
+      "automation",
+      "beginner"
+    ],
+    "scaffold": "basic"
   }

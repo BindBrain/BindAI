@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 
-def bootstrap():
-
+def bootstrap() -> None:
     providers = [
         "bindai_provider_openai",
         "bindai_provider_anthropic",
@@ -15,8 +14,15 @@ def bootstrap():
                 module_name,
                 fromlist=["register"],
             )
+        except ModuleNotFoundError as exc:
+            if exc.name == module_name:
+                continue
 
-            module.register()
+            raise
 
-        except ImportError:
-            pass
+        register = getattr(module, "register", None)
+
+        if register is None:
+            continue
+
+        register()
