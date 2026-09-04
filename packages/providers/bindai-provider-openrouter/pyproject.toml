@@ -1,0 +1,20 @@
+[project]
+name = "bindai-provider-openrouter"
+version = "0.1.0"
+description = "OpenRouter provider for BindAI"
+requires-python = ">=3.11"
+
+dependencies = [
+    "openai>=2.47.0",
+    "bindai-core",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.entry-points."bindai.providers"]
+openrouter = "bindai_provider_openrouter:register"
