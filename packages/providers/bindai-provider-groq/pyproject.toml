@@ -1,0 +1,20 @@
+[project]
+name = "bindai-provider-groq"
+version = "0.1.0"
+description = "Groq provider for BindAI"
+requires-python = ">=3.11"
+
+dependencies = [
+    "groq>=1.7.0",
+    "bindai-core",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.entry-points."bindai.providers"]
+groq = "bindai_provider_groq:register"

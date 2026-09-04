@@ -6,6 +6,7 @@ def bootstrap() -> None:
         "bindai_provider_openai",
         "bindai_provider_anthropic",
         "bindai_provider_google",
+        "bindai_provider_groq",
     ]
 
     for module_name in providers:
