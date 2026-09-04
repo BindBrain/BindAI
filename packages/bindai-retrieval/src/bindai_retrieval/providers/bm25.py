@@ -46,21 +46,34 @@ class BM25RetrieverProvider(RetrieverProvider):
         query: RetrievalQuery,
     ) -> RetrievalResult:
 
-        query_tokens = self._tokenize(query.text)
+        scored = self.score_documents(
+            query,
+        )
+
+        return RetrievalResult(
+            success=True,
+            documents=[
+                document
+                for _, document in scored[:query.limit]
+            ],
+        )
+
+    def score_documents(
+        self,
+        query: RetrievalQuery,
+    ) -> list[tuple[float, KnowledgeDocument]]:
+
+        query_tokens = self._tokenize(
+            query.text,
+        )
 
         if not query_tokens:
-            return RetrievalResult(
-                success=True,
-                documents=[],
-            )
+            return []
 
         document_count = len(self.documents)
 
         if document_count == 0:
-            return RetrievalResult(
-                success=True,
-                documents=[],
-            )
+            return []
 
         scored: list[tuple[float, KnowledgeDocument]] = []
 
@@ -94,13 +107,7 @@ class BM25RetrieverProvider(RetrieverProvider):
             reverse=True,
         )
 
-        return RetrievalResult(
-            success=True,
-            documents=[
-                document
-                for _, document in scored[:query.limit]
-            ],
-        )
+        return scored
 
     def _score(
         self,
@@ -128,7 +135,9 @@ class BM25RetrieverProvider(RetrieverProvider):
             else 1.0
         )
 
-        frequencies = Counter(document_tokens)
+        frequencies = Counter(
+            document_tokens,
+        )
 
         score = 0.0
 
