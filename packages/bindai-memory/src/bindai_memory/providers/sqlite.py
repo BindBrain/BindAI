@@ -52,7 +52,12 @@ class SQLiteMemoryProvider(MemoryProvider):
 
         connection = self._ensure_connection()
 
-        columns = {row[1] for row in connection.execute("PRAGMA table_info(memory)")}
+        columns = {
+            row[1]
+            for row in connection.execute(
+                "PRAGMA table_info(memory)"
+            )
+        }
 
         required = {
             "metadata": "TEXT NOT NULL DEFAULT '{}'",
@@ -99,7 +104,6 @@ class SQLiteMemoryProvider(MemoryProvider):
         self,
         record: MemoryRecord,
     ) -> MemoryResult:
-
         connection = self._ensure_connection()
 
         now = datetime.now(
@@ -154,10 +158,18 @@ class SQLiteMemoryProvider(MemoryProvider):
                 ),
                 record.importance,
                 record.access_count,
-                record.created_at.isoformat() if record.created_at else None,
-                record.updated_at.isoformat() if record.updated_at else None,
-                record.last_accessed.isoformat() if record.last_accessed else None,
-                record.expires_at.isoformat() if record.expires_at else None,
+                record.created_at.isoformat()
+                if record.created_at
+                else None,
+                record.updated_at.isoformat()
+                if record.updated_at
+                else None,
+                record.last_accessed.isoformat()
+                if record.last_accessed
+                else None,
+                record.expires_at.isoformat()
+                if record.expires_at
+                else None,
             ),
         )
 
@@ -173,13 +185,11 @@ class SQLiteMemoryProvider(MemoryProvider):
         key: str,
         namespace: str = "default",
     ) -> MemoryResult:
-
         connection = self._ensure_connection()
 
         row = connection.execute(
             """
             SELECT
-
                 key,
                 value,
                 type,
@@ -190,9 +200,7 @@ class SQLiteMemoryProvider(MemoryProvider):
                 updated_at,
                 last_accessed,
                 expires_at
-
             FROM memory
-
             WHERE namespace=?
             AND key=?
             """,
@@ -207,22 +215,48 @@ class SQLiteMemoryProvider(MemoryProvider):
                 success=False,
             )
 
+        record = MemoryRecord(
+            key=row[0],
+            value=row[1],
+            namespace=namespace,
+            metadata=json.loads(
+                row[3],
+            ),
+            importance=row[4],
+            access_count=row[5],
+            created_at=(
+                datetime.fromisoformat(row[6])
+                if row[6]
+                else datetime.now(UTC)
+            ),
+            updated_at=(
+                datetime.fromisoformat(row[7])
+                if row[7]
+                else datetime.now(UTC)
+            ),
+            last_accessed=(
+                datetime.fromisoformat(row[8])
+                if row[8]
+                else None
+            ),
+            expires_at=(
+                datetime.fromisoformat(row[9])
+                if row[9]
+                else None
+            ),
+        )
+
+        if (
+            record.expires_at is not None
+            and datetime.now(UTC) >= record.expires_at
+        ):
+            return MemoryResult(
+                success=False,
+            )
+
         return MemoryResult(
             success=True,
-            value=MemoryRecord(
-                key=row[0],
-                value=row[1],
-                namespace=namespace,
-                metadata=json.loads(
-                    row[3],
-                ),
-                importance=row[4],
-                access_count=row[5],
-                created_at=(datetime.fromisoformat(row[6]) if row[6] else datetime.now(UTC)),
-                updated_at=(datetime.fromisoformat(row[7]) if row[7] else datetime.now(UTC)),
-                last_accessed=(datetime.fromisoformat(row[8]) if row[8] else None),
-                expires_at=(datetime.fromisoformat(row[9]) if row[9] else None),
-            ),
+            value=record,
         )
 
     def search(
@@ -232,13 +266,11 @@ class SQLiteMemoryProvider(MemoryProvider):
         limit: int = 10,
         metadata: dict | None = None,
     ) -> list[MemoryRecord]:
-
         connection = self._ensure_connection()
 
         rows = connection.execute(
             """
             SELECT
-
                 key,
                 value,
                 type,
@@ -249,12 +281,9 @@ class SQLiteMemoryProvider(MemoryProvider):
                 updated_at,
                 last_accessed,
                 expires_at
-
             FROM memory
-
             WHERE namespace=?
             AND value LIKE ?
-
             LIMIT ?
             """,
             (
@@ -276,14 +305,39 @@ class SQLiteMemoryProvider(MemoryProvider):
                 ),
                 importance=row[4],
                 access_count=row[5],
-                created_at=(datetime.fromisoformat(row[6]) if row[6] else datetime.now(UTC)),
-                updated_at=(datetime.fromisoformat(row[7]) if row[7] else datetime.now(UTC)),
-                last_accessed=(datetime.fromisoformat(row[8]) if row[8] else None),
-                expires_at=(datetime.fromisoformat(row[9]) if row[9] else None),
+                created_at=(
+                    datetime.fromisoformat(row[6])
+                    if row[6]
+                    else datetime.now(UTC)
+                ),
+                updated_at=(
+                    datetime.fromisoformat(row[7])
+                    if row[7]
+                    else datetime.now(UTC)
+                ),
+                last_accessed=(
+                    datetime.fromisoformat(row[8])
+                    if row[8]
+                    else None
+                ),
+                expires_at=(
+                    datetime.fromisoformat(row[9])
+                    if row[9]
+                    else None
+                ),
             )
 
+            if (
+                record.expires_at is not None
+                and datetime.now(UTC) >= record.expires_at
+            ):
+                continue
+
             if metadata:
-                matches = all(record.metadata.get(key) == value for key, value in metadata.items())
+                matches = all(
+                    record.metadata.get(key) == value
+                    for key, value in metadata.items()
+                )
 
                 if not matches:
                     continue
@@ -299,7 +353,6 @@ class SQLiteMemoryProvider(MemoryProvider):
         key: str,
         namespace: str = "default",
     ) -> MemoryResult:
-
         connection = self._ensure_connection()
 
         connection.execute(
@@ -325,12 +378,11 @@ class SQLiteMemoryProvider(MemoryProvider):
         key: str,
         namespace: str = "default",
     ) -> bool:
-
         connection = self._ensure_connection()
 
         row = connection.execute(
             """
-            SELECT 1
+            SELECT expires_at
             FROM memory
             WHERE namespace=?
             AND key=?
@@ -341,13 +393,20 @@ class SQLiteMemoryProvider(MemoryProvider):
             ),
         ).fetchone()
 
-        return row is not None
+        if row is None:
+            return False
+
+        expires_at = row[0]
+
+        if expires_at is None:
+            return True
+
+        return datetime.now(UTC) < datetime.fromisoformat(expires_at)
 
     def clear(
         self,
         namespace: str = "default",
     ) -> MemoryResult:
-
         connection = self._ensure_connection()
 
         connection.execute(
