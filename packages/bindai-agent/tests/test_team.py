@@ -201,3 +201,19 @@ def test_agent_team_parallel_then_review():
         "Researcher: Research findings\n"
         "Writer: Draft content"
     )
+
+def test_agent_team_supports_agent_roles():
+    class RoleAgent:
+        def __init__(self, name):
+            self.name = name
+
+    researcher = RoleAgent("Researcher")
+    writer = RoleAgent("Writer")
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher, role="research")
+    team.add(writer, role="writing")
+
+    assert team.role("research") is researcher
+    assert team.role("writing") is writer
+    assert team.roles() == ["research", "writing"]

@@ -18,12 +18,19 @@ class AgentTeam:
     ) -> None:
         self.name = name
         self._agents: dict[str, Agent] = {}
+        self._roles: dict[str, Agent] = {}
 
     def add(
         self,
         agent: Agent,
+        *,
+        role: str | None = None,
     ) -> AgentTeam:
         self._agents[agent.name] = agent
+
+        if role is not None:
+            self._roles[role] = agent
+
         return self
 
     def get(
@@ -31,6 +38,17 @@ class AgentTeam:
         name: str,
     ) -> Agent:
         return self._agents[name]
+
+    def role(
+        self,
+        role: str,
+    ) -> Agent:
+        return self._roles[role]
+
+    def roles(
+        self,
+    ) -> list[str]:
+        return list(self._roles.keys())
 
     def remove(
         self,
