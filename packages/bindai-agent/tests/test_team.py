@@ -170,3 +170,34 @@ def test_agent_team_chains_agent_outputs():
     assert first.received_message == "Create an article about AI agents."
     assert second.received_message == "Create an article about AI agents. -> research"
     assert third.received_message == "Create an article about AI agents. -> research -> draft"
+
+def test_agent_team_parallel_then_review():
+    from bindai_agent import AgentResult
+
+    class TeamAgent:
+        def __init__(self, name, output):
+            self.name = name
+            self.output = output
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+            return AgentResult(success=True, output=self.output)
+
+    researcher = TeamAgent("Researcher", "Research findings")
+    writer = TeamAgent("Writer", "Draft content")
+    reviewer = TeamAgent("Reviewer", "Final reviewed result")
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher).add(writer).add(reviewer)
+
+    result = team.run_parallel_then_review(
+        "Create an article about AI agents."
+    )
+
+    assert result.success is True
+    assert result.output == "Final reviewed result"
+    assert reviewer.received_message == (
+        "Researcher: Research findings\n"
+        "Writer: Draft content"
+    )

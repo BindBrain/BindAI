@@ -182,3 +182,70 @@ class AgentTeam:
             success=True,
             output=results,
         )
+
+    def run_parallel_then_review(
+        self,
+        message: str,
+    ) -> AgentResult:
+        """
+        Run all agents except the final agent in parallel,
+        then pass their combined outputs to the final agent for review.
+        """
+
+        agents = self.all()
+
+        if not agents:
+            return AgentResult(
+                success=False,
+                error="AgentTeam has no agents.",
+            )
+
+        if len(agents) == 1:
+            result = agents[0].run(message)
+            return AgentResult(
+                success=result.success,
+                output=result.output,
+                error=result.error,
+            )
+
+        specialists = agents[:-1]
+        reviewer = agents[-1]
+
+        with ThreadPoolExecutor(max_workers=len(specialists)) as executor:
+            futures = {
+                agent.name: executor.submit(agent.run, message)
+                for agent in specialists
+            }
+
+            outputs: dict[str, object] = {}
+
+            for name, future in futures.items():
+                result = future.result()
+
+                if not result.success:
+                    return AgentResult(
+                        success=False,
+                        output=outputs,
+                        error=result.error or f"Agent '{name}' failed.",
+                    )
+
+                outputs[name] = result.output
+
+        review_message = "\n".join(
+            f"{name}: {output}"
+            for name, output in outputs.items()
+        )
+
+        result = reviewer.run(review_message)
+
+        if not result.success:
+            return AgentResult(
+                success=False,
+                output=outputs,
+                error=result.error or f"Agent '{reviewer.name}' failed.",
+            )
+
+        return AgentResult(
+            success=True,
+            output=result.output,
+        )
