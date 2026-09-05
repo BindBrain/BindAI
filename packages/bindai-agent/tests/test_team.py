@@ -137,3 +137,36 @@ def test_agent_team_runs_agents_in_parallel():
         "Writer": "Draft complete.",
     }
     assert elapsed < 0.35
+
+def test_agent_team_chains_agent_outputs():
+    from bindai_agent import AgentResult
+
+    class ChainAgent:
+        def __init__(self, name, suffix):
+            self.name = name
+            self.suffix = suffix
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+
+            return AgentResult(
+                success=True,
+                output=f"{message} -> {self.suffix}",
+            )
+
+    first = ChainAgent("Researcher", "research")
+    second = ChainAgent("Writer", "draft")
+    third = ChainAgent("Reviewer", "review")
+
+    team = AgentTeam(name="Content Team")
+    team.add(first).add(second).add(third)
+
+    result = team.run_chain("Create an article about AI agents.")
+
+    assert result.success is True
+    assert result.output == "Create an article about AI agents. -> research -> draft -> review"
+
+    assert first.received_message == "Create an article about AI agents."
+    assert second.received_message == "Create an article about AI agents. -> research"
+    assert third.received_message == "Create an article about AI agents. -> research -> draft"
