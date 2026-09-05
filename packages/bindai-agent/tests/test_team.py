@@ -101,3 +101,39 @@ def test_agent_team_stops_when_agent_fails():
         "Researcher": "Research complete.",
     }
     assert result.error == "Writer failed."
+
+def test_agent_team_runs_agents_in_parallel():
+    import time
+
+    from bindai_agent import AgentResult
+
+    class SlowAgent:
+        def __init__(self, name, output):
+            self.name = name
+            self.output = output
+
+        def run(self, message):
+            time.sleep(0.2)
+            return AgentResult(
+                success=True,
+                output=self.output,
+            )
+
+    first = SlowAgent("Researcher", "Research complete.")
+    second = SlowAgent("Writer", "Draft complete.")
+
+    team = AgentTeam(name="Content Team")
+    team.add(first).add(second)
+
+    start = time.perf_counter()
+
+    result = team.run_parallel("Create an article.")
+
+    elapsed = time.perf_counter() - start
+
+    assert result.success is True
+    assert result.output == {
+        "Researcher": "Research complete.",
+        "Writer": "Draft complete.",
+    }
+    assert elapsed < 0.35

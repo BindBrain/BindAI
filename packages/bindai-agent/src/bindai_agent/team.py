@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+
 from .agent import Agent
 from .result import AgentResult
-
 
 class AgentTeam:
     """
@@ -83,6 +84,39 @@ class AgentTeam:
                 )
 
             results[agent.name] = result.output
+
+        return AgentResult(
+            success=True,
+            output=results,
+        )
+
+    def run_parallel(
+        self,
+        message: str,
+    ) -> AgentResult:
+        """
+        Run the task through all team agents in parallel.
+        """
+
+        with ThreadPoolExecutor(max_workers=self.size()) as executor:
+            futures = {
+                agent.name: executor.submit(agent.run, message)
+                for agent in self._agents.values()
+            }
+
+            results: dict[str, object] = {}
+
+            for name, future in futures.items():
+                result = future.result()
+
+                if not result.success:
+                    return AgentResult(
+                        success=False,
+                        output=results,
+                        error=result.error or f"Agent '{name}' failed.",
+                    )
+
+                results[name] = result.output
 
         return AgentResult(
             success=True,
