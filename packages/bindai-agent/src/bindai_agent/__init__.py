@@ -10,6 +10,7 @@ from .registry import AgentRegistry
 from .result import AgentResult
 from .state import AgentState
 from .delegation import AgentDelegationTool
+from .team import AgentTeam
 
 __all__ = [
     "Agent",
@@ -22,4 +23,5 @@ __all__ = [
     "AgentResult",
     "AgentState",
     "AgentDelegationTool",
+    "AgentTeam",
 ]

@@ -1,0 +1,103 @@
+from bindai_agent import AgentTeam
+
+
+class FakeAgent:
+    def __init__(self, name):
+        self.name = name
+
+
+def test_agent_team_manages_agents():
+    team = AgentTeam(name="Research Team")
+
+    researcher = FakeAgent("Researcher")
+    writer = FakeAgent("Writer")
+
+    team.add(researcher)
+    team.add(writer)
+
+    assert team.name == "Research Team"
+    assert team.size() == 2
+    assert team.names() == ["Researcher", "Writer"]
+    assert team.get("Researcher") is researcher
+    assert team.contains("Writer") is True
+
+    team.remove("Writer")
+
+    assert team.size() == 1
+    assert team.contains("Writer") is False
+
+def test_agent_team_with_real_agents():
+    from bindai_agent import AgentBuilder
+
+    researcher = AgentBuilder().name("Researcher").build()
+    writer = AgentBuilder().name("Writer").build()
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher).add(writer)
+
+    assert team.size() == 2
+    assert team.get("Researcher") is researcher
+    assert team.get("Writer") is writer
+def test_agent_team_runs_agents_sequentially():
+    class FakeAgent:
+        def __init__(self, name, output):
+            self.name = name
+            self.output = output
+            self.received_message = None
+
+        def run(self, message):
+            from bindai_agent import AgentResult
+
+            self.received_message = message
+
+            return AgentResult(
+                success=True,
+                output=self.output,
+            )
+
+    first = FakeAgent("Researcher", "Research complete.")
+    second = FakeAgent("Writer", "Draft complete.")
+
+    team = AgentTeam(name="Content Team")
+    team.add(first).add(second)
+
+    result = team.run("Create an article about AI agents.")
+
+    assert result.success is True
+    assert result.output == {
+        "Researcher": "Research complete.",
+        "Writer": "Draft complete.",
+    }
+    assert first.received_message == "Create an article about AI agents."
+    assert second.received_message == "Create an article about AI agents."
+
+def test_agent_team_stops_when_agent_fails():
+    class FakeAgent:
+        def __init__(self, name, result):
+            self.name = name
+            self.result = result
+
+        def run(self, message):
+            return self.result
+
+    from bindai_agent import AgentResult
+
+    first = FakeAgent(
+        "Researcher",
+        AgentResult(success=True, output="Research complete."),
+    )
+    second = FakeAgent(
+        "Writer",
+        AgentResult(success=False, error="Writer failed."),
+    )
+
+    team = AgentTeam(name="Content Team")
+    team.add(first).add(second)
+
+    result = team.run("Create an article.")
+
+    assert result.success is False
+    assert result.output == {
+        "Researcher": "Research complete.",
+    }
+    assert result.error == "Writer failed."
