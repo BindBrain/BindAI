@@ -129,6 +129,41 @@ class AgentTeam:
             output=results,
         )
 
+    def run_continue(
+        self,
+        message: str,
+    ) -> AgentResult:
+        """
+        Run all team agents and continue even when an agent fails.
+        """
+
+        results: dict[str, object] = {}
+        errors: list[str] = []
+
+        for agent in self._agents.values():
+            result = agent.run(message)
+
+            if result.success:
+                results[agent.name] = result.output
+            else:
+                results[agent.name] = None
+                errors.append(
+                    f"{agent.name}: "
+                    f"{result.error or 'Agent execution failed.'}"
+                )
+
+        if errors:
+            return AgentResult(
+                success=False,
+                output=results,
+                error="\n".join(errors),
+            )
+
+        return AgentResult(
+            success=True,
+            output=results,
+        )
+
     def run_chain(
         self,
         message: str,

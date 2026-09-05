@@ -261,3 +261,43 @@ def test_agent_team_removes_role_when_agent_is_removed():
 
     assert team.contains("Researcher") is False
     assert team.roles() == []
+
+def test_agent_team_can_continue_after_agent_failure():
+    from bindai_agent import AgentResult
+
+    class TeamAgent:
+        def __init__(self, name, output=None, error=None):
+            self.name = name
+            self.output = output
+            self.error = error
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+
+            if self.error:
+                return AgentResult(success=False, error=self.error)
+
+            return AgentResult(success=True, output=self.output)
+
+    researcher = TeamAgent(
+        "Researcher",
+        error="Research failed.",
+    )
+    writer = TeamAgent(
+        "Writer",
+        output="Writing complete.",
+    )
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher).add(writer)
+
+    result = team.run_continue("Create an article.")
+
+    assert result.success is False
+    assert result.output == {
+        "Researcher": None,
+        "Writer": "Writing complete.",
+    }
+    assert result.error == "Researcher: Research failed."
+    assert writer.received_message == "Create an article."
