@@ -217,3 +217,32 @@ def test_agent_team_supports_agent_roles():
     assert team.role("research") is researcher
     assert team.role("writing") is writer
     assert team.roles() == ["research", "writing"]
+
+def test_agent_team_runs_agent_by_role():
+    from bindai_agent import AgentResult
+
+    class RoleAgent:
+        def __init__(self, name):
+            self.name = name
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+            return AgentResult(
+                success=True,
+                output=f"{self.name}: {message}",
+            )
+
+    researcher = RoleAgent("Researcher")
+    writer = RoleAgent("Writer")
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher, role="research")
+    team.add(writer, role="writing")
+
+    result = team.run_role("research", "Research AI agents.")
+
+    assert result.success is True
+    assert result.output == "Researcher: Research AI agents."
+    assert researcher.received_message == "Research AI agents."
+    assert writer.received_message is None

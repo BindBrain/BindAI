@@ -50,6 +50,14 @@ class AgentTeam:
     ) -> list[str]:
         return list(self._roles.keys())
 
+    def run_role(
+        self,
+        role: str,
+        message: str,
+    ) -> AgentResult:
+        agent = self.role(role)
+        return agent.run(message)
+
     def remove(
         self,
         name: str,
