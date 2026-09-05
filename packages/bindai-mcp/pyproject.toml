@@ -13,9 +13,9 @@ description = "MCP integration package for BindAI"
 requires-python = ">=3.11"
 
 dependencies = [
-    "httpx"
+    "httpx",
+    "bindai-tool",
 ]
-
 
 [tool.setuptools.packages.find]
 where = [

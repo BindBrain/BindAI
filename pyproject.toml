@@ -8,7 +8,12 @@ requires-python = ">=3.12"
 dependencies = [
     "bindai",
     "bindai-cli",
+    "bindai-mcp",
+    "bindai-provider-ollama",
+    "bindai-provider-openrouter",
+    "chromadb>=1.5.9",
     "openai>=2.47.0",
+    "psycopg[binary]>=3.2",
     "pypdf>=6.14.2",
     "python-dotenv>=1.2.2",
     "pyyaml>=6.0.3",
@@ -47,10 +52,11 @@ members = [
     "packages/bindai-task",
     "packages/bindai-tool",
     "packages/bindai-workflow",
-
+    "packages/bindai-mcp",
     "packages/providers/bindai-provider-openai",
     "packages/providers/bindai-provider-anthropic",
     "packages/providers/bindai-provider-ollama",
+    "packages/providers/bindai-provider-openrouter",
 ]
 
 [tool.uv.sources]
@@ -78,7 +84,9 @@ bindai-workflow = { workspace = true }
 
 bindai-provider-openai = { workspace = true }
 bindai-provider-anthropic = { workspace = true }
-bindai-provider-ollama = { workspace = true }
+bindai-mcp = { workspace = true }
+bindai-provider-ollama = { workspace = true, editable = true }
+bindai-provider-openrouter = { workspace = true, editable = true }
 
 [dependency-groups]
 dev = [
@@ -91,6 +99,7 @@ dev = [
     "twine>=6.2.0",
     "reportlab>=5.0.0",
     "types-pyyaml>=6.0.12.20260518",
+    "pytest-asyncio>=1.4.0",
 ]
 
 [tool.ruff]
