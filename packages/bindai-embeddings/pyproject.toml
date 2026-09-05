@@ -8,6 +8,10 @@ version = "0.1.0"
 description = "Embedding providers for BindAI"
 requires-python = ">=3.11"
 
+dependencies = [
+    "openai>=2.47.0",
+]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 

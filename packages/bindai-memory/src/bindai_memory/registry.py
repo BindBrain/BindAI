@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .provider import MemoryProvider
 from .providers.postgresql import PostgreSQLMemoryProvider
+from .providers.pinecone import PineconeMemoryProvider
 
 class MemoryRegistry:
     """
@@ -99,4 +100,9 @@ MemoryRegistry.register(
 MemoryRegistry.register(
 	"postgresql", 
 	PostgreSQLMemoryProvider
+)
+
+MemoryRegistry.register(
+    "pinecone",
+    PineconeMemoryProvider,
 )
