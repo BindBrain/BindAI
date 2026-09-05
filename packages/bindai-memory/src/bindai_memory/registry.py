@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .provider import MemoryProvider
-
+from .providers.postgresql import PostgreSQLMemoryProvider
 
 class MemoryRegistry:
     """
@@ -94,4 +94,9 @@ MemoryRegistry.register(
 MemoryRegistry.register(
     "vector",
     VectorMemoryProvider,
+)
+
+MemoryRegistry.register(
+	"postgresql", 
+	PostgreSQLMemoryProvider
 )
