@@ -62,7 +62,19 @@ class AgentTeam:
         self,
         name: str,
     ) -> None:
-        self._agents.pop(name, None)
+        agent = self._agents.pop(name, None)
+
+        if agent is None:
+            return
+
+        roles_to_remove = [
+            role
+            for role, role_agent in self._roles.items()
+            if role_agent is agent
+        ]
+
+        for role in roles_to_remove:
+            del self._roles[role]
 
     def contains(
         self,

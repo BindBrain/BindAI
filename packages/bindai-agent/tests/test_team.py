@@ -246,3 +246,18 @@ def test_agent_team_runs_agent_by_role():
     assert result.output == "Researcher: Research AI agents."
     assert researcher.received_message == "Research AI agents."
     assert writer.received_message is None
+
+def test_agent_team_removes_role_when_agent_is_removed():
+    class RoleAgent:
+        def __init__(self, name):
+            self.name = name
+
+    researcher = RoleAgent("Researcher")
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher, role="research")
+
+    team.remove("Researcher")
+
+    assert team.contains("Researcher") is False
+    assert team.roles() == []
