@@ -9,6 +9,7 @@ from .factory import (
 from .registry import AgentRegistry
 from .result import AgentResult
 from .state import AgentState
+from .delegation import AgentDelegationTool
 
 __all__ = [
     "Agent",
@@ -20,4 +21,5 @@ __all__ = [
     "AgentRegistry",
     "AgentResult",
     "AgentState",
+    "AgentDelegationTool",
 ]

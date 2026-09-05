@@ -10,6 +10,7 @@ from bindai_core.tool import ToolRegistry
 from bindai_memory import InMemoryProvider, Memory
 from bindai_prompts import Prompt
 
+from .delegation import AgentDelegationTool
 from .configuration import AgentConfiguration
 from .conversation import Conversation
 from .execution.data import ExecutionData
@@ -181,6 +182,22 @@ class Agent(Executable):
         return self.tool(
             tool,
         )
+
+    def delegate_to(
+        self,
+        agent: Agent,
+        *,
+        name: str | None = None,
+        description: str | None = None,
+    ) -> Agent:
+        self.tool(
+            AgentDelegationTool(
+                agent,
+                name=name,
+                description=description,
+            )
+        )
+        return self
 
     def execute(
         self,
