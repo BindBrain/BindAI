@@ -3,6 +3,7 @@ from __future__ import annotations
 from .provider import MemoryProvider
 from .providers.postgresql import PostgreSQLMemoryProvider
 from .providers.pinecone import PineconeMemoryProvider
+from .providers.chroma import ChromaMemoryProvider
 
 class MemoryRegistry:
     """
@@ -105,4 +106,9 @@ MemoryRegistry.register(
 MemoryRegistry.register(
     "pinecone",
     PineconeMemoryProvider,
+)
+
+MemoryRegistry.register(
+    "chroma",
+    ChromaMemoryProvider,
 )
