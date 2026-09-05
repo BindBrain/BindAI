@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from .agent import Agent
 from .result import AgentResult
 
+
 class AgentTeam:
     """
     Collection of agents that can collaborate on a task.
@@ -90,38 +91,6 @@ class AgentTeam:
             output=results,
         )
 
-    def test_agent_team_chain_stops_when_agent_fails():
-        from bindai_agent import AgentResult
-
-        class ChainAgent:
-            def __init__(self, name, output=None, error=None):
-                self.name = name
-                self.output = output
-                self.error = error
-                self.received_message = None
-
-            def run(self, message):
-                self.received_message = message
-
-                if self.error:
-                    return AgentResult(success=False, error=self.error)
-
-                return AgentResult(success=True, output=self.output)
-
-        first = ChainAgent("Researcher", output="Research complete.")
-        second = ChainAgent("Writer", error="Writer failed.")
-        third = ChainAgent("Reviewer", output="Review complete.")
-
-        team = AgentTeam(name="Content Team")
-        team.add(first).add(second).add(third)
-
-        result = team.run_chain("Create an article.")
-
-        assert result.success is False
-        assert result.error == "Writer failed."
-        assert result.output == "Research complete."
-        assert third.received_message is None
-
     def run_chain(
         self,
         message: str,
@@ -202,6 +171,7 @@ class AgentTeam:
 
         if len(agents) == 1:
             result = agents[0].run(message)
+
             return AgentResult(
                 success=result.success,
                 output=result.output,
