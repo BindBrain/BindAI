@@ -144,7 +144,9 @@ class AgentExecutor:
             iterations += 1
 
             if iterations >= agent.configuration.max_tool_iterations:
-                raise RuntimeError("Maximum tool iterations exceeded.")
+                raise RuntimeError(
+                    "Maximum tool iterations exceeded."
+                )
 
     def _execute_turn(
         self,
@@ -258,6 +260,47 @@ class AgentExecutor:
     # Request Builder
     #
 
+    def _retrieve_context(
+        self,
+        agent: Agent,
+    ) -> str:
+
+        if agent.knowledge is not None:
+            result = agent.knowledge.search_conversation(
+                agent.conversation,
+                limit=5,
+            )
+
+            if result.success and result.value:
+                return "\n\n".join(
+                    document.content
+                    for document in result.value
+                )
+
+            return ""
+
+        if agent.retriever is not None:
+            query = ""
+
+            if agent.conversation.messages:
+                query = agent.conversation.messages[-1].content
+
+            if not query:
+                return ""
+
+            result = agent.retriever.retrieve(
+                query,
+                top_k=5,
+            )
+
+            if result.success and result.documents:
+                return "\n\n".join(
+                    document.content
+                    for document in result.documents
+                )
+
+        return ""
+
     def _build_request(
         self,
         agent: Agent,
@@ -273,7 +316,24 @@ class AgentExecutor:
             )
         )
 
-        messages.extend(agent.conversation.messages)
+        messages.extend(
+            agent.conversation.messages
+        )
+
+        context_text = self._retrieve_context(
+            agent,
+        )
+
+        if context_text:
+            messages.append(
+                Message(
+                    role=MessageRole.SYSTEM,
+                    content=(
+                        "Relevant knowledge context:\n\n"
+                        f"{context_text}"
+                    ),
+                )
+            )
 
         return ModelRequest(
             messages=messages,
@@ -362,10 +422,12 @@ class AgentExecutor:
 
         for message in messages:
             if message.role == MessageRole.ASSISTANT:
+
                 if message.tool_calls:
                     agent.conversation.add_assistant_tool_call(
                         message.tool_calls,
                     )
+
                 else:
                     agent.conversation.add_assistant(
                         message.content,
