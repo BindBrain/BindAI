@@ -6,7 +6,7 @@ from .provider import KnowledgeProvider
 from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
 from .reranker import LexicalReranker
-
+from .pipeline import KnowledgePipeline
 
 class Knowledge:
     """
@@ -17,12 +17,14 @@ class Knowledge:
         self,
         provider: KnowledgeProvider,
         conversation_query: ConversationQuery | None = None,
+        pipeline: KnowledgePipeline | None = None,
     ):
         self.provider = provider
         self.conversation_query = (
             conversation_query
             or ConversationQuery()
         )
+        self.pipeline = pipeline or KnowledgePipeline()
 
     def add(
         self,
@@ -234,29 +236,13 @@ class Knowledge:
         chunker=None,
     ) -> int:
         documents = loader.load()
-        count = 0
+        processed = self.pipeline.process(
+            documents,
+            chunker=chunker,
+        )
 
-        for document in documents:
-            if chunker is None:
-                self.add(document)
-                count += 1
-            else:
-                chunks = chunker.chunk(document)
+        for document in processed:
+            self.add(document)
 
-                for chunk in chunks:
-                    self.add(
-                        KnowledgeDocument(
-                            id=chunk.id,
-                            title=document.title,
-                            content=chunk.content,
-                            metadata={
-                                **(document.metadata or {}),
-                                "document_id": document.id,
-                                "chunk": True,
-                            },
-                        )
-                    )
-                    count += 1
-
-        return count
+        return len(processed)
 

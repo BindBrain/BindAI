@@ -25,6 +25,7 @@ from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
 from .reranker import LexicalReranker
 from .conversation_query import ConversationQuery
+from .pipeline import KnowledgePipeline
 
 __all__ = [
     "Knowledge",
@@ -52,4 +53,5 @@ __all__ = [
     "KnowledgeSearchOptions",
     "LexicalReranker",
     "ConversationQuery",
+    "KnowledgePipeline",
 ]

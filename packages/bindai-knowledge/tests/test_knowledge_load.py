@@ -164,3 +164,47 @@ def test_load_without_chunker_preserves_metadata():
         "environment": "test",
         "version": 2,
     }
+
+def test_pipeline_preserves_chunk_metadata():
+    from bindai_knowledge import (
+        KnowledgeChunk,
+        KnowledgeDocument,
+    )
+    from bindai_knowledge.pipeline import KnowledgePipeline
+
+    class MetadataChunker:
+        def chunk(self, document):
+            return [
+                KnowledgeChunk(
+                    id="doc-1:0",
+                    document_id=document.id,
+                    content="Chunk content",
+                    metadata={
+                        "chunk_type": "summary",
+                        "chunk_index": 0,
+                    },
+                )
+            ]
+
+    document = KnowledgeDocument(
+        id="doc-1",
+        title="Test Document",
+        content="Original content",
+        metadata={
+            "source": "test",
+        },
+    )
+
+    processed = KnowledgePipeline().process(
+        [document],
+        chunker=MetadataChunker(),
+    )
+
+    assert len(processed) == 1
+    assert processed[0].metadata == {
+        "source": "test",
+        "chunk_type": "summary",
+        "chunk_index": 0,
+        "document_id": "doc-1",
+        "chunk": True,
+    }
