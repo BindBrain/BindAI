@@ -82,6 +82,41 @@ class AgentTeam:
             output=results,
         )
 
+    def run_roles_parallel(
+        self,
+        roles: list[str],
+        message: str,
+    ) -> AgentResult:
+        selected_agents = {
+            role: self.role(role)
+            for role in roles
+        }
+
+        with ThreadPoolExecutor(max_workers=len(selected_agents)) as executor:
+            futures = {
+                role: executor.submit(agent.run, message)
+                for role, agent in selected_agents.items()
+            }
+
+            results: dict[str, object] = {}
+
+            for role, future in futures.items():
+                result = future.result()
+
+                if not result.success:
+                    return AgentResult(
+                        success=False,
+                        output=results,
+                        error=result.error or f"Role '{role}' failed.",
+                    )
+
+                results[role] = result.output
+
+        return AgentResult(
+            success=True,
+            output=results,
+        )
+
     def remove(
         self,
         name: str,

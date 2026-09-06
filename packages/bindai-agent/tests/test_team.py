@@ -339,3 +339,50 @@ def test_agent_team_runs_selected_roles():
     assert researcher.received_message == "Create an article about AI agents."
     assert writer.received_message == "Create an article about AI agents."
     assert reviewer.received_message is None
+
+def test_agent_team_runs_selected_roles_in_parallel():
+    import time
+
+    from bindai_agent import AgentResult
+
+    class SlowRoleAgent:
+        def __init__(self, name, output):
+            self.name = name
+            self.output = output
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+            time.sleep(0.2)
+            return AgentResult(
+                success=True,
+                output=f"{self.name}: {self.output}",
+            )
+
+    researcher = SlowRoleAgent("Researcher", "Research complete.")
+    writer = SlowRoleAgent("Writer", "Writing complete.")
+    reviewer = SlowRoleAgent("Reviewer", "Review complete.")
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher, role="research")
+    team.add(writer, role="writing")
+    team.add(reviewer, role="review")
+
+    start = time.perf_counter()
+
+    result = team.run_roles_parallel(
+        ["research", "writing"],
+        "Create an article about AI agents.",
+    )
+
+    elapsed = time.perf_counter() - start
+
+    assert result.success is True
+    assert result.output == {
+        "research": "Researcher: Research complete.",
+        "writing": "Writer: Writing complete.",
+    }
+    assert researcher.received_message == "Create an article about AI agents."
+    assert writer.received_message == "Create an article about AI agents."
+    assert reviewer.received_message is None
+    assert elapsed < 0.35
