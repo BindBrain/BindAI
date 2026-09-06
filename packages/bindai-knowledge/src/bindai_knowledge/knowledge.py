@@ -6,6 +6,7 @@ from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
 from .reranker import LexicalReranker
 
+
 class Knowledge:
     """
     High-level knowledge facade.
@@ -21,7 +22,6 @@ class Knowledge:
         self,
         document: KnowledgeDocument,
     ) -> KnowledgeResult:
-
         return self.provider.add(
             document,
         )
@@ -30,7 +30,6 @@ class Knowledge:
         self,
         documents: list[KnowledgeDocument],
     ) -> KnowledgeResult:
-
         return self.provider.add_many(
             documents,
         )
@@ -39,7 +38,6 @@ class Knowledge:
         self,
         document_id: str,
     ) -> KnowledgeResult:
-
         return self.provider.get(
             document_id,
         )
@@ -56,21 +54,56 @@ class Knowledge:
         Search the knowledge base.
 
         Existing API remains supported while allowing
-        optional reranking of search results.
+        search type, minimum score, and optional reranking.
         """
+
         if options is None:
             options = KnowledgeSearchOptions(
                 limit=limit,
                 filters=filters,
             )
 
-        result = self.provider.search(
-            query=query,
-            limit=options.limit,
-            filters=options.filters,
-        )
+        if options.search_type == "vector":
+            result = self.provider.search_with_scores(
+                query=query,
+                limit=options.limit,
+                filters=options.filters,
+            )
+        elif options.search_type == "hybrid":
+            result = self.provider.hybrid_search(
+                query=query,
+                limit=options.limit,
+                filters=options.filters,
+            )
+        else:
+            result = self.provider.search(
+                query=query,
+                limit=options.limit,
+                filters=options.filters,
+            )
 
-        if reranker is not None and result.success and result.value:
+        if (
+            options.min_score > 0
+            and result.success
+            and result.value
+        ):
+            scored_results = result.value
+
+            if scored_results and isinstance(
+                scored_results[0],
+                tuple,
+            ):
+                result.value = [
+                    document
+                    for score, document in scored_results
+                    if score >= options.min_score
+                ]
+
+        if (
+            reranker is not None
+            and result.success
+            and result.value
+        ):
             result.value = reranker.rerank(
                 query,
                 result.value,
@@ -96,7 +129,6 @@ class Knowledge:
         limit: int = 5,
         filters: dict[str, object] | None = None,
     ) -> KnowledgeResult:
-
         return self.provider.hybrid_search(
             query=query,
             limit=limit,
@@ -107,7 +139,6 @@ class Knowledge:
         self,
         document_id: str,
     ) -> KnowledgeResult:
-
         return self.provider.delete(
             document_id,
         )
@@ -115,7 +146,6 @@ class Knowledge:
     def clear(
         self,
     ) -> KnowledgeResult:
-
         return self.provider.clear()
 
     def retrieve(
@@ -123,17 +153,18 @@ class Knowledge:
         query: str,
         limit: int = 5,
     ) -> str:
-
         result = self.search(
             query,
             limit,
-            reranker=reranker,
         )
 
         if not result.success or not result.value:
             return ""
 
-        return "\n\n".join(document.content for document in result.value)
+        return "\n\n".join(
+            document.content
+            for document in result.value
+        )
 
     def retrieve_with_sources(
         self,
@@ -158,7 +189,10 @@ class Knowledge:
                 "content": document.content,
                 "metadata": document.metadata,
             }
-            for index, document in enumerate(result.value, start=1)
+            for index, document in enumerate(
+                result.value,
+                start=1,
+            )
         ]
 
     def load(
@@ -166,17 +200,13 @@ class Knowledge:
         loader,
         chunker=None,
     ) -> int:
-
         documents = loader.load()
-
         count = 0
 
         for document in documents:
             if chunker is None:
                 self.add(document)
-
                 count += 1
-
             else:
                 chunks = chunker.chunk(document)
 
@@ -193,7 +223,7 @@ class Knowledge:
                             },
                         )
                     )
-
                     count += 1
 
         return count
+
