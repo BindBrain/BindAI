@@ -155,6 +155,7 @@ class AgentTeam:
         self,
     ) -> None:
         self._agents.clear()
+        self._roles.clear()
 
     def size(
         self,

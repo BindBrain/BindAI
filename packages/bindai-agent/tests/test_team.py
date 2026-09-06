@@ -386,3 +386,13 @@ def test_agent_team_runs_selected_roles_in_parallel():
     assert writer.received_message == "Create an article about AI agents."
     assert reviewer.received_message is None
     assert elapsed < 0.35
+
+def test_clear_removes_roles():
+    team = AgentTeam(name="Team")
+    researcher = FakeAgent("Researcher")
+
+    team.add(researcher, role="researcher")
+    team.clear()
+
+    assert team.names() == []
+    assert team.roles() == []
