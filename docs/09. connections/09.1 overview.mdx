@@ -1,0 +1,24 @@
+---
+title: "Connections"
+description: "Connect BindAI applications to external services and systems."
+---
+
+# Connections
+
+BindAI connections provide a small, consistent interface for integrating external services with agents, workflows, and applications.
+
+A connection represents an external destination or service that BindAI can communicate with.
+
+## Connection lifecycle
+
+Every connection follows the same basic lifecycle:
+
+1. Create the connection.
+2. Connect to the external service.
+3. Send data.
+4. Disconnect when finished.
+
+The base `Connection` interface provides these operations:
+
+```python
+from bindai_connections import Connection

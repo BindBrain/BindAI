@@ -15,6 +15,7 @@ members = [
     "bindai-application",
     "bindai-cli",
     "bindai-config",
+    "bindai-connections",
     "bindai-core",
     "bindai-embeddings",
     "bindai-group",
@@ -434,6 +435,17 @@ requires-dist = [
 ]
 
 [[package]]
+name = "bindai-connections"
+version = "0.1.0"
+source = { editable = "packages/bindai-connections" }
+dependencies = [
+    { name = "bindai-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "bindai-core", editable = "packages/bindai-core" }]
+
+[[package]]
 name = "bindai-core"
 version = "0.1.0"
 source = { editable = "packages/bindai-core" }
@@ -687,6 +699,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "bindai" },
     { name = "bindai-cli" },
+    { name = "bindai-connections" },
     { name = "bindai-mcp" },
     { name = "bindai-provider-ollama" },
     { name = "bindai-provider-openrouter" },
@@ -723,6 +736,7 @@ dev = [
 requires-dist = [
     { name = "bindai", editable = "packages/bindai" },
     { name = "bindai-cli", editable = "packages/bindai-cli" },
+    { name = "bindai-connections", editable = "packages/bindai-connections" },
     { name = "bindai-mcp", editable = "packages/bindai-mcp" },
     { name = "bindai-provider-ollama", editable = "packages/providers/bindai-provider-ollama" },
     { name = "bindai-provider-openrouter", editable = "packages/providers/bindai-provider-openrouter" },

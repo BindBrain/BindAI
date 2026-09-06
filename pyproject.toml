@@ -9,6 +9,7 @@ dependencies = [
     "bindai",
     "bindai-cli",
     "bindai-mcp",
+    "bindai-connections",
     "bindai-provider-ollama",
     "bindai-provider-openrouter",
     "chromadb>=1.5.9",
@@ -53,6 +54,7 @@ members = [
     "packages/bindai-tool",
     "packages/bindai-workflow",
     "packages/bindai-mcp",
+    "packages/bindai-connections",
     "packages/providers/bindai-provider-openai",
     "packages/providers/bindai-provider-anthropic",
     "packages/providers/bindai-provider-ollama",
@@ -85,6 +87,7 @@ bindai-workflow = { workspace = true }
 bindai-provider-openai = { workspace = true }
 bindai-provider-anthropic = { workspace = true }
 bindai-mcp = { workspace = true }
+bindai-connections = { workspace = true }
 bindai-provider-ollama = { workspace = true, editable = true }
 bindai-provider-openrouter = { workspace = true, editable = true }
 
@@ -178,3 +181,11 @@ module = [
     "bindai_cli.scaffolds.*",
 ]
 ignore_errors = true
+
+
+
+
+
+
+
+

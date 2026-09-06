@@ -61,6 +61,12 @@
           "docs/05. knowledge/05.5 rag"
         ]
       },
+	  {
+		"group": "Connections",
+		"pages": [
+		  "docs/09. connections/09.1 overview"
+		]
+	  },
       {
         "group": "Workflows",
         "pages": [
