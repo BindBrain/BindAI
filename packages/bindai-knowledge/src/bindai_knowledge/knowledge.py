@@ -4,7 +4,7 @@ from .document import KnowledgeDocument
 from .provider import KnowledgeProvider
 from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
-
+from .reranker import LexicalReranker
 
 class Knowledge:
     """
@@ -50,25 +50,33 @@ class Knowledge:
         limit: int = 5,
         filters: dict[str, object] | None = None,
         options: KnowledgeSearchOptions | None = None,
+        reranker: LexicalReranker | None = None,
     ):
         """
         Search the knowledge base.
 
         Existing API remains supported while allowing
-        future search options.
+        optional reranking of search results.
         """
-
         if options is None:
             options = KnowledgeSearchOptions(
                 limit=limit,
                 filters=filters,
             )
 
-        return self.provider.search(
+        result = self.provider.search(
             query=query,
             limit=options.limit,
             filters=options.filters,
         )
+
+        if reranker is not None and result.success and result.value:
+            result.value = reranker.rerank(
+                query,
+                result.value,
+            )
+
+        return result
 
     def search_with_scores(
         self,
@@ -119,6 +127,7 @@ class Knowledge:
         result = self.search(
             query,
             limit,
+            reranker=reranker,
         )
 
         if not result.success or not result.value:
@@ -130,10 +139,12 @@ class Knowledge:
         self,
         query: str,
         limit: int = 5,
+        reranker: LexicalReranker | None = None,
     ) -> list[dict]:
         result = self.search(
             query,
             limit,
+            reranker=reranker,
         )
 
         if not result.success or not result.value:
