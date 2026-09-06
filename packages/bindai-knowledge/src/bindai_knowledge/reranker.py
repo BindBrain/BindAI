@@ -3,9 +3,9 @@ from __future__ import annotations
 import re
 
 from .document import KnowledgeDocument
+from .reranker_base import Reranker
 
-
-class LexicalReranker:
+class LexicalReranker(Reranker):
     """
     Reranks knowledge documents using query-term overlap.
     """

@@ -6,6 +6,7 @@ from .provider import KnowledgeProvider
 from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
 from .reranker import LexicalReranker
+from .reranker_base import Reranker
 from .pipeline import KnowledgePipeline
 
 class Knowledge:
@@ -56,7 +57,7 @@ class Knowledge:
         limit: int = 5,
         filters: dict[str, object] | None = None,
         options: KnowledgeSearchOptions | None = None,
-        reranker: LexicalReranker | None = None,
+        reranker: Reranker | None = None,
     ):
         """
         Search the knowledge base using recent conversation history.
@@ -83,7 +84,7 @@ class Knowledge:
         limit: int = 5,
         filters: dict[str, object] | None = None,
         options: KnowledgeSearchOptions | None = None,
-        reranker: LexicalReranker | None = None,
+        reranker: Reranker | None = None,
     ):
         """
         Search the knowledge base.
@@ -205,7 +206,7 @@ class Knowledge:
         self,
         query: str,
         limit: int = 5,
-        reranker: LexicalReranker | None = None,
+        reranker: Reranker | None = None,
     ) -> list[dict]:
         result = self.search(
             query,
