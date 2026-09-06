@@ -131,7 +131,6 @@ class Knowledge:
         query: str,
         limit: int = 5,
     ) -> list[dict]:
-
         result = self.search(
             query,
             limit,
@@ -142,12 +141,13 @@ class Knowledge:
 
         return [
             {
+                "citation": f"[{index}]",
                 "id": document.id,
                 "title": document.title,
                 "content": document.content,
                 "metadata": document.metadata,
             }
-            for document in result.value
+            for index, document in enumerate(result.value, start=1)
         ]
 
     def load(
