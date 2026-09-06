@@ -11,6 +11,7 @@ from .result import AgentResult
 from .state import AgentState
 from .delegation import AgentDelegationTool
 from .team import AgentTeam
+from .team_delegation import AgentTeamDelegationTool
 
 __all__ = [
     "Agent",
@@ -24,4 +25,5 @@ __all__ = [
     "AgentState",
     "AgentDelegationTool",
     "AgentTeam",
+    "AgentTeamDelegationTool",
 ]
