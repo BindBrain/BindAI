@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .conversation_query import ConversationQuery
 from .document import KnowledgeDocument
 from .provider import KnowledgeProvider
 from .result import KnowledgeResult
@@ -15,8 +16,13 @@ class Knowledge:
     def __init__(
         self,
         provider: KnowledgeProvider,
+        conversation_query: ConversationQuery | None = None,
     ):
         self.provider = provider
+        self.conversation_query = (
+            conversation_query
+            or ConversationQuery()
+        )
 
     def add(
         self,
@@ -40,6 +46,33 @@ class Knowledge:
     ) -> KnowledgeResult:
         return self.provider.get(
             document_id,
+        )
+
+    def search_conversation(
+        self,
+        conversation,
+        limit: int = 5,
+        filters: dict[str, object] | None = None,
+        options: KnowledgeSearchOptions | None = None,
+        reranker: LexicalReranker | None = None,
+    ):
+        """
+        Search the knowledge base using recent conversation history.
+        """
+        query = self.conversation_query.build(conversation)
+
+        if not query:
+            return KnowledgeResult(
+                success=True,
+                value=[],
+            )
+
+        return self.search(
+            query=query,
+            limit=limit,
+            filters=filters,
+            options=options,
+            reranker=reranker,
         )
 
     def search(

@@ -24,6 +24,7 @@ from .providers.vector_provider import VectorKnowledgeProvider
 from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
 from .reranker import LexicalReranker
+from .conversation_query import ConversationQuery
 
 __all__ = [
     "Knowledge",
@@ -50,4 +51,5 @@ __all__ = [
     "JsonKnowledgeProvider",
     "KnowledgeSearchOptions",
     "LexicalReranker",
+    "ConversationQuery",
 ]
