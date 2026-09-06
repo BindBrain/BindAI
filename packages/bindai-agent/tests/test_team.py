@@ -301,3 +301,41 @@ def test_agent_team_can_continue_after_agent_failure():
     }
     assert result.error == "Researcher: Research failed."
     assert writer.received_message == "Create an article."
+
+def test_agent_team_runs_selected_roles():
+    from bindai_agent import AgentResult
+
+    class RoleAgent:
+        def __init__(self, name):
+            self.name = name
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+            return AgentResult(
+                success=True,
+                output=f"{self.name}: {message}",
+            )
+
+    researcher = RoleAgent("Researcher")
+    writer = RoleAgent("Writer")
+    reviewer = RoleAgent("Reviewer")
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher, role="research")
+    team.add(writer, role="writing")
+    team.add(reviewer, role="review")
+
+    result = team.run_roles(
+        ["research", "writing"],
+        "Create an article about AI agents.",
+    )
+
+    assert result.success is True
+    assert result.output == {
+        "research": "Researcher: Create an article about AI agents.",
+        "writing": "Writer: Create an article about AI agents.",
+    }
+    assert researcher.received_message == "Create an article about AI agents."
+    assert writer.received_message == "Create an article about AI agents."
+    assert reviewer.received_message is None

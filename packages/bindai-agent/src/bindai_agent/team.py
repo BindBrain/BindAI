@@ -58,6 +58,30 @@ class AgentTeam:
         agent = self.role(role)
         return agent.run(message)
 
+    def run_roles(
+        self,
+        roles: list[str],
+        message: str,
+    ) -> AgentResult:
+        results: dict[str, object] = {}
+
+        for role in roles:
+            result = self.run_role(role, message)
+
+            if not result.success:
+                return AgentResult(
+                    success=False,
+                    output=results,
+                    error=result.error or f"Role '{role}' failed.",
+                )
+
+            results[role] = result.output
+
+        return AgentResult(
+            success=True,
+            output=results,
+        )
+
     def remove(
         self,
         name: str,
