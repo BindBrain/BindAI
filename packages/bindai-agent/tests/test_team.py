@@ -396,3 +396,101 @@ def test_clear_removes_roles():
 
     assert team.names() == []
     assert team.roles() == []
+
+def test_agent_team_chains_selected_roles():
+    from bindai_agent import AgentResult
+
+    class ChainRoleAgent:
+        def __init__(self, name, suffix):
+            self.name = name
+            self.suffix = suffix
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+
+            return AgentResult(
+                success=True,
+                output=f"{message} -> {self.suffix}",
+            )
+
+    researcher = ChainRoleAgent("Researcher", "research")
+    writer = ChainRoleAgent("Writer", "draft")
+    reviewer = ChainRoleAgent("Reviewer", "review")
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher, role="research")
+    team.add(writer, role="writing")
+    team.add(reviewer, role="review")
+
+    result = team.run_roles_chain(
+        ["research", "writing", "review"],
+        "Create an article about AI agents.",
+    )
+
+    assert result.success is True
+    assert result.output == (
+        "Create an article about AI agents. -> research -> draft -> review"
+    )
+
+    assert researcher.received_message == "Create an article about AI agents."
+    assert writer.received_message == (
+        "Create an article about AI agents. -> research"
+    )
+    assert reviewer.received_message == (
+        "Create an article about AI agents. -> research -> draft"
+    )
+
+
+def test_agent_team_role_chain_stops_on_failure():
+    from bindai_agent import AgentResult
+
+    class ChainRoleAgent:
+        def __init__(self, name, output=None, error=None):
+            self.name = name
+            self.output = output
+            self.error = error
+            self.received_message = None
+
+        def run(self, message):
+            self.received_message = message
+
+            if self.error:
+                return AgentResult(
+                    success=False,
+                    error=self.error,
+                )
+
+            return AgentResult(
+                success=True,
+                output=self.output,
+            )
+
+    researcher = ChainRoleAgent(
+        "Researcher",
+        output="Research complete.",
+    )
+    writer = ChainRoleAgent(
+        "Writer",
+        error="Writing failed.",
+    )
+    reviewer = ChainRoleAgent(
+        "Reviewer",
+        output="Review complete.",
+    )
+
+    team = AgentTeam(name="Content Team")
+    team.add(researcher, role="research")
+    team.add(writer, role="writing")
+    team.add(reviewer, role="review")
+
+    result = team.run_roles_chain(
+        ["research", "writing", "review"],
+        "Create an article.",
+    )
+
+    assert result.success is False
+    assert result.output == "Research complete."
+    assert result.error == "Writing failed."
+
+    assert reviewer.received_message is None

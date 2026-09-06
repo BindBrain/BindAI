@@ -82,6 +82,38 @@ class AgentTeam:
             output=results,
         )
 
+    def run_roles_chain(
+        self,
+        roles: list[str],
+        message: str,
+    ) -> AgentResult:
+        """
+        Run selected roles sequentially, passing each role's
+        output to the next role.
+        """
+
+        current_message = message
+
+        for role in roles:
+            result = self.run_role(
+                role,
+                current_message,
+            )
+
+            if not result.success:
+                return AgentResult(
+                    success=False,
+                    output=current_message,
+                    error=result.error or f"Role '{role}' failed.",
+                )
+
+            current_message = str(result.output)
+
+        return AgentResult(
+            success=True,
+            output=current_message,
+        )
+
     def run_roles_parallel(
         self,
         roles: list[str],
