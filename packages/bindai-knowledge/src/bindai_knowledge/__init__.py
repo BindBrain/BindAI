@@ -23,6 +23,7 @@ from .providers.json_provider import JsonKnowledgeProvider
 from .providers.vector_provider import VectorKnowledgeProvider
 from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
+from .reranker import LexicalReranker
 
 __all__ = [
     "Knowledge",
@@ -48,4 +49,5 @@ __all__ = [
     "FakeEmbeddingProvider",
     "JsonKnowledgeProvider",
     "KnowledgeSearchOptions",
+    "LexicalReranker",
 ]
