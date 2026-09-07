@@ -59,6 +59,8 @@ members = [
     "packages/providers/bindai-provider-anthropic",
     "packages/providers/bindai-provider-ollama",
     "packages/providers/bindai-provider-openrouter",
+    "packages/providers/bindai-provider-google",
+    "packages/providers/bindai-provider-groq",
 ]
 
 [tool.uv.sources]
@@ -90,6 +92,8 @@ bindai-mcp = { workspace = true }
 bindai-connections = { workspace = true }
 bindai-provider-ollama = { workspace = true, editable = true }
 bindai-provider-openrouter = { workspace = true, editable = true }
+bindai-provider-google = { workspace = true }
+bindai-provider-groq = { workspace = true }
 
 [dependency-groups]
 dev = [
