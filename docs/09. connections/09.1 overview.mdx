@@ -1,24 +1,793 @@
 ---
+
 title: "Connections"
 description: "Connect BindAI applications to external services and systems."
----
+----------------------------------------------------------------------------
 
 # Connections
 
-BindAI connections provide a small, consistent interface for integrating external services with agents, workflows, and applications.
+BindAI Connections provide a consistent interface for communicating with external services and systems.
 
-A connection represents an external destination or service that BindAI can communicate with.
+A connection represents an external destination that BindAI can connect to and send data through.
 
-## Connection lifecycle
+Connections are useful for integrating AI applications and workflows with services such as GitHub, Slack, Notion, Jira, Discord, email providers, deployment platforms, and generic webhooks.
 
-Every connection follows the same basic lifecycle:
+---
 
-1. Create the connection.
-2. Connect to the external service.
-3. Send data.
-4. Disconnect when finished.
+# Connection Architecture
 
-The base `Connection` interface provides these operations:
+The Connections package provides three core concepts:
+
+* `Connection` — the base interface for an external connection.
+* `ConnectionRegistry` — the registry of available connection types.
+* `ConnectionManager` — manages active connection instances.
+
+The architecture can be represented as:
+
+```text
+Application / Workflow
+        |
+        v
+ConnectionManager
+        |
+        v
+Connection
+        |
+        v
+External Service
+```
+
+This keeps external-service communication separate from agent and workflow logic.
+
+---
+
+# Connection Interface
+
+The base `Connection` abstraction defines a small common interface:
 
 ```python
 from bindai_connections import Connection
+```
+
+A connection provides:
+
+* `name`
+* `connect()`
+* `disconnect()`
+* `is_connected()`
+* `send(payload)`
+
+Conceptually:
+
+```python
+connection.connect()
+
+if connection.is_connected():
+    result = connection.send(payload)
+
+connection.disconnect()
+```
+
+The exact behavior of `send()` depends on the specific connection implementation.
+
+---
+
+# Connection Lifecycle
+
+A typical connection lifecycle is:
+
+```text
+Create
+  |
+  v
+Connect
+  |
+  v
+Send
+  |
+  v
+Disconnect
+```
+
+Connections do not necessarily maintain a long-lived network session.
+
+For some integrations, `connect()` may prepare or validate the connection while `send()` performs the actual external request.
+
+The concrete behavior depends on the integration.
+
+---
+
+# Connection Registry
+
+`ConnectionRegistry` stores available connection types.
+
+```python
+from bindai_connections import ConnectionRegistry
+
+ConnectionRegistry.names()
+```
+
+The registry can be used to inspect registered connection types.
+
+A connection type can be retrieved by name:
+
+```python
+connection_type = ConnectionRegistry.provider("slack")
+```
+
+The registry is useful when applications need to work with connections dynamically.
+
+---
+
+# Registered Connections
+
+The current Connections package includes:
+
+* `webhook`
+* `slack`
+* `notion`
+* `jira`
+* `discord`
+* `resend`
+* `vercel`
+* `netlify`
+
+The package also exposes the corresponding connection classes.
+
+For example:
+
+```python
+from bindai_connections import SlackConnection
+```
+
+The available integrations can grow independently from the core connection abstraction.
+
+---
+
+# Connection Manager
+
+`ConnectionManager` manages active connection instances.
+
+```python
+from bindai_connections import ConnectionManager
+
+manager = ConnectionManager()
+```
+
+A connection can be added to the manager:
+
+```python
+manager.add(connection)
+```
+
+Connections can then be accessed by name:
+
+```python
+connection = manager.get("slack")
+```
+
+The manager also provides operations for:
+
+* Checking whether a connection exists
+* Connecting a connection
+* Disconnecting a connection
+* Disconnecting all active connections
+* Removing a connection
+* Listing managed connections
+* Clearing all connections
+
+For example:
+
+```python
+manager.connect("slack")
+manager.disconnect("slack")
+```
+
+---
+
+# Webhook Connections
+
+`WebhookConnection` provides a generic integration for sending payloads to webhook endpoints.
+
+This is useful for services that expose HTTP webhook interfaces.
+
+Typical use cases include:
+
+* Automation triggers
+* Notifications
+* Workflow events
+* External system callbacks
+* Custom integrations
+
+Webhook connections provide a general-purpose integration point without requiring a dedicated provider-specific package.
+
+---
+
+# GitHub
+
+`GitHubConnection` provides an integration with GitHub services.
+
+Typical use cases include:
+
+* Repository-related automation
+* GitHub API operations
+* Workflow-triggered GitHub actions
+* AI-assisted development workflows
+
+The connection encapsulates the external-service communication behind the common Connections interface.
+
+---
+
+# Slack
+
+`SlackConnection` provides an integration with Slack.
+
+Typical use cases include:
+
+* Sending notifications
+* Posting workflow results
+* Sending agent-generated messages
+* Alerting teams about workflow events
+
+A workflow can therefore use a Slack connection without embedding Slack-specific communication logic throughout the workflow itself.
+
+---
+
+# Notion
+
+`NotionConnection` provides an integration with Notion.
+
+Potential application uses include:
+
+* Writing generated content
+* Updating pages
+* Publishing workflow results
+* Connecting AI workflows with workspace information
+
+Authentication and request behavior remain specific to the Notion integration.
+
+---
+
+# Jira
+
+`JiraConnection` provides an integration with Jira.
+
+Typical uses include:
+
+* Creating or updating issues
+* Connecting AI workflows to project-management processes
+* Automating issue-related operations
+* Sending workflow results to Jira
+
+The connection abstraction keeps Jira-specific communication separate from general workflow logic.
+
+---
+
+# Discord
+
+`DiscordConnection` provides an integration with Discord.
+
+Typical uses include:
+
+* Sending notifications
+* Publishing workflow results
+* Alerting Discord channels
+* Connecting automated workflows with communities
+
+---
+
+# Resend
+
+`ResendConnection` provides an integration with Resend for email-related operations.
+
+Typical uses include:
+
+* Sending application notifications
+* Delivering workflow results
+* Sending generated messages
+* Integrating email delivery into automated workflows
+
+Email credentials and sender configuration should be supplied through secure deployment configuration.
+
+---
+
+# Vercel
+
+`VercelConnection` provides an integration with Vercel.
+
+It can be used to connect BindAI automation with deployment-related operations supported by the connection implementation.
+
+This can be useful when AI workflows participate in application deployment or infrastructure automation.
+
+---
+
+# Netlify
+
+`NetlifyConnection` provides an integration with Netlify.
+
+It can connect BindAI automation with deployment-related operations supported by the integration.
+
+This makes it possible to incorporate deployment platforms into larger AI-driven workflows.
+
+---
+
+# Connections and Agents
+
+Connections can be used alongside agents when an agent needs to interact with an external system.
+
+A typical architecture is:
+
+```text
+Agent
+  |
+  v
+Tool
+  |
+  v
+Connection
+  |
+  v
+External Service
+```
+
+The tool can provide the agent with a controlled interface while the connection handles communication with the external service.
+
+This separation is useful because agents should not need to contain provider-specific networking logic.
+
+---
+
+# Connections and Workflows
+
+Connections can also be used by workflows.
+
+For example:
+
+```text
+Workflow
+   |
+   +---- Agent
+   |
+   +---- Tool
+   |
+   v
+Connection
+   |
+   v
+External Service
+```
+
+A workflow might:
+
+1. Execute an agent.
+2. Process the result.
+3. Send the result through a connection.
+4. Continue or complete execution.
+
+The exact workflow integration depends on how the connection is used by the application or tool.
+
+---
+
+# Connections and Tools
+
+A common pattern is to expose a connection through a tool.
+
+```python
+def notify_team(message: str) -> str:
+    connection.send({"message": message})
+    return "Notification sent"
+```
+
+The tool becomes the controlled interface available to the agent, while the connection manages external communication.
+
+This separation provides several benefits:
+
+* Provider-specific logic remains isolated.
+* Agents receive simple tool interfaces.
+* External credentials remain outside prompts.
+* Connections can be reused.
+* Tools can validate inputs before performing external actions.
+
+---
+
+# Configuration
+
+Connection configuration should remain outside application logic whenever possible.
+
+Depending on the integration, configuration may include:
+
+* API keys
+* Access tokens
+* Webhook URLs
+* Account identifiers
+* Workspace identifiers
+* Project identifiers
+* Endpoint URLs
+* Sender information
+
+Sensitive credentials should normally be supplied through environment variables or a dedicated secret-management system.
+
+Never commit credentials to source control.
+
+---
+
+# Connection State
+
+The base interface exposes:
+
+```python
+connection.is_connected()
+```
+
+This allows applications to determine whether a connection considers itself active.
+
+Applications should not assume that an internally connected state guarantees that an external service is currently reachable.
+
+Network availability, credentials, service availability, and authorization can change independently.
+
+---
+
+# Error Handling
+
+External services can fail for many reasons.
+
+Examples include:
+
+* Authentication failures
+* Invalid requests
+* Network failures
+* Rate limits
+* Service outages
+* Invalid payloads
+* Permission errors
+
+Applications should handle connection failures explicitly.
+
+For operations that have external side effects, retry behavior should be designed carefully.
+
+Blindly retrying a request can create duplicate operations when the first request actually succeeded but its response was lost.
+
+---
+
+# Idempotency
+
+Connections that perform state-changing operations should consider idempotency.
+
+For example:
+
+```text
+Workflow
+   |
+   v
+Send Request
+   |
+   +---- Success
+   |
+   +---- Unknown Outcome
+             |
+             v
+          Retry?
+```
+
+Before retrying a failed external operation, determine whether repeating it is safe.
+
+Where supported, use idempotency keys or other mechanisms provided by the external service.
+
+---
+
+# Security
+
+Connections often provide access to external systems and therefore require careful security controls.
+
+Recommended practices include:
+
+* Keep credentials outside source code.
+* Use the minimum required permissions.
+* Validate data before sending it externally.
+* Restrict write operations where possible.
+* Protect state-changing tools.
+* Avoid exposing secrets to agents.
+* Avoid placing credentials in prompts.
+* Audit important external operations.
+* Rotate credentials when appropriate.
+
+Connections should be treated as privileged boundaries between BindAI and external systems.
+
+---
+
+# External Data
+
+Connections may send or receive information from external services.
+
+Applications should consider:
+
+* Data sensitivity
+* User authorization
+* Access permissions
+* Data retention
+* Logging
+* Compliance requirements
+* Cross-system data flow
+
+Only the data required for the operation should be transmitted.
+
+---
+
+# Reusing Connections
+
+A connection instance can be managed and reused by an application.
+
+For example:
+
+```python
+manager = ConnectionManager()
+
+manager.add(connection)
+
+manager.connect(connection.name)
+
+# Use the connection...
+
+manager.disconnect(connection.name)
+```
+
+Reusing connections can simplify resource management and avoid repeatedly constructing the same integration object.
+
+The appropriate lifecycle depends on the external service and the connection implementation.
+
+---
+
+# Connection Isolation
+
+Different external services should remain logically isolated.
+
+For example:
+
+```text
+Application
+   |
+   +---- Slack Connection
+   |
+   +---- GitHub Connection
+   |
+   +---- Notion Connection
+   |
+   +---- Jira Connection
+```
+
+A failure in one integration should not unnecessarily compromise unrelated integrations.
+
+Applications should also avoid sharing credentials between unrelated services.
+
+---
+
+# Connections in Multi-Agent Systems
+
+Connections can support multi-agent architectures.
+
+For example:
+
+```text
+Team
+ |
+ +---- Research Agent
+ |
+ +---- Development Agent
+ |
+ +---- Communication Agent
+                 |
+                 v
+              Slack
+```
+
+Different agents can use different tools and connections according to their responsibilities.
+
+This helps maintain clear boundaries between agent roles and external permissions.
+
+---
+
+# Testing Connections
+
+Connections should be tested independently from the agents and workflows that use them.
+
+Useful tests include:
+
+* Construction
+* Configuration validation
+* Connection lifecycle
+* Connected-state behavior
+* Payload handling
+* Authentication failures
+* External-service failures
+* Invalid responses
+* Cleanup
+* Error handling
+
+External API calls should generally be mocked in unit tests.
+
+Integration tests can be used separately when real external services are required.
+
+---
+
+# Local Development
+
+During development, connections should preferably use:
+
+* Test accounts
+* Mock services
+* Development workspaces
+* Non-production credentials
+* Safe test data
+
+Avoid pointing development automation at production systems unless there is a deliberate reason to do so.
+
+---
+
+# Production Usage
+
+Production connections require additional operational considerations.
+
+These can include:
+
+* Credential management
+* Rate limits
+* Service availability
+* Network configuration
+* Monitoring
+* Failure handling
+* Retry behavior
+* Audit logging
+* Access control
+
+Production infrastructure should be configured independently from local development environments.
+
+---
+
+# Adding a New Connection
+
+A new integration should implement the `Connection` abstraction.
+
+Conceptually:
+
+```python
+from typing import Any
+from bindai_connections import Connection
+
+class ExampleConnection(Connection):
+
+    @property
+    def name(self) -> str:
+        return "example"
+
+    def connect(self) -> None:
+        ...
+
+    def disconnect(self) -> None:
+        ...
+
+    def is_connected(self) -> bool:
+        ...
+
+    def send(self, payload: Any) -> Any:
+        ...
+```
+
+The implementation can then be registered with `ConnectionRegistry`.
+
+The exact registration and integration details should follow the current package implementation.
+
+---
+
+# Connection Design Principles
+
+Good connections should:
+
+* Have a clear responsibility.
+* Hide provider-specific communication details.
+* Avoid exposing credentials.
+* Validate external input.
+* Handle failures explicitly.
+* Keep side effects predictable.
+* Support testing.
+* Avoid unnecessary global state.
+* Provide clear error information.
+* Follow the common connection interface.
+
+---
+
+# Current Scope
+
+The current Connections package provides:
+
+### Core
+
+* `Connection`
+* `ConnectionRegistry`
+* `ConnectionManager`
+
+### Integrations
+
+* Webhooks
+* GitHub
+* Slack
+* Notion
+* Jira
+* Discord
+* Resend
+* Vercel
+* Netlify
+
+These integrations provide a foundation for connecting BindAI applications and workflows to external systems.
+
+Additional integrations can be added without changing the core connection abstraction.
+
+---
+
+# Future Integrations
+
+Potential future integrations include services such as:
+
+* Google Workspace
+* Stripe
+* Additional communication platforms
+* Additional project-management systems
+* Additional deployment platforms
+* Additional SaaS APIs
+
+Future integrations should follow the same common connection architecture where appropriate.
+
+---
+
+# API Accuracy
+
+The Connections package currently provides the abstractions described in this document.
+
+This documentation intentionally avoids assuming higher-level APIs such as:
+
+```python
+project.add_connection(...)
+application.connection(...)
+workflow.connection(...)
+connection.authenticate(...)
+connection.receive(...)
+```
+
+unless those APIs are explicitly implemented.
+
+Applications should use the public interfaces provided by the installed BindAI version.
+
+---
+
+# Summary
+
+BindAI Connections provide a small abstraction for communicating with external services.
+
+The core architecture is:
+
+```text
+Application
+    |
+    v
+ConnectionManager
+    |
+    v
+Connection
+    |
+    v
+External Service
+```
+
+Connections can be combined with tools, agents, and workflows to build AI applications that interact with external systems.
+
+The current package includes integrations for:
+
+* Webhooks
+* GitHub
+* Slack
+* Notion
+* Jira
+* Discord
+* Resend
+* Vercel
+* Netlify
+
+By keeping external-service communication behind a common interface, BindAI can add integrations incrementally while keeping application and workflow logic independent from individual service implementations.
