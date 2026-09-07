@@ -6,193 +6,279 @@ The roadmap below describes the major capabilities we plan to develop as BindAI 
 
 > The roadmap represents our direction and priorities. Features and priorities may evolve as the framework develops and as we learn from the community.
 
+Status markers:
+
+* `[x]` Completed
+* `[~]` Partially implemented
+* `[ ]` Planned / remaining
+
 ---
 
 ## Current
 
 ### AI Application Foundation
 
-The foundation of BindAI is already in place.
+The core application foundation of BindAI is in place.
 
-* AI agents
-* Tools and tool calling
-* Memory and context
-* Knowledge and RAG
-* Workflow orchestration
-* Conditional execution
-* Loops
-* Parallel execution
-* Retries and timeouts
-* Human approval and tasks
-* Scheduling
-* Projects
-* CLI tooling
-* Modular package architecture
-* Workflow templates
-* Documentation and testing
+#### Completed
+
+* [x] AI agents
+* [x] Tools and tool calling
+* [x] Memory and context
+* [x] Knowledge and RAG integration
+* [x] Workflow orchestration
+* [x] Conditional execution
+* [x] Loops
+* [x] Parallel execution
+* [x] Retries and timeouts
+* [x] Human approval and tasks
+* [x] Scheduling
+* [x] Projects
+* [x] CLI tooling
+* [x] Modular package architecture
+* [x] Workflow templates
+* [x] Documentation and testing
+* [x] Agent delegation
+* [x] Team delegation
+* [x] Specialist role chains
+* [x] Agent hooks, callbacks, and middleware
+* [x] Agent execution configuration
+* [x] Conversation management
+* [x] Tool registry and execution
 
 The goal of this foundation is to provide a clean Python architecture that developers can extend without being locked into a single AI provider or execution model.
 
 ---
 
-## Next
+## Current
 
 ### AI Provider Ecosystem
 
 Expand BindAI's provider ecosystem through a consistent provider architecture.
 
-Planned integrations include:
+#### Completed
 
-* OpenAI
-* Anthropic
-* Google Gemini
-* Ollama
-* OpenRouter
-* Groq
-* Azure OpenAI
-* Mistral
-* Additional compatible providers
+* [x] OpenAI
+* [x] Anthropic
+* [x] Google Gemini
+* [x] Ollama
+* [x] OpenRouter
+* [x] Groq
+* [x] Provider registry
+* [x] Provider bootstrap architecture
+* [x] Consistent provider interfaces
+* [x] CLI provider initialization
+
+#### Remaining
+
+* [ ] Azure OpenAI
+* [ ] Mistral
+* [ ] Additional compatible providers
 
 Applications should be able to switch providers and models without changing their core application architecture.
 
 ---
 
-## Next
+## Current
 
 ### Memory, Storage & Retrieval
 
 Expand the persistence and retrieval capabilities of BindAI.
 
-Planned integrations include:
+#### Completed
 
-* SQLite
-* PostgreSQL
-* Redis
-* Qdrant
-* Pinecone
-* pgvector
-* Chroma
-* Additional vector and storage providers
+* [x] SQLite
+* [x] PostgreSQL
+* [x] Pinecone
+* [x] Chroma
+* [x] In-memory memory provider
+* [x] Vector memory provider
+* [x] Memory provider abstractions
+* [x] BM25 retrieval
+* [x] Vector retrieval
+* [x] Hybrid retrieval
+* [x] Embedding provider abstraction
+* [x] Random/local embedding provider
+* [x] OpenAI embeddings
+* [x] Retrieval configuration and search options
+
+#### Remaining
+
+* [ ] Redis
+* [ ] Qdrant
+* [ ] pgvector
+* [ ] Additional vector and storage providers
+* [ ] Unified metadata filtering improvements across providers
 
 The goal is to provide common BindAI interfaces while allowing applications to choose the storage technology that best fits their requirements.
 
 ---
 
-## Planned
+## Current
 
 ### Advanced Knowledge & RAG
 
 Build a more complete knowledge and retrieval platform.
 
-Planned capabilities include:
+#### Completed
 
-* Document ingestion
-* Document parsing
-* Chunking strategies
-* Embeddings
-* Metadata
-* Semantic search
-* Hybrid search
-* Filtering
-* Reranking
-* Citations
-* Conversational retrieval
-* Knowledge pipelines
+* [x] Document ingestion
+* [x] Document loaders
+* [x] Document parsing
+* [x] Chunking strategies
+* [x] Embeddings
+* [x] Metadata
+* [x] Semantic search
+* [x] Hybrid search
+* [x] Metadata filtering
+* [x] Reranking
+* [x] Lexical reranking
+* [x] Conversational retrieval
+* [x] Knowledge pipelines
+* [x] Knowledge retrieval integration with agents
+* [x] Retrieval configuration
+* [x] Search options
+
+#### Remaining
+
+* [ ] Citations
+* [ ] Advanced document parsing
+* [ ] Advanced chunking strategies
+* [ ] Additional reranking strategies
+* [ ] Advanced hybrid retrieval
+* [ ] Advanced filtering
+* [ ] Production-scale knowledge pipelines
 
 This will allow developers to build reliable knowledge-driven AI applications on top of BindAI.
 
 ---
 
-## Planned
+## Current
 
 ### Connections & Integrations
 
 Introduce a unified connections architecture for integrating BindAI with external services.
 
-Initial integrations may include:
+#### Completed
 
-* GitHub
-* Slack
-* Notion
-* Jira
-* Google services
-* Discord
-* Stripe
-* Resend
-* Vercel
-* Netlify
+The unified connections architecture and initial integrations are implemented and tested.
+
+* [x] Connection abstraction
+* [x] Connection registry
+* [x] Connection manager
+* [x] Webhook
+* [x] GitHub
+* [x] Slack
+* [x] Notion
+* [x] Jira
+* [x] Discord
+* [x] Resend
+* [x] Vercel
+* [x] Netlify
+
+#### Remaining
 
 Additional integrations will be added over time based on developer and business use cases.
+
+* [ ] Google services
+* [ ] Stripe
+* [ ] Additional integrations
 
 The goal is to make integrations modular and easy to create, configure, authenticate, and reuse.
 
 ---
 
-## Planned
+## Current
 
 ### MCP
 
 Expand BindAI's support for the Model Context Protocol.
 
-Planned capabilities include:
+#### Completed
 
-* MCP clients
-* MCP servers
-* Tool discovery
-* Resource discovery
-* Authentication
-* Connection management
-* MCP tools as BindAI tools
-* MCP resources as agent context
+* [x] MCP client
+* [x] MCP tool discovery
+* [x] MCP tool calling
+* [x] MCP tools as BindAI tools
+* [x] Basic MCP connection handling
+
+#### Remaining
+
+* [ ] MCP servers
+* [ ] Resource discovery
+* [ ] Authentication
+* [ ] Advanced connection management
+* [ ] MCP resources as agent context
+* [ ] Expanded MCP protocol support
 
 MCP will provide another standardized way for BindAI agents and workflows to interact with external capabilities.
 
 ---
 
-## Planned
+## Current
 
 ### Advanced Agents & Multi-Agent Systems
 
 Expand the agent runtime beyond individual AI assistants.
 
-Planned capabilities include:
+#### Completed
 
-* Structured agent outputs
-* Advanced tool execution
-* Planning
-* Context management
-* Agent memory
-* Delegation
-* Agent handoff
-* Specialist agents
-* Supervisor agents
-* Agent groups
-* Parallel agents
-* Hierarchical multi-agent systems
+* [x] Structured agent configuration
+* [x] Context management
+* [x] Agent memory
+* [x] Delegation
+* [x] Agent handoff
+* [x] Specialist agents
+* [x] Team delegation
+* [x] Role-based agent chains
+* [x] RAG-enabled agents
+
+#### Partially Implemented
+
+* [~] Advanced tool execution
+* [~] Agent groups
+* [~] Parallel agents
+
+#### Remaining
+
+* [ ] Planning
+* [ ] Supervisor agents
+* [ ] Hierarchical multi-agent systems
+* [ ] More advanced coordination strategies
+* [ ] More robust multi-agent state management
 
 The objective is to make complex AI systems composable from multiple specialized agents.
 
 ---
 
-## Planned
+## Current
 
 ### AI Automation Platform
 
 Bring agents, workflows, integrations, and triggers together into a unified automation layer.
 
-Planned capabilities include:
+#### Completed
 
-* Event triggers
-* Webhooks
-* Scheduled execution
-* Conditional routing
-* Loops
-* Parallel execution
-* Retry policies
-* Timeouts
-* Human approval
-* Agent execution
-* External service integrations
+* [x] Webhooks
+* [x] Scheduled execution
+* [x] Conditional routing
+* [x] Loops
+* [x] Parallel execution
+* [x] Retry policies
+* [x] Timeouts
+* [x] Human approval
+* [x] Agent execution
+* [x] External service integrations
+
+#### Remaining
+
+* [ ] Event trigger framework
+* [ ] Unified trigger management
+* [ ] Automation definitions
+* [ ] Persistent automation state
+* [ ] Automation run history
+* [ ] Background automation workers
+* [ ] Advanced event routing
 
 This layer will allow BindAI to automate complete business processes rather than isolated AI tasks.
 
@@ -204,23 +290,23 @@ This layer will allow BindAI to automate complete business processes rather than
 
 Make BindAI applications easier to expose, deploy, and operate as services.
 
-Planned capabilities include:
+#### Remaining
 
-* Public API
-* REST endpoints
-* API authentication
-* API keys
-* Webhooks
-* Agent execution APIs
-* Workflow execution APIs
-* Project APIs
-* Streaming
-* Background execution
-* Docker deployment
-* Docker Compose
-* Kubernetes
-* Worker processes
-* Queue-based execution
+* [ ] Public API
+* [ ] REST endpoints
+* [ ] API authentication
+* [ ] API keys
+* [ ] Webhooks
+* [ ] Agent execution APIs
+* [ ] Workflow execution APIs
+* [ ] Project APIs
+* [ ] Streaming API
+* [ ] Background execution
+* [ ] Docker deployment
+* [ ] Docker Compose
+* [ ] Kubernetes
+* [ ] Worker processes
+* [ ] Queue-based execution
 
 BindAI will progressively support both local development and production deployment architectures.
 
@@ -232,21 +318,21 @@ BindAI will progressively support both local development and production deployme
 
 Provide developers with visibility into AI agents and workflow execution.
 
-Planned capabilities include:
+#### Remaining
 
-* Structured logging
-* Distributed tracing
-* Metrics
-* Execution history
-* Workflow run history
-* Agent run history
-* Token usage
-* Latency tracking
-* Error tracking
-* Provider statistics
-* Cost tracking
-* OpenTelemetry integration
-* Monitoring integrations
+* [ ] Structured logging
+* [ ] Distributed tracing
+* [ ] Metrics
+* [ ] Execution history
+* [ ] Workflow run history
+* [ ] Agent run history
+* [ ] Token usage
+* [ ] Latency tracking
+* [ ] Error tracking
+* [ ] Provider statistics
+* [ ] Cost tracking
+* [ ] OpenTelemetry integration
+* [ ] Monitoring integrations
 
 The objective is to make AI applications observable, debuggable, and measurable in production.
 
@@ -260,19 +346,19 @@ As the platform matures, BindAI will introduce capabilities required by larger o
 
 Planned areas include:
 
-* Role-based access control
-* Organizations and workspaces
-* Multi-tenancy
-* Permission management
-* Audit logs
-* Secret management
-* Credential management
-* Security controls
-* Remote workers
-* Distributed execution
-* Worker pools
-* Enterprise monitoring
-* Governance capabilities
+* [ ] Role-based access control
+* [ ] Organizations and workspaces
+* [ ] Multi-tenancy
+* [ ] Permission management
+* [ ] Audit logs
+* [ ] Secret management
+* [ ] Credential management
+* [ ] Security controls
+* [ ] Remote workers
+* [ ] Distributed execution
+* [ ] Worker pools
+* [ ] Enterprise monitoring
+* [ ] Governance capabilities
 
 These features will provide the foundation for operating BindAI across larger teams and organizations.
 
@@ -286,18 +372,18 @@ The long-term vision is to make BindAI workflows visually composable while prese
 
 The visual platform may provide:
 
-* Drag-and-drop workflow design
-* Agent nodes
-* Tool nodes
-* Condition nodes
-* Loop nodes
-* Parallel branches
-* Human approval nodes
-* Integration nodes
-* Trigger nodes
-* Scheduling
-* Execution visualization
-* Workflow debugging
+* [ ] Drag-and-drop workflow design
+* [ ] Agent nodes
+* [ ] Tool nodes
+* [ ] Condition nodes
+* [ ] Loop nodes
+* [ ] Parallel branches
+* [ ] Human approval nodes
+* [ ] Integration nodes
+* [ ] Trigger nodes
+* [ ] Scheduling
+* [ ] Execution visualization
+* [ ] Workflow debugging
 
 Developers will be able to move between code-based and visual workflow development while using the same underlying execution engine.
 
@@ -311,14 +397,14 @@ BindAI will eventually expand into voice-based AI applications.
 
 Potential capabilities include:
 
-* Speech-to-text
-* Text-to-speech
-* Streaming audio
-* Voice agents
-* Conversational voice workflows
-* Real-time interactions
-* Phone integrations
-* Voice memory and context
+* [ ] Speech-to-text
+* [ ] Text-to-speech
+* [ ] Streaming audio
+* [ ] Voice agents
+* [ ] Conversational voice workflows
+* [ ] Real-time interactions
+* [ ] Phone integrations
+* [ ] Voice memory and context
 
 This will enable applications such as voice assistants, customer service systems, appointment assistants, and industry-specific voice agents.
 
@@ -332,16 +418,16 @@ BindAI will provide complete templates that demonstrate how the platform can be 
 
 Examples may include:
 
-* AI Business Consultant
-* Internal Knowledge Assistant
-* Customer Support Agent
-* HR Leave Automation
-* Invoice Approval
-* Document Processing
-* Research Agent
-* Sales Assistant
-* Finance Assistant
-* Dentist Voice Assistant
+* [ ] AI Business Consultant
+* [ ] Internal Knowledge Assistant
+* [ ] Customer Support Agent
+* [ ] HR Leave Automation
+* [ ] Invoice Approval
+* [ ] Document Processing
+* [ ] Research Agent
+* [ ] Sales Assistant
+* [ ] Finance Assistant
+* [ ] Dentist Voice Assistant
 
 These solutions will be developed as reusable examples, documentation tutorials, GitHub projects, and educational content.
 
@@ -355,35 +441,35 @@ The long-term architecture can be summarized as:
 
 ```text
                     BindAI
-                       │
-       ┌───────────────┼────────────────┐
-       ▼               ▼                ▼
+                       |
+       +---------------+---------------+
+       |               |               |
      Agents        Workflows        Knowledge
-       │               │                │
-       └───────────────┼────────────────┘
-                       ▼
+       |               |               |
+       +---------------+---------------+
+                       |
                   Integrations
-                       │
-              ┌────────┼────────┐
-              ▼        ▼        ▼
+                       |
+              +--------+--------+
+              |        |        |
              MCP    Providers  Tools
-              │        │        │
-              └────────┼────────┘
-                       ▼
+              |        |        |
+              +--------+--------+
+                       |
                  Automation
-                       │
-             ┌─────────┼─────────┐
-             ▼         ▼         ▼
-          API       Workers   Triggers
-             │         │         │
-             └─────────┼─────────┘
-                       ▼
+                       |
+             +---------+---------+
+             |         |         |
+            API      Workers   Triggers
+             |         |         |
+             +---------+---------+
+                       |
                 Observability
-                       │
-                       ▼
-                 Enterprise
-                       │
-                       ▼
+                       |
+                       v
+                  Enterprise
+                       |
+                       v
               Visual Platform
 ```
 
