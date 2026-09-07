@@ -11,6 +11,7 @@ from .jira import JiraConnection
 from .discord import DiscordConnection
 from .resend import ResendConnection
 from .vercel import VercelConnection
+from .netlify import NetlifyConnection
 
 ConnectionRegistry.register("webhook", WebhookConnection)
 ConnectionRegistry.register("slack", SlackConnection)
@@ -19,6 +20,7 @@ ConnectionRegistry.register("jira", JiraConnection)
 ConnectionRegistry.register("discord", DiscordConnection)
 ConnectionRegistry.register("resend", ResendConnection)
 ConnectionRegistry.register("vercel", VercelConnection)
+ConnectionRegistry.register("netlify", NetlifyConnection)
 
 __version__ = "0.1.0"
 
@@ -34,4 +36,5 @@ __all__ = [
     "DiscordConnection",
     "ResendConnection",
     "VercelConnection",
+    "NetlifyConnection",
 ]
