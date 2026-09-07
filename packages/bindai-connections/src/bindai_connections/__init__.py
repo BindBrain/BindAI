@@ -4,6 +4,7 @@ from .connection import Connection
 from .manager import ConnectionManager
 from .registry import ConnectionRegistry
 from .webhook import WebhookConnection
+from .github import GitHubConnection
 
 ConnectionRegistry.register("webhook", WebhookConnection)
 
@@ -14,4 +15,5 @@ __all__ = [
     "ConnectionManager",
     "ConnectionRegistry",
     "WebhookConnection",
+    "GitHubConnection",
 ]
