@@ -123,6 +123,11 @@ class Agent(Executable):
             output,
         )
 
+    @staticmethod
+    def builder():
+        from .builder import AgentBuilder
+        return AgentBuilder()
+
     def chat(
         self,
         message: str,
