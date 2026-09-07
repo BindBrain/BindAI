@@ -8,11 +8,13 @@ from .github import GitHubConnection
 from .slack import SlackConnection
 from .notion import NotionConnection
 from .jira import JiraConnection
+from .discord import DiscordConnection
 
 ConnectionRegistry.register("webhook", WebhookConnection)
 ConnectionRegistry.register("slack", SlackConnection)
 ConnectionRegistry.register("notion", NotionConnection)
 ConnectionRegistry.register("jira", JiraConnection)
+ConnectionRegistry.register("discord", DiscordConnection)
 
 __version__ = "0.1.0"
 
@@ -25,4 +27,5 @@ __all__ = [
     "SlackConnection",
     "NotionConnection",
     "JiraConnection",
+    "DiscordConnection",
 ]
