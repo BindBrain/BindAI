@@ -1,6 +1,132 @@
 # BindAI Automation
 
-Automation and event-trigger primitives for BindAI.
+Automation definitions, execution state, and event-trigger primitives for BindAI.
+
+## Automation Definitions
+
+`AutomationDefinition` describes an automation and the executable target it invokes.
+
+```python
+from bindai_automation import AutomationDefinition
+
+automation = AutomationDefinition(
+    name="my-automation",
+    target=my_executable,
+)
+
+result = automation.run()
+```
+
+Each definition provides:
+
+* `id` — unique automation definition identifier
+* `name` — human-readable automation name
+* `version` — definition version, starting at `1`
+* `target` — the `bindai-core` executable invoked by the automation
+* `metadata` — optional application-defined metadata
+
+Definitions can be cloned to create a new version:
+
+```python
+version_2 = automation.clone()
+
+assert version_2.version == 2
+assert automation.version == 1
+```
+
+The automation definition is intentionally independent from triggers. A definition describes **what runs**, while triggers describe **when it runs**.
+
+## Automation Runs
+
+`AutomationRun` represents one execution of an automation definition.
+
+```python
+from bindai_automation import AutomationRun
+
+run = AutomationRun(
+    definition_id=automation.id,
+    definition_version=automation.version,
+    input={"message": "hello"},
+)
+
+run.start()
+
+# Execute the automation target here.
+
+run.complete(output={"result": "done"})
+```
+
+An automation run provides:
+
+* `id` — unique execution identifier
+* `definition_id` — automation definition identifier
+* `definition_version` — definition version used for the execution
+* `status` — execution state such as `pending`, `running`, `completed`, or `failed`
+* `input` — optional execution input
+* `output` — execution output
+* `error` — failure information when execution fails
+* `created_at` — run creation timestamp
+* `started_at` — execution start timestamp
+* `completed_at` — execution completion timestamp
+
+Runs expose lifecycle methods:
+
+```python
+run.start()
+
+run.complete(output={"result": "done"})
+
+run.fail("execution failed")
+```
+
+The run object represents execution state independently from the automation definition itself.
+
+## Automation State Store
+
+`AutomationStateStore` defines the persistence contract for automation runs.
+
+```python
+from bindai_automation import AutomationStateStore
+
+
+class CustomAutomationStateStore(AutomationStateStore):
+    def save(self, run):
+        ...
+
+    def load(self, run_id):
+        ...
+
+    def delete(self, run_id):
+        ...
+```
+
+The state store is intentionally separate from `AutomationRun`. This allows execution state to be stored in memory or backed by another persistence system without coupling the run model to a specific storage implementation.
+
+## In-Memory State Store
+
+`MemoryAutomationStateStore` provides an in-memory implementation of the automation state store.
+
+```python
+from bindai_automation import MemoryAutomationStateStore
+
+store = MemoryAutomationStateStore()
+
+store.save(run)
+
+loaded = store.load(run.id)
+
+assert loaded is run
+```
+
+Runs can also be removed:
+
+```python
+store.delete(run.id)
+
+assert store.load(run.id) is None
+```
+
+The in-memory store is intended as the current lightweight implementation and as a foundation for future persistent storage backends.
 
 ## Event Triggers
 
@@ -45,7 +171,6 @@ Triggers can be temporarily disabled without detaching them:
 
 ```python
 trigger.disable()
-
 trigger.enable()
 ```
 
@@ -68,7 +193,6 @@ Calling `attach()` more than once does not create duplicate subscriptions.
 ```python
 from bindai_automation import EventTrigger, TriggerRegistry
 from bindai_core.events import EventBus
-
 
 bus = EventBus()
 
@@ -94,25 +218,34 @@ The registry supports:
 registry.get("my-trigger")
 registry.get_or_none("my-trigger")
 registry.contains("my-trigger")
-
 registry.keys()
 registry.values()
 registry.items()
-
 registry.remove("my-trigger")
 registry.clear()
 ```
 
-The registry stores trigger definitions; registering a trigger does not automatically attach it to its event source.
+The registry stores trigger instances; registering a trigger does not automatically attach it to its event source.
 
 ## Current Scope
 
 The package currently provides:
 
+* `AutomationDefinition` — definition and versioning of an executable automation
+* `AutomationRun` — execution state for an automation run
+* `AutomationStateStore` — persistence contract for automation runs
+* `MemoryAutomationStateStore` — in-memory automation state implementation
 * `Trigger` — base trigger abstraction
 * `EventTrigger` — event-driven trigger implementation
 * `TriggerRegistry` — registry for named triggers
 
-These primitives provide the foundation for event-driven automation in BindAI.
+These primitives provide the foundation for stateful, event-driven automation in BindAI.
 
-The package currently does not provide persistent automation state, background workers, scheduled execution, or built-in retry handling.
+The package currently does not provide:
+
+* persistent database-backed automation state
+* automation run history
+* background automation workers
+* scheduled execution
+* advanced event routing
+* built-in retry handling
