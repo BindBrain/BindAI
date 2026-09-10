@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import VercelConnection
 
 
@@ -149,13 +148,9 @@ def test_vercel_connection_sends_json_body(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://api.vercel.com/v13/deployments"
-    )
+    assert request.full_url == ("https://api.vercel.com/v13/deployments")
     assert request.method == "POST"
-    assert request.data == (
-        b'{"name": "bindai-app", "target": "production"}'
-    )
+    assert request.data == (b'{"name": "bindai-app", "target": "production"}')
     assert request.get_header("Accept") == "application/json"
     assert request.get_header("Authorization") == "Bearer test-token"
     assert request.get_header("Content-type") == "application/json"

@@ -119,15 +119,11 @@ class AgentTeam:
         roles: list[str],
         message: str,
     ) -> AgentResult:
-        selected_agents = {
-            role: self.role(role)
-            for role in roles
-        }
+        selected_agents = {role: self.role(role) for role in roles}
 
         with ThreadPoolExecutor(max_workers=len(selected_agents)) as executor:
             futures = {
-                role: executor.submit(agent.run, message)
-                for role, agent in selected_agents.items()
+                role: executor.submit(agent.run, message) for role, agent in selected_agents.items()
             }
 
             results: dict[str, object] = {}
@@ -158,11 +154,7 @@ class AgentTeam:
         if agent is None:
             return
 
-        roles_to_remove = [
-            role
-            for role, role_agent in self._roles.items()
-            if role_agent is agent
-        ]
+        roles_to_remove = [role for role, role_agent in self._roles.items() if role_agent is agent]
 
         for role in roles_to_remove:
             del self._roles[role]
@@ -239,10 +231,7 @@ class AgentTeam:
                 results[agent.name] = result.output
             else:
                 results[agent.name] = None
-                errors.append(
-                    f"{agent.name}: "
-                    f"{result.error or 'Agent execution failed.'}"
-                )
+                errors.append(f"{agent.name}: {result.error or 'Agent execution failed.'}")
 
         if errors:
             return AgentResult(
@@ -294,8 +283,7 @@ class AgentTeam:
 
         with ThreadPoolExecutor(max_workers=self.size()) as executor:
             futures = {
-                agent.name: executor.submit(agent.run, message)
-                for agent in self._agents.values()
+                agent.name: executor.submit(agent.run, message) for agent in self._agents.values()
             }
 
             results: dict[str, object] = {}
@@ -347,10 +335,7 @@ class AgentTeam:
         reviewer = agents[-1]
 
         with ThreadPoolExecutor(max_workers=len(specialists)) as executor:
-            futures = {
-                agent.name: executor.submit(agent.run, message)
-                for agent in specialists
-            }
+            futures = {agent.name: executor.submit(agent.run, message) for agent in specialists}
 
             outputs: dict[str, object] = {}
 
@@ -366,10 +351,7 @@ class AgentTeam:
 
                 outputs[name] = result.output
 
-        review_message = "\n".join(
-            f"{name}: {output}"
-            for name, output in outputs.items()
-        )
+        review_message = "\n".join(f"{name}: {output}" for name, output in outputs.items())
 
         result = reviewer.run(review_message)
 

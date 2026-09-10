@@ -15,5 +15,4 @@ class Reranker(ABC):
         self,
         query: str,
         documents: list[KnowledgeDocument],
-    ) -> list[KnowledgeDocument]:
-        ...
+    ) -> list[KnowledgeDocument]: ...

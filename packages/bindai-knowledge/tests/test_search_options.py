@@ -44,9 +44,7 @@ def test_search_options_min_score():
 
 
 def test_keyword_search_remains_default():
-    knowledge = Knowledge(
-        InMemoryKnowledgeProvider()
-    )
+    knowledge = Knowledge(InMemoryKnowledgeProvider())
 
     knowledge.add(
         KnowledgeDocument(
@@ -61,4 +59,3 @@ def test_keyword_search_remains_default():
     assert result.success
     assert len(result.value) == 1
     assert result.value[0].id == "doc-1"
-

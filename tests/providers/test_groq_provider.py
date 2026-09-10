@@ -1,6 +1,14 @@
 import os
 
 import pytest
+from bindai_core import (
+    Message,
+    MessageRole,
+    ModelRequest,
+    ProviderConfiguration,
+)
+from bindai_provider_groq import GroqProvider
+from bindai_tool.definition import ToolDefinition
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,18 +19,8 @@ if "GROQ_API_KEY" not in os.environ:
         allow_module_level=True,
     )
 
-from bindai_core import (
-    Message,
-    MessageRole,
-    ModelRequest,
-    ProviderConfiguration,
-)
-from bindai_provider_groq import GroqProvider
-from bindai_tool.definition import ToolDefinition
-
 
 def test_chat_completion():
-
     provider = GroqProvider(
         ProviderConfiguration(
             api_key=os.environ["GROQ_API_KEY"],
@@ -45,7 +43,6 @@ def test_chat_completion():
 
 
 def test_streaming():
-
     provider = GroqProvider(
         ProviderConfiguration(
             api_key=os.environ["GROQ_API_KEY"],
@@ -69,7 +66,6 @@ def test_streaming():
 
 
 def test_tool_call():
-
     provider = GroqProvider(
         ProviderConfiguration(
             api_key=os.environ["GROQ_API_KEY"],

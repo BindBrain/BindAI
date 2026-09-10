@@ -1,5 +1,4 @@
 from bindai_knowledge import (
-    EmbeddingProvider,
     KnowledgeDocument,
     VectorKnowledgeProvider,
 )
@@ -129,6 +128,7 @@ def test_hybrid_search_combines_keyword_and_vector_candidates():
 
     assert "keyword-match" in ids
     assert "vector-match" in ids
+
 
 def test_hybrid_search_normalizes_keyword_and_vector_scores():
     embedding = ControlledEmbeddingProvider(

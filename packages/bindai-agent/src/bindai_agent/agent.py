@@ -10,9 +10,9 @@ from bindai_core.tool import ToolRegistry
 from bindai_memory import InMemoryProvider, Memory
 from bindai_prompts import Prompt
 
-from .delegation import AgentDelegationTool
 from .configuration import AgentConfiguration
 from .conversation import Conversation
+from .delegation import AgentDelegationTool
 from .execution.data import ExecutionData
 from .execution.engine import AgentExecutionEngine
 from .provider_resolver import resolve_provider
@@ -126,6 +126,7 @@ class Agent(Executable):
     @staticmethod
     def builder():
         from .builder import AgentBuilder
+
         return AgentBuilder()
 
     def chat(

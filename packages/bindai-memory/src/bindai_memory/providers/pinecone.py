@@ -28,9 +28,7 @@ class PineconeMemoryProvider(MemoryProvider):
             api_key = os.getenv("PINECONE_API_KEY")
 
         if not api_key:
-            raise ValueError(
-                "PINECONE_API_KEY is required for PineconeMemoryProvider."
-            )
+            raise ValueError("PINECONE_API_KEY is required for PineconeMemoryProvider.")
 
         from bindai_embeddings import EmbeddingRegistry
 
@@ -155,7 +153,6 @@ class PineconeMemoryProvider(MemoryProvider):
         results: list[MemoryRecord] = []
 
         for match in response.matches:
-
             record = self._record_from_metadata(
                 match.id,
                 match.metadata or {},
@@ -274,10 +271,7 @@ class PineconeMemoryProvider(MemoryProvider):
         for key, value in record.metadata.items():
             if isinstance(value, (str, int, float, bool)):
                 metadata[f"meta__{key}"] = value
-            elif isinstance(value, list) and all(
-                isinstance(item, str)
-                for item in value
-            ):
+            elif isinstance(value, list) and all(isinstance(item, str) for item in value):
                 metadata[f"meta__{key}"] = value
 
         return metadata
@@ -384,10 +378,7 @@ class PineconeMemoryProvider(MemoryProvider):
         if record.expires_at is None:
             return False
 
-        return (
-            datetime.now(UTC)
-            >= record.expires_at
-        )
+        return datetime.now(UTC) >= record.expires_at
 
     def close(
         self,

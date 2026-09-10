@@ -1,5 +1,6 @@
-from bindai_cli.app import app
 from bindai_providers import bootstrap
+
+from bindai_cli.app import app
 
 
 def main():

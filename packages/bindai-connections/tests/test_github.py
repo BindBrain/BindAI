@@ -1,7 +1,6 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import GitHubConnection
 
 
@@ -108,9 +107,7 @@ def test_github_connection_sends_json_body(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://api.github.com/repos/example/project/issues"
-    )
+    assert request.full_url == ("https://api.github.com/repos/example/project/issues")
     assert request.method == "POST"
     assert request.data == b'{"title": "Hello from BindAI"}'
     assert request.get_header("Content-type") == "application/json"

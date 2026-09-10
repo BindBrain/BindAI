@@ -76,18 +76,13 @@ class AnthropicProvider(ModelProvider):
         usage = TokenUsage(
             prompt_tokens=response.usage.input_tokens,
             completion_tokens=response.usage.output_tokens,
-            total_tokens=(
-                response.usage.input_tokens
-                + response.usage.output_tokens
-            ),
+            total_tokens=(response.usage.input_tokens + response.usage.output_tokens),
         )
 
         content = ""
         if response.content:
             text_parts = [
-                block.text
-                for block in response.content
-                if getattr(block, "type", None) == "text"
+                block.text for block in response.content if getattr(block, "type", None) == "text"
             ]
             content = "".join(text_parts)
 

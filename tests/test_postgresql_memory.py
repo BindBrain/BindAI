@@ -3,9 +3,7 @@ from bindai_memory.record import MemoryRecord
 
 
 def test_postgresql_memory_set_get():
-    provider = PostgreSQLMemoryProvider(
-        "postgresql://postgres:postgres@localhost:5432/bindai"
-    )
+    provider = PostgreSQLMemoryProvider("postgresql://postgres:postgres@localhost:5432/bindai")
 
     record = MemoryRecord(
         namespace="test",
@@ -26,6 +24,7 @@ def test_postgresql_memory_set_get():
     assert result.value.value == "world"
 
     provider.close()
+
 
 def test_postgresql_memory_persists_across_instances():
     database = "postgresql://postgres:postgres@localhost:5432/bindai"
@@ -53,6 +52,7 @@ def test_postgresql_memory_persists_across_instances():
     assert result.value.value == "stored value"
 
     provider.close()
+
 
 def test_postgresql_memory_search_metadata_filter():
     database = "postgresql://postgres:postgres@localhost:5432/bindai"
@@ -90,6 +90,7 @@ def test_postgresql_memory_search_metadata_filter():
 
     provider.close()
 
+
 def test_postgresql_memory_search_namespace_isolation():
     database = "postgresql://postgres:postgres@localhost:5432/bindai"
 
@@ -124,6 +125,7 @@ def test_postgresql_memory_search_namespace_isolation():
     assert results[0].key == "shared"
 
     provider.close()
+
 
 def test_postgresql_memory_expiration():
     from datetime import UTC, datetime, timedelta

@@ -88,9 +88,9 @@ class GoogleProvider(ModelProvider):
         usage_metadata = response.usage_metadata
 
         usage = TokenUsage(
-            prompt_tokens=usage_metadata.prompt_token_count or 0,
-            completion_tokens=usage_metadata.candidates_token_count or 0,
-            total_tokens=usage_metadata.total_token_count or 0,
+            prompt_tokens=(usage_metadata.prompt_token_count or 0) if usage_metadata else 0,
+            completion_tokens=(usage_metadata.candidates_token_count or 0) if usage_metadata else 0,
+            total_tokens=(usage_metadata.total_token_count or 0) if usage_metadata else 0,
         )
 
         content = response.text or ""
@@ -98,9 +98,7 @@ class GoogleProvider(ModelProvider):
         finish_reason = None
 
         if response.candidates:
-            finish_reason = str(
-                response.candidates[0].finish_reason
-            )
+            finish_reason = str(response.candidates[0].finish_reason)
 
         return ModelResponse(
             content=content,

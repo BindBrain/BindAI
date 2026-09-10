@@ -52,12 +52,7 @@ class SQLiteMemoryProvider(MemoryProvider):
 
         connection = self._ensure_connection()
 
-        columns = {
-            row[1]
-            for row in connection.execute(
-                "PRAGMA table_info(memory)"
-            )
-        }
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(memory)")}
 
         required = {
             "metadata": "TEXT NOT NULL DEFAULT '{}'",
@@ -158,18 +153,10 @@ class SQLiteMemoryProvider(MemoryProvider):
                 ),
                 record.importance,
                 record.access_count,
-                record.created_at.isoformat()
-                if record.created_at
-                else None,
-                record.updated_at.isoformat()
-                if record.updated_at
-                else None,
-                record.last_accessed.isoformat()
-                if record.last_accessed
-                else None,
-                record.expires_at.isoformat()
-                if record.expires_at
-                else None,
+                record.created_at.isoformat() if record.created_at else None,
+                record.updated_at.isoformat() if record.updated_at else None,
+                record.last_accessed.isoformat() if record.last_accessed else None,
+                record.expires_at.isoformat() if record.expires_at else None,
             ),
         )
 
@@ -224,32 +211,13 @@ class SQLiteMemoryProvider(MemoryProvider):
             ),
             importance=row[4],
             access_count=row[5],
-            created_at=(
-                datetime.fromisoformat(row[6])
-                if row[6]
-                else datetime.now(UTC)
-            ),
-            updated_at=(
-                datetime.fromisoformat(row[7])
-                if row[7]
-                else datetime.now(UTC)
-            ),
-            last_accessed=(
-                datetime.fromisoformat(row[8])
-                if row[8]
-                else None
-            ),
-            expires_at=(
-                datetime.fromisoformat(row[9])
-                if row[9]
-                else None
-            ),
+            created_at=(datetime.fromisoformat(row[6]) if row[6] else datetime.now(UTC)),
+            updated_at=(datetime.fromisoformat(row[7]) if row[7] else datetime.now(UTC)),
+            last_accessed=(datetime.fromisoformat(row[8]) if row[8] else None),
+            expires_at=(datetime.fromisoformat(row[9]) if row[9] else None),
         )
 
-        if (
-            record.expires_at is not None
-            and datetime.now(UTC) >= record.expires_at
-        ):
+        if record.expires_at is not None and datetime.now(UTC) >= record.expires_at:
             return MemoryResult(
                 success=False,
             )
@@ -305,39 +273,17 @@ class SQLiteMemoryProvider(MemoryProvider):
                 ),
                 importance=row[4],
                 access_count=row[5],
-                created_at=(
-                    datetime.fromisoformat(row[6])
-                    if row[6]
-                    else datetime.now(UTC)
-                ),
-                updated_at=(
-                    datetime.fromisoformat(row[7])
-                    if row[7]
-                    else datetime.now(UTC)
-                ),
-                last_accessed=(
-                    datetime.fromisoformat(row[8])
-                    if row[8]
-                    else None
-                ),
-                expires_at=(
-                    datetime.fromisoformat(row[9])
-                    if row[9]
-                    else None
-                ),
+                created_at=(datetime.fromisoformat(row[6]) if row[6] else datetime.now(UTC)),
+                updated_at=(datetime.fromisoformat(row[7]) if row[7] else datetime.now(UTC)),
+                last_accessed=(datetime.fromisoformat(row[8]) if row[8] else None),
+                expires_at=(datetime.fromisoformat(row[9]) if row[9] else None),
             )
 
-            if (
-                record.expires_at is not None
-                and datetime.now(UTC) >= record.expires_at
-            ):
+            if record.expires_at is not None and datetime.now(UTC) >= record.expires_at:
                 continue
 
             if metadata:
-                matches = all(
-                    record.metadata.get(key) == value
-                    for key, value in metadata.items()
-                )
+                matches = all(record.metadata.get(key) == value for key, value in metadata.items())
 
                 if not matches:
                     continue

@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import NetlifyConnection
 
 
@@ -95,9 +94,7 @@ def test_netlify_connection_sends_get_request(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://api.netlify.com/api/v1/user"
-    )
+    assert request.full_url == ("https://api.netlify.com/api/v1/user")
     assert request.method == "GET"
     assert request.get_header("Accept") == "application/json"
     assert request.get_header("Authorization") == "Bearer test-token"
@@ -146,9 +143,7 @@ def test_netlify_connection_sends_json_body(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://api.netlify.com/api/v1/sites"
-    )
+    assert request.full_url == ("https://api.netlify.com/api/v1/sites")
     assert request.method == "POST"
     assert request.data == b'{"name": "bindai-app"}'
     assert request.get_header("Accept") == "application/json"

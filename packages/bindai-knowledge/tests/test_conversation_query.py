@@ -1,6 +1,4 @@
 from bindai_core.conversation import Conversation
-from bindai_core.model import MessageRole
-
 from bindai_knowledge.conversation_query import ConversationQuery
 
 
@@ -14,9 +12,7 @@ def test_conversation_query_uses_user_and_assistant_messages():
     query = ConversationQuery().build(conversation)
 
     assert query == (
-        "user: What is BindAI?\n"
-        "assistant: BindAI is an AI framework.\n"
-        "user: How does memory work?"
+        "user: What is BindAI?\nassistant: BindAI is an AI framework.\nuser: How does memory work?"
     )
 
 
@@ -40,14 +36,9 @@ def test_conversation_query_limits_recent_messages():
     conversation.add_user("Message three")
     conversation.add_assistant("Message four")
 
-    query = ConversationQuery(max_messages=2).build(
-        conversation
-    )
+    query = ConversationQuery(max_messages=2).build(conversation)
 
-    assert query == (
-        "user: Message three\n"
-        "assistant: Message four"
-    )
+    assert query == ("user: Message three\nassistant: Message four")
 
 
 def test_conversation_query_returns_empty_for_empty_conversation():
@@ -67,6 +58,7 @@ def test_conversation_query_ignores_empty_messages():
     query = ConversationQuery().build(conversation)
 
     assert query == "user: Actual question"
+
 
 def test_knowledge_search_conversation_uses_conversation_query():
     from bindai_knowledge import (

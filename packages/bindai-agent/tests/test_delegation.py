@@ -26,6 +26,7 @@ def test_agent_delegation_tool():
     assert result.value == "Research completed."
     assert agent.received_message == "Find information about AI agents."
 
+
 def test_agent_team_delegation_tool():
     from bindai_agent import AgentResult, AgentTeam
 
@@ -53,9 +54,7 @@ def test_agent_team_delegation_tool():
     tool = AgentTeamDelegationTool(team)
 
     context = type("Context", (), {})()
-    context.variables = {
-        "message": "Create an article about AI agents."
-    }
+    context.variables = {"message": "Create an article about AI agents."}
 
     result = tool.execute(context)
 
@@ -67,6 +66,7 @@ def test_agent_team_delegation_tool():
 
     assert researcher.received_message == "Create an article about AI agents."
     assert writer.received_message == "Create an article about AI agents."
+
 
 def test_agent_team_delegation_tool_propagates_failure():
     from bindai_agent import AgentResult, AgentTeam, AgentTeamDelegationTool
@@ -86,9 +86,7 @@ def test_agent_team_delegation_tool_propagates_failure():
     tool = AgentTeamDelegationTool(team)
 
     context = type("Context", (), {})()
-    context.variables = {
-        "message": "Research AI agents."
-    }
+    context.variables = {"message": "Research AI agents."}
 
     result = tool.execute(context)
 

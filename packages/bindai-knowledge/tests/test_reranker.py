@@ -58,15 +58,14 @@ def test_lexical_reranker_preserves_order_when_query_has_no_terms():
 
     assert result == documents
 
+
 def test_knowledge_search_can_rerank_results():
     from bindai_knowledge import (
         InMemoryKnowledgeProvider,
         Knowledge,
     )
 
-    knowledge = Knowledge(
-        InMemoryKnowledgeProvider()
-    )
+    knowledge = Knowledge(InMemoryKnowledgeProvider())
 
     knowledge.add_many(
         [
@@ -94,15 +93,14 @@ def test_knowledge_search_can_rerank_results():
     assert result.success
     assert result.value[0].id == "2"
 
+
 def test_knowledge_retrieve_with_sources_includes_citations():
     from bindai_knowledge import (
         InMemoryKnowledgeProvider,
         Knowledge,
     )
 
-    knowledge = Knowledge(
-        InMemoryKnowledgeProvider()
-    )
+    knowledge = Knowledge(InMemoryKnowledgeProvider())
 
     knowledge.add(
         KnowledgeDocument(

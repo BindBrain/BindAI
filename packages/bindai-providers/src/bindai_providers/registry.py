@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import Any
 
 from bindai_core import ProviderFactory
+from bindai_core.provider.model_provider import ModelProvider
 
 
 class ProviderRegistry:
@@ -15,7 +16,7 @@ class ProviderRegistry:
     def register(
         cls,
         name: str,
-        builder: Callable,
+        builder: type[ModelProvider],
     ) -> None:
         ProviderFactory.register(
             name,
@@ -45,13 +46,9 @@ class ProviderRegistry:
         name: str,
     ) -> Callable:
         try:
-            return ProviderFactory._providers[
-                name.lower()
-            ]
+            return ProviderFactory._providers[name.lower()]
         except KeyError as exc:
-            raise ValueError(
-                f"Unknown provider '{name}'."
-            ) from exc
+            raise ValueError(f"Unknown provider '{name}'.") from exc
 
     @classmethod
     def create(

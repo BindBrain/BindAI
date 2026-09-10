@@ -25,17 +25,14 @@ class BM25RetrieverProvider(RetrieverProvider):
             for document in documents
         ]
 
-        self._document_frequencies = Counter()
+        self._document_frequencies: Counter[str] = Counter()
 
         for tokens in self._tokenized_documents:
             for token in set(tokens):
                 self._document_frequencies[token] += 1
 
         self._average_document_length = (
-            sum(
-                len(tokens)
-                for tokens in self._tokenized_documents
-            )
+            sum(len(tokens) for tokens in self._tokenized_documents)
             / len(self._tokenized_documents)
             if self._tokenized_documents
             else 0.0
@@ -52,10 +49,7 @@ class BM25RetrieverProvider(RetrieverProvider):
 
         return RetrievalResult(
             success=True,
-            documents=[
-                document
-                for _, document in scored[:query.limit]
-            ],
+            documents=[document for _, document in scored[: query.limit]],
         )
 
     def score_documents(
@@ -83,8 +77,7 @@ class BM25RetrieverProvider(RetrieverProvider):
         ):
             if query.metadata:
                 if not all(
-                    document.metadata.get(key) == value
-                    for key, value in query.metadata.items()
+                    document.metadata.get(key) == value for key, value in query.metadata.items()
                 ):
                     continue
 
@@ -125,12 +118,7 @@ class BM25RetrieverProvider(RetrieverProvider):
         document_length = len(document_tokens)
 
         length_normalization = (
-            1 - b
-            + b
-            * (
-                document_length
-                / self._average_document_length
-            )
+            1 - b + b * (document_length / self._average_document_length)
             if self._average_document_length
             else 1.0
         )
@@ -156,29 +144,11 @@ class BM25RetrieverProvider(RetrieverProvider):
             )
 
             idf = math.log(
-                1
-                + (
-                    document_count
-                    - document_frequency
-                    + 0.5
-                )
-                / (
-                    document_frequency
-                    + 0.5
-                )
+                1 + (document_count - document_frequency + 0.5) / (document_frequency + 0.5)
             )
 
             score += (
-                idf
-                * (
-                    term_frequency
-                    * (k1 + 1)
-                )
-                / (
-                    term_frequency
-                    + k1
-                    * length_normalization
-                )
+                idf * (term_frequency * (k1 + 1)) / (term_frequency + k1 * length_normalization)
             )
 
         return score

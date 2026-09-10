@@ -13,14 +13,14 @@ class ToolResult(ExecutionResult):
     error: str | None = None
 
     @classmethod
-    def ok(cls, value=None):
+    def ok(cls, value: Any = None) -> "ToolResult":
         return cls(
             success=True,
             value=value,
         )
 
     @classmethod
-    def failed(cls, message: str):
+    def failed(cls, message: str) -> "ToolResult":
         return cls(
             success=False,
             error=message,

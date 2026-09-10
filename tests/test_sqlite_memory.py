@@ -62,6 +62,7 @@ def test_sqlite_memory_exists_delete_clear(tmp_path):
 
     provider.close()
 
+
 def test_sqlite_memory_persists_across_instances(tmp_path):
     db = tmp_path / "memory.db"
 
@@ -88,6 +89,7 @@ def test_sqlite_memory_persists_across_instances(tmp_path):
     assert result.value.value == "stored value"
 
     provider.close()
+
 
 def test_sqlite_memory_search_metadata_filter(tmp_path):
     db = tmp_path / "memory.db"
@@ -123,6 +125,7 @@ def test_sqlite_memory_search_metadata_filter(tmp_path):
 
     provider.close()
 
+
 def test_sqlite_memory_search_namespace_isolation(tmp_path):
     db = tmp_path / "memory.db"
 
@@ -154,6 +157,7 @@ def test_sqlite_memory_search_namespace_isolation(tmp_path):
     assert results[0].key == "shared"
 
     provider.close()
+
 
 def test_sqlite_memory_expiration(tmp_path):
     db = tmp_path / "memory.db"

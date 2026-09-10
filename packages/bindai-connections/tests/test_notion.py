@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import NotionConnection
 
 
@@ -113,9 +112,7 @@ def test_notion_connection_sends_json_body(monkeypatch):
 
     assert request.full_url == "https://api.notion.com/v1/pages"
     assert request.method == "POST"
-    assert request.data == (
-        b'{"parent": {"page_id": "test-page"}, "properties": {}}'
-    )
+    assert request.data == (b'{"parent": {"page_id": "test-page"}, "properties": {}}')
     assert request.get_header("Content-type") == "application/json"
     assert result == {
         "status_code": 200,

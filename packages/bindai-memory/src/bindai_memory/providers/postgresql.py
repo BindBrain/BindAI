@@ -222,10 +222,7 @@ class PostgreSQLMemoryProvider(MemoryProvider):
                     continue
 
             if metadata:
-                if any(
-                    row_metadata.get(k) != v
-                    for k, v in metadata.items()
-                ):
+                if any(row_metadata.get(k) != v for k, v in metadata.items()):
                     continue
 
             if query_lower not in value.lower():

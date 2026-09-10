@@ -54,22 +54,17 @@ def test_agent_injects_knowledge_context():
     )
 
     agent.use_knowledge(knowledge)
-    agent.conversation.add_user(
-        "What does BindAI support?"
-    )
+    agent.conversation.add_user("What does BindAI support?")
 
     executor = AgentExecutor()
 
     request = executor._build_request(
         agent,
-        agent._create_context(
-            "What does BindAI support?"
-        ),
+        agent._create_context("What does BindAI support?"),
     )
 
     assert any(
         message.role == MessageRole.SYSTEM
-        and "BindAI supports retrieval augmented generation."
-        in message.content
+        and "BindAI supports retrieval augmented generation." in message.content
         for message in request.messages
     )

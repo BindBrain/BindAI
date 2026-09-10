@@ -1,7 +1,5 @@
-from typer.testing import CliRunner
-
 from bindai_cli.commands.run import app
-
+from typer.testing import CliRunner
 
 runner = CliRunner()
 

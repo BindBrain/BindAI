@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from bindai_knowledge import KnowledgeDocument
-from bindai_knowledge.loaders.text_loader import TextLoader
-from bindai_knowledge.loaders.markdown_loader import MarkdownLoader
 from bindai_knowledge.loaders.directory_loader import DirectoryLoader
+from bindai_knowledge.loaders.markdown_loader import MarkdownLoader
+from bindai_knowledge.loaders.text_loader import TextLoader
 
 
 def test_text_loader():

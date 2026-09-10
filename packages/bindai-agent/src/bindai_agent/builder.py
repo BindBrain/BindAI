@@ -96,7 +96,7 @@ class AgentBuilder:
             str,
         ):
             bootstrap()
-            
+
             configuration = ProviderConfiguration(
                 api_key=api_key,
                 endpoint=endpoint,

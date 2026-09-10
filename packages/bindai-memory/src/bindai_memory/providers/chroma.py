@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
 import chromadb
+from chromadb.api.types import Where
 
 from bindai_memory.provider import MemoryProvider
 from bindai_memory.record import MemoryRecord, MemoryType
@@ -23,11 +25,9 @@ class ChromaMemoryProvider(MemoryProvider):
     ) -> None:
         self.path = path
         self.collection_name = collection_name
-
         self._client = chromadb.PersistentClient(
             path=path,
         )
-
         self._collection = self._client.get_or_create_collection(
             name=collection_name,
             metadata={
@@ -54,7 +54,6 @@ class ChromaMemoryProvider(MemoryProvider):
         record.updated_at = now
 
         metadata = self._record_metadata(record)
-
         storage_key = self._storage_key(
             record.key,
             record.namespace,
@@ -63,7 +62,10 @@ class ChromaMemoryProvider(MemoryProvider):
         if record.embedding is not None:
             self._collection.upsert(
                 ids=[storage_key],
-                embeddings=[record.embedding],
+                embeddings=cast(
+                    list[Sequence[float]],
+                    [record.embedding],
+                ),
                 documents=[str(record.value)],
                 metadatas=[metadata],
             )
@@ -133,14 +135,14 @@ class ChromaMemoryProvider(MemoryProvider):
         limit: int = 10,
         metadata: dict | None = None,
     ) -> list[MemoryRecord]:
-        namespace_condition = {
+        namespace_condition: Where = {
             "namespace": namespace,
         }
 
-        where: dict[str, Any]
+        where: Where
 
         if metadata:
-            conditions = [
+            conditions: list[Where] = [
                 {
                     f"meta__{key}": value,
                 }
@@ -172,29 +174,21 @@ class ChromaMemoryProvider(MemoryProvider):
         distances = response.get("distances") or [[]]
 
         result_ids = ids[0] if ids else []
-        result_metadata = (
-            metadata_groups[0]
-            if metadata_groups
-            else []
-        )
-        result_distances = (
-            distances[0]
-            if distances
-            else []
-        )
+
+        result_metadata = metadata_groups[0] if metadata_groups else []
+
+        result_distances = distances[0] if distances else []
 
         results: list[MemoryRecord] = []
 
         for index, storage_key in enumerate(result_ids):
-            record_metadata = (
-                result_metadata[index]
-                if index < len(result_metadata)
-                else {}
-            )
+            record_metadata = result_metadata[index] if index < len(result_metadata) else {}
 
-            original_key = record_metadata.get(
-                "key",
-                storage_key,
+            original_key = str(
+                record_metadata.get(
+                    "key",
+                    storage_key,
+                )
             )
 
             record = self._record_from_metadata(
@@ -210,9 +204,7 @@ class ChromaMemoryProvider(MemoryProvider):
                 distance = result_distances[index]
 
                 if distance is not None:
-                    record.score = 1.0 / (
-                        1.0 + float(distance)
-                    )
+                    record.score = 1.0 / (1.0 + float(distance))
 
             record.last_accessed = datetime.now(UTC)
             record.access_count += 1
@@ -315,24 +307,16 @@ class ChromaMemoryProvider(MemoryProvider):
         }
 
         if record.created_at is not None:
-            metadata["created_at"] = (
-                record.created_at.isoformat()
-            )
+            metadata["created_at"] = record.created_at.isoformat()
 
         if record.updated_at is not None:
-            metadata["updated_at"] = (
-                record.updated_at.isoformat()
-            )
+            metadata["updated_at"] = record.updated_at.isoformat()
 
         if record.last_accessed is not None:
-            metadata["last_accessed"] = (
-                record.last_accessed.isoformat()
-            )
+            metadata["last_accessed"] = record.last_accessed.isoformat()
 
         if record.expires_at is not None:
-            metadata["expires_at"] = (
-                record.expires_at.isoformat()
-            )
+            metadata["expires_at"] = record.expires_at.isoformat()
 
         for key, value in record.metadata.items():
             if isinstance(
@@ -341,10 +325,7 @@ class ChromaMemoryProvider(MemoryProvider):
             ):
                 metadata[f"meta__{key}"] = value
 
-            elif isinstance(value, list) and all(
-                isinstance(item, str)
-                for item in value
-            ):
+            elif isinstance(value, list) and all(isinstance(item, str) for item in value):
                 metadata[f"meta__{key}"] = json.dumps(
                     value,
                 )
@@ -354,7 +335,7 @@ class ChromaMemoryProvider(MemoryProvider):
     def _record_from_metadata(
         self,
         key: str,
-        metadata: dict[str, Any],
+        metadata: Mapping[str, Any],
         namespace: str,
     ) -> MemoryRecord:
         value = metadata.get(

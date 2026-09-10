@@ -12,7 +12,7 @@ class RandomEmbeddingProvider(EmbeddingProvider):
     Used only for tests.
     """
 
-    DIMENSION = 128
+    DIMENSION = 512
 
     def embed(
         self,

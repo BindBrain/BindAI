@@ -70,10 +70,7 @@ def test_document_id_is_preserved():
 
     chunks = RecursiveChunker(chunk_size=100, overlap=20).chunk(document)
 
-    assert all(
-        chunk.document_id == "source-document"
-        for chunk in chunks
-    )
+    assert all(chunk.document_id == "source-document" for chunk in chunks)
 
 
 def test_chunks_do_not_exceed_chunk_size():
@@ -95,10 +92,7 @@ def test_chunks_do_not_exceed_chunk_size():
 
     assert chunks
 
-    assert all(
-        len(chunk.content) <= chunk_size
-        for chunk in chunks
-    )
+    assert all(len(chunk.content) <= chunk_size for chunk in chunks)
 
 
 def test_large_paragraph_is_split():
@@ -115,10 +109,7 @@ def test_large_paragraph_is_split():
 
     assert len(chunks) > 1
 
-    assert all(
-        len(chunk.content) <= 100
-        for chunk in chunks
-    )
+    assert all(len(chunk.content) <= 100 for chunk in chunks)
 
 
 def test_overlap_is_present_between_adjacent_chunks():

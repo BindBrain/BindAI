@@ -1,7 +1,7 @@
 from bindai_knowledge import (
+    InMemoryKnowledgeProvider,
     Knowledge,
     KnowledgeDocument,
-    InMemoryKnowledgeProvider,
     RecursiveChunker,
 )
 
@@ -73,25 +73,13 @@ def test_load_with_chunker():
 
     chunks = list(provider._documents.values())
 
-    assert all(
-        chunk.metadata["document_id"] == "chunk-doc"
-        for chunk in chunks
-    )
+    assert all(chunk.metadata["document_id"] == "chunk-doc" for chunk in chunks)
 
-    assert all(
-        chunk.metadata["chunk"] is True
-        for chunk in chunks
-    )
+    assert all(chunk.metadata["chunk"] is True for chunk in chunks)
 
-    assert all(
-        chunk.metadata["source"] == "test"
-        for chunk in chunks
-    )
+    assert all(chunk.metadata["source"] == "test" for chunk in chunks)
 
-    assert all(
-        chunk.id.startswith("chunk-doc:")
-        for chunk in chunks
-    )
+    assert all(chunk.id.startswith("chunk-doc:") for chunk in chunks)
 
 
 def test_load_with_chunker_preserves_title():
@@ -101,11 +89,7 @@ def test_load_with_chunker_preserves_title():
     document = KnowledgeDocument(
         id="title-doc",
         title="Important Document",
-        content=(
-            "AAAAA\n\n"
-            "BBBBB\n\n"
-            "CCCCC"
-        ),
+        content=("AAAAA\n\nBBBBB\n\nCCCCC"),
     )
 
     loader = FakeLoader([document])
@@ -122,10 +106,7 @@ def test_load_with_chunker_preserves_title():
 
     assert len(chunks) == 3
 
-    assert all(
-        chunk.title == "Important Document"
-        for chunk in chunks
-    )
+    assert all(chunk.title == "Important Document" for chunk in chunks)
 
 
 def test_load_returns_zero_for_empty_loader():
@@ -164,6 +145,7 @@ def test_load_without_chunker_preserves_metadata():
         "environment": "test",
         "version": 2,
     }
+
 
 def test_pipeline_preserves_chunk_metadata():
     from bindai_knowledge import (

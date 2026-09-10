@@ -1,7 +1,5 @@
 from unittest.mock import Mock
 
-from pydantic import create_model
-
 from bindai_core import (
     Message,
     MessageRole,
@@ -10,6 +8,7 @@ from bindai_core import (
 )
 from bindai_core.schema import ResponseSchema
 from bindai_provider_openrouter.provider import OpenRouterProvider
+from pydantic import create_model
 
 
 def create_provider() -> OpenRouterProvider:
@@ -33,9 +32,7 @@ def test_openrouter_chat():
     response.usage.completion_tokens = 8
     response.model = "google/gemini-3.8-flash"
 
-    provider._client.client.chat.completions.create = Mock(
-        return_value=response
-    )
+    provider._client.client.chat.completions.create = Mock(return_value=response)
 
     request = ModelRequest(
         messages=[
@@ -69,9 +66,7 @@ def test_openrouter_streaming():
     chunk_2.choices = [Mock()]
     chunk_2.choices[0].delta.content = "from OpenRouter"
 
-    provider._client.client.chat.completions.create = Mock(
-        return_value=iter([chunk_1, chunk_2])
-    )
+    provider._client.client.chat.completions.create = Mock(return_value=iter([chunk_1, chunk_2]))
 
     request = ModelRequest(
         messages=[
@@ -109,9 +104,7 @@ def test_openrouter_tool_call():
     response.usage.completion_tokens = 10
     response.model = "google/gemini-3.8-flash"
 
-    provider._client.client.chat.completions.create = Mock(
-        return_value=response
-    )
+    provider._client.client.chat.completions.create = Mock(return_value=response)
 
     request = ModelRequest(
         messages=[
@@ -147,18 +140,14 @@ def test_openrouter_structured_output():
 
     response = Mock()
     response.choices = [Mock()]
-    response.choices[0].message.content = (
-        '{"city":"Lisbon","temperature":24}'
-    )
+    response.choices[0].message.content = '{"city":"Lisbon","temperature":24}'
     response.choices[0].message.tool_calls = []
     response.choices[0].finish_reason = "stop"
     response.usage.prompt_tokens = 10
     response.usage.completion_tokens = 5
     response.model = "google/gemini-3.8-flash"
 
-    provider._client.client.chat.completions.create = Mock(
-        return_value=response
-    )
+    provider._client.client.chat.completions.create = Mock(return_value=response)
 
     request = ModelRequest(
         messages=[

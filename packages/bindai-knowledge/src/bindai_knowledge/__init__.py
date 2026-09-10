@@ -6,6 +6,7 @@ from .chunkers import (
     FixedChunker,
     RecursiveChunker,
 )
+from .conversation_query import ConversationQuery
 from .document import KnowledgeDocument
 from .embedding import Embedding
 from .fake_embedding import FakeEmbeddingProvider
@@ -16,17 +17,16 @@ from .loaders.html_loader import HTMLLoader
 from .loaders.markdown_loader import MarkdownLoader
 from .loaders.pdf_loader import PDFLoader
 from .loaders.text_loader import TextLoader
+from .pipeline import KnowledgePipeline
 from .provider import KnowledgeProvider
 from .providers.dummy_embedding import DummyEmbeddingProvider
 from .providers.in_memory import InMemoryKnowledgeProvider
 from .providers.json_provider import JsonKnowledgeProvider
 from .providers.vector_provider import VectorKnowledgeProvider
+from .reranker import LexicalReranker
+from .reranker_base import Reranker
 from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
-from .reranker import LexicalReranker
-from .conversation_query import ConversationQuery
-from .pipeline import KnowledgePipeline
-from .reranker_base import Reranker
 
 __all__ = [
     "Knowledge",

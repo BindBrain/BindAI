@@ -48,4 +48,3 @@ def test_connection_requires_active_state():
         assert str(exc) == "Connection is not active."
     else:
         raise AssertionError("Expected RuntimeError")
-

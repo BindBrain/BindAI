@@ -42,6 +42,7 @@ def test_webhook_connection_requires_active_state():
     else:
         raise AssertionError("Expected RuntimeError")
 
+
 def test_webhook_connection_sends_json_payload(monkeypatch):
     connection = WebhookConnection("https://example.com/webhook")
     connection.connect()

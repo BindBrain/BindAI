@@ -131,3 +131,27 @@ updates:
     directory: "/packages/providers/bindai-provider-openai"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/packages/providers/bindai-provider-google"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/packages/providers/bindai-provider-groq"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/packages/providers/bindai-provider-ollama"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/packages/providers/bindai-provider-openrouter"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/packages/providers/bindai-provider-anthropic"
+    schedule:
+      interval: "weekly"

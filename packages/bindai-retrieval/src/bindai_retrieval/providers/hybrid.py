@@ -49,10 +49,7 @@ class HybridRetrieverProvider(RetrieverProvider):
             query,
         )
 
-        bm25_by_id = {
-            document.id: score
-            for score, document in bm25_scores
-        }
+        bm25_by_id = {document.id: score for score, document in bm25_scores}
 
         maximum_bm25 = max(
             bm25_by_id.values(),
@@ -60,11 +57,7 @@ class HybridRetrieverProvider(RetrieverProvider):
         )
 
         normalized_bm25 = {
-            document_id: (
-                score / maximum_bm25
-                if maximum_bm25 > 0
-                else 0.0
-            )
+            document_id: (score / maximum_bm25 if maximum_bm25 > 0 else 0.0)
             for document_id, score in bm25_by_id.items()
         }
 
@@ -72,15 +65,12 @@ class HybridRetrieverProvider(RetrieverProvider):
             query.text,
         )
 
-        ranked: list[
-            tuple[float, KnowledgeDocument]
-        ] = []
+        ranked: list[tuple[float, KnowledgeDocument]] = []
 
         for document in self.documents:
             if query.metadata:
                 if not all(
-                    document.metadata.get(key) == value
-                    for key, value in query.metadata.items()
+                    document.metadata.get(key) == value for key, value in query.metadata.items()
                 ):
                     continue
 
@@ -102,8 +92,7 @@ class HybridRetrieverProvider(RetrieverProvider):
                     0.0,
                 )
                 * 0.6
-                + vector_score
-                * 0.4
+                + vector_score * 0.4
             )
 
             ranked.append(
@@ -120,10 +109,7 @@ class HybridRetrieverProvider(RetrieverProvider):
 
         return RetrievalResult(
             success=True,
-            documents=[
-                document
-                for _, document in ranked[:query.limit]
-            ],
+            documents=[document for _, document in ranked[: query.limit]],
         )
 
     @staticmethod
@@ -132,18 +118,11 @@ class HybridRetrieverProvider(RetrieverProvider):
         b: list[float],
     ) -> float:
 
-        dot = sum(
-            x * y
-            for x, y in zip(a, b)
-        )
+        dot = sum(x * y for x, y in zip(a, b))
 
-        norm_a = math.sqrt(
-            sum(x * x for x in a)
-        )
+        norm_a = math.sqrt(sum(x * x for x in a))
 
-        norm_b = math.sqrt(
-            sum(x * x for x in b)
-        )
+        norm_b = math.sqrt(sum(x * x for x in b))
 
         if norm_a == 0 or norm_b == 0:
             return 0.0

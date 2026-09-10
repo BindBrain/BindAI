@@ -20,10 +20,7 @@ def _normalize_scores(
     if maximum <= 0:
         return [0.0 for _ in scores]
 
-    return [
-        score / maximum
-        for score in scores
-    ]
+    return [score / maximum for score in scores]
 
 
 class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
@@ -91,10 +88,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
 
         return KnowledgeResult(
             success=result.success,
-            value=[
-                document
-                for _, document in result.value
-            ],
+            value=[document for _, document in result.value],
         )
 
     def search_with_scores(
@@ -119,10 +113,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             if filters:
                 metadata = record.document.metadata or {}
 
-                if not all(
-                    metadata.get(key) == value
-                    for key, value in filters.items()
-                ):
+                if not all(metadata.get(key) == value for key, value in filters.items()):
                     continue
 
             score = cosine_similarity(
@@ -166,23 +157,13 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             filters=filters,
         )
 
-        keyword_scores = {
-            document.id: score
-            for score, document in keyword.value
-        }
+        keyword_scores = {document.id: score for score, document in keyword.value}
 
-        vector_scores = {
-            document.id: score
-            for score, document in vector.value
-        }
+        vector_scores = {document.id: score for score, document in vector.value}
 
-        keyword_normalized_values = _normalize_scores(
-            list(keyword_scores.values())
-        )
+        keyword_normalized_values = _normalize_scores(list(keyword_scores.values()))
 
-        vector_normalized_values = _normalize_scores(
-            list(vector_scores.values())
-        )
+        vector_normalized_values = _normalize_scores(list(vector_scores.values()))
 
         normalized_keyword = dict(
             zip(
@@ -198,21 +179,11 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
             )
         )
 
-        document_by_id = {
-            document.id: document
-            for _, document in keyword.value
-        }
+        document_by_id = {document.id: document for _, document in keyword.value}
 
-        document_by_id.update(
-            {
-                document.id: document
-                for _, document in vector.value
-            }
-        )
+        document_by_id.update({document.id: document for _, document in vector.value})
 
-        candidate_ids = set(
-            document_by_id
-        )
+        candidate_ids = set(document_by_id)
 
         ranked: list[
             tuple[
@@ -232,10 +203,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
                 0.0,
             )
 
-            score = (
-                keyword_score * 0.6
-                + vector_score * 0.4
-            )
+            score = keyword_score * 0.6 + vector_score * 0.4
 
             ranked.append(
                 (
@@ -251,10 +219,7 @@ class VectorKnowledgeProvider(InMemoryKnowledgeProvider):
 
         return KnowledgeResult(
             success=True,
-            value=[
-                document
-                for _, document in ranked[:limit]
-            ],
+            value=[document for _, document in ranked[:limit]],
         )
 
     def delete(

@@ -26,9 +26,7 @@ class RecursiveChunker(DocumentChunker):
             raise ValueError("overlap must not be negative")
 
         if overlap >= chunk_size:
-            raise ValueError(
-                "overlap must be smaller than chunk_size"
-            )
+            raise ValueError("overlap must be smaller than chunk_size")
 
         self.chunk_size = chunk_size
         self.overlap = overlap
@@ -76,9 +74,7 @@ class RecursiveChunker(DocumentChunker):
                     chunks.append(current)
                     current = ""
 
-                chunks.extend(
-                    self._split_large_piece(piece)
-                )
+                chunks.extend(self._split_large_piece(piece))
 
                 continue
 
@@ -152,10 +148,6 @@ class RecursiveChunker(DocumentChunker):
         text: str,
     ) -> list[str]:
 
-        paragraphs = [
-            paragraph.strip()
-            for paragraph in text.split("\n\n")
-            if paragraph.strip()
-        ]
+        paragraphs = [paragraph.strip() for paragraph in text.split("\n\n") if paragraph.strip()]
 
         return paragraphs

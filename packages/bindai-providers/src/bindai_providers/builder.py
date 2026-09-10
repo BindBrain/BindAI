@@ -53,9 +53,7 @@ class ProviderBuilder:
         )
 
         if not provider:
-            raise ValueError(
-                "BINDAI_PROVIDER is not configured."
-            )
+            raise ValueError("BINDAI_PROVIDER is not configured.")
 
         configuration = ProviderConfiguration(
             api_key=os.getenv("OPENAI_API_KEY"),

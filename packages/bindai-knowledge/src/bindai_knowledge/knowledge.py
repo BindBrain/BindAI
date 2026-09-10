@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from .conversation_query import ConversationQuery
 from .document import KnowledgeDocument
+from .pipeline import KnowledgePipeline
 from .provider import KnowledgeProvider
+from .reranker_base import Reranker
 from .result import KnowledgeResult
 from .search_options import KnowledgeSearchOptions
-from .reranker import LexicalReranker
-from .reranker_base import Reranker
-from .pipeline import KnowledgePipeline
+
 
 class Knowledge:
     """
@@ -21,10 +21,7 @@ class Knowledge:
         pipeline: KnowledgePipeline | None = None,
     ):
         self.provider = provider
-        self.conversation_query = (
-            conversation_query
-            or ConversationQuery()
-        )
+        self.conversation_query = conversation_query or ConversationQuery()
         self.pipeline = pipeline or KnowledgePipeline()
 
     def add(
@@ -118,11 +115,7 @@ class Knowledge:
                 filters=options.filters,
             )
 
-        if (
-            options.min_score > 0
-            and result.success
-            and result.value
-        ):
+        if options.min_score > 0 and result.success and result.value:
             scored_results = result.value
 
             if scored_results and isinstance(
@@ -130,16 +123,10 @@ class Knowledge:
                 tuple,
             ):
                 result.value = [
-                    document
-                    for score, document in scored_results
-                    if score >= options.min_score
+                    document for score, document in scored_results if score >= options.min_score
                 ]
 
-        if (
-            reranker is not None
-            and result.success
-            and result.value
-        ):
+        if reranker is not None and result.success and result.value:
             result.value = reranker.rerank(
                 query,
                 result.value,
@@ -197,10 +184,7 @@ class Knowledge:
         if not result.success or not result.value:
             return ""
 
-        return "\n\n".join(
-            document.content
-            for document in result.value
-        )
+        return "\n\n".join(document.content for document in result.value)
 
     def retrieve_with_sources(
         self,
@@ -246,4 +230,3 @@ class Knowledge:
             self.add(document)
 
         return len(processed)
-

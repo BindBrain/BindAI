@@ -1,5 +1,4 @@
 import pytest
-
 from bindai_connections.connection import Connection
 from bindai_connections.registry import ConnectionRegistry
 
@@ -42,6 +41,7 @@ def test_registry_rejects_empty_name():
 def test_registry_rejects_unknown_connection():
     with pytest.raises(KeyError):
         ConnectionRegistry.provider("missing")
+
 
 def test_webhook_connection_is_registered():
     from bindai_connections import WebhookConnection

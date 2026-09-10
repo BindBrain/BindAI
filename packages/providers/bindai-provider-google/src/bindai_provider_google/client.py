@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from google import genai
 from bindai_core import ProviderConfiguration
+from google import genai
 
 
 class GoogleClient:

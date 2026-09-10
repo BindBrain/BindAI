@@ -11,13 +11,7 @@ def test_agent_is_registered_when_added_to_workflow():
 
     agent = DummyAgent()
 
-    workflow = (
-        WorkflowBuilder("test-workflow")
-        .start_node()
-        .agent(agent)
-        .end_node()
-        .build()
-    )
+    workflow = WorkflowBuilder("test-workflow").start_node().agent(agent).end_node().build()
 
     assert AgentRegistry.contains("test-agent")
     assert workflow.name == "test-workflow"

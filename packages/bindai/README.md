@@ -225,9 +225,7 @@ from bindai import Agent
 from bindai_memory import Memory, SQLiteMemoryProvider
 
 
-memory = Memory(
-    SQLiteMemoryProvider("memory.db")
-)
+memory = Memory(SQLiteMemoryProvider("memory.db"))
 
 agent = (
     Agent.builder()

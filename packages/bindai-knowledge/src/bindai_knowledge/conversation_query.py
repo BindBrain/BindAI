@@ -22,7 +22,8 @@ class ConversationQuery:
         messages = [
             message
             for message in conversation.messages
-            if message.role in {
+            if message.role
+            in {
                 MessageRole.USER,
                 MessageRole.ASSISTANT,
             }
@@ -32,9 +33,8 @@ class ConversationQuery:
         if not messages:
             return ""
 
-        recent_messages = messages[-self.max_messages:]
+        recent_messages = messages[-self.max_messages :]
 
         return "\n".join(
-            f"{message.role.value}: {message.content.strip()}"
-            for message in recent_messages
+            f"{message.role.value}: {message.content.strip()}" for message in recent_messages
         )

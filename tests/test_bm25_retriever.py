@@ -2,6 +2,7 @@ from bindai_knowledge import KnowledgeDocument
 from bindai_retrieval import RetrievalQuery
 from bindai_retrieval.providers.bm25 import BM25RetrieverProvider
 
+
 def test_bm25_ranks_relevant_documents():
     documents = [
         KnowledgeDocument(

@@ -144,9 +144,7 @@ class AgentExecutor:
             iterations += 1
 
             if iterations >= agent.configuration.max_tool_iterations:
-                raise RuntimeError(
-                    "Maximum tool iterations exceeded."
-                )
+                raise RuntimeError("Maximum tool iterations exceeded.")
 
     def _execute_turn(
         self,
@@ -272,10 +270,7 @@ class AgentExecutor:
             )
 
             if result.success and result.value:
-                return "\n\n".join(
-                    document.content
-                    for document in result.value
-                )
+                return "\n\n".join(document.content for document in result.value)
 
             return ""
 
@@ -294,10 +289,7 @@ class AgentExecutor:
             )
 
             if result.success and result.documents:
-                return "\n\n".join(
-                    document.content
-                    for document in result.documents
-                )
+                return "\n\n".join(document.content for document in result.documents)
 
         return ""
 
@@ -316,9 +308,7 @@ class AgentExecutor:
             )
         )
 
-        messages.extend(
-            agent.conversation.messages
-        )
+        messages.extend(agent.conversation.messages)
 
         context_text = self._retrieve_context(
             agent,
@@ -328,10 +318,7 @@ class AgentExecutor:
             messages.append(
                 Message(
                     role=MessageRole.SYSTEM,
-                    content=(
-                        "Relevant knowledge context:\n\n"
-                        f"{context_text}"
-                    ),
+                    content=(f"Relevant knowledge context:\n\n{context_text}"),
                 )
             )
 
@@ -422,7 +409,6 @@ class AgentExecutor:
 
         for message in messages:
             if message.role == MessageRole.ASSISTANT:
-
                 if message.tool_calls:
                     agent.conversation.add_assistant_tool_call(
                         message.tool_calls,

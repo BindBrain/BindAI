@@ -26,6 +26,7 @@ def test_agent_team_manages_agents():
     assert team.size() == 1
     assert team.contains("Writer") is False
 
+
 def test_agent_team_with_real_agents():
     from bindai_agent import AgentBuilder
 
@@ -38,6 +39,8 @@ def test_agent_team_with_real_agents():
     assert team.size() == 2
     assert team.get("Researcher") is researcher
     assert team.get("Writer") is writer
+
+
 def test_agent_team_runs_agents_sequentially():
     class FakeAgent:
         def __init__(self, name, output):
@@ -71,6 +74,7 @@ def test_agent_team_runs_agents_sequentially():
     assert first.received_message == "Create an article about AI agents."
     assert second.received_message == "Create an article about AI agents."
 
+
 def test_agent_team_stops_when_agent_fails():
     class FakeAgent:
         def __init__(self, name, result):
@@ -101,6 +105,7 @@ def test_agent_team_stops_when_agent_fails():
         "Researcher": "Research complete.",
     }
     assert result.error == "Writer failed."
+
 
 def test_agent_team_runs_agents_in_parallel():
     import time
@@ -138,6 +143,7 @@ def test_agent_team_runs_agents_in_parallel():
     }
     assert elapsed < 0.35
 
+
 def test_agent_team_chains_agent_outputs():
     from bindai_agent import AgentResult
 
@@ -171,6 +177,7 @@ def test_agent_team_chains_agent_outputs():
     assert second.received_message == "Create an article about AI agents. -> research"
     assert third.received_message == "Create an article about AI agents. -> research -> draft"
 
+
 def test_agent_team_parallel_then_review():
     from bindai_agent import AgentResult
 
@@ -191,16 +198,12 @@ def test_agent_team_parallel_then_review():
     team = AgentTeam(name="Content Team")
     team.add(researcher).add(writer).add(reviewer)
 
-    result = team.run_parallel_then_review(
-        "Create an article about AI agents."
-    )
+    result = team.run_parallel_then_review("Create an article about AI agents.")
 
     assert result.success is True
     assert result.output == "Final reviewed result"
-    assert reviewer.received_message == (
-        "Researcher: Research findings\n"
-        "Writer: Draft content"
-    )
+    assert reviewer.received_message == ("Researcher: Research findings\nWriter: Draft content")
+
 
 def test_agent_team_supports_agent_roles():
     class RoleAgent:
@@ -217,6 +220,7 @@ def test_agent_team_supports_agent_roles():
     assert team.role("research") is researcher
     assert team.role("writing") is writer
     assert team.roles() == ["research", "writing"]
+
 
 def test_agent_team_runs_agent_by_role():
     from bindai_agent import AgentResult
@@ -247,6 +251,7 @@ def test_agent_team_runs_agent_by_role():
     assert researcher.received_message == "Research AI agents."
     assert writer.received_message is None
 
+
 def test_agent_team_removes_role_when_agent_is_removed():
     class RoleAgent:
         def __init__(self, name):
@@ -261,6 +266,7 @@ def test_agent_team_removes_role_when_agent_is_removed():
 
     assert team.contains("Researcher") is False
     assert team.roles() == []
+
 
 def test_agent_team_can_continue_after_agent_failure():
     from bindai_agent import AgentResult
@@ -302,6 +308,7 @@ def test_agent_team_can_continue_after_agent_failure():
     assert result.error == "Researcher: Research failed."
     assert writer.received_message == "Create an article."
 
+
 def test_agent_team_runs_selected_roles():
     from bindai_agent import AgentResult
 
@@ -339,6 +346,7 @@ def test_agent_team_runs_selected_roles():
     assert researcher.received_message == "Create an article about AI agents."
     assert writer.received_message == "Create an article about AI agents."
     assert reviewer.received_message is None
+
 
 def test_agent_team_runs_selected_roles_in_parallel():
     import time
@@ -387,6 +395,7 @@ def test_agent_team_runs_selected_roles_in_parallel():
     assert reviewer.received_message is None
     assert elapsed < 0.35
 
+
 def test_clear_removes_roles():
     team = AgentTeam(name="Team")
     researcher = FakeAgent("Researcher")
@@ -396,6 +405,7 @@ def test_clear_removes_roles():
 
     assert team.names() == []
     assert team.roles() == []
+
 
 def test_agent_team_chains_selected_roles():
     from bindai_agent import AgentResult
@@ -429,17 +439,11 @@ def test_agent_team_chains_selected_roles():
     )
 
     assert result.success is True
-    assert result.output == (
-        "Create an article about AI agents. -> research -> draft -> review"
-    )
+    assert result.output == ("Create an article about AI agents. -> research -> draft -> review")
 
     assert researcher.received_message == "Create an article about AI agents."
-    assert writer.received_message == (
-        "Create an article about AI agents. -> research"
-    )
-    assert reviewer.received_message == (
-        "Create an article about AI agents. -> research -> draft"
-    )
+    assert writer.received_message == ("Create an article about AI agents. -> research")
+    assert reviewer.received_message == ("Create an article about AI agents. -> research -> draft")
 
 
 def test_agent_team_role_chain_stops_on_failure():

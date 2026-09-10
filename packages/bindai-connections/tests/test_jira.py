@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import JiraConnection
 
 
@@ -89,9 +88,7 @@ def test_jira_connection_sends_get_request(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://example.atlassian.net/rest/api/3/myself"
-    )
+    assert request.full_url == ("https://example.atlassian.net/rest/api/3/myself")
     assert request.method == "GET"
     assert request.get_header("Accept") == "application/json"
     assert request.get_header("Authorization") == "Bearer test-token"
@@ -143,13 +140,10 @@ def test_jira_connection_sends_json_body(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://example.atlassian.net/rest/api/3/issue"
-    )
+    assert request.full_url == ("https://example.atlassian.net/rest/api/3/issue")
     assert request.method == "POST"
     assert request.data == (
-        b'{"fields": {"summary": "Hello from BindAI", '
-        b'"project": {"key": "TEST"}}}'
+        b'{"fields": {"summary": "Hello from BindAI", "project": {"key": "TEST"}}}'
     )
     assert request.get_header("Content-type") == "application/json"
     assert result == {

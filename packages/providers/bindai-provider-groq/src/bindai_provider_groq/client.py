@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from groq import Groq
 from bindai_core import ProviderConfiguration
+from groq import Groq
 
 
 class GroqClient:

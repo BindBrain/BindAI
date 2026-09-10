@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import ResendConnection
 
 
@@ -160,9 +159,7 @@ def test_resend_connection_sends_custom_get_request(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://example.resend.test/v1/domains"
-    )
+    assert request.full_url == ("https://example.resend.test/v1/domains")
     assert request.method == "GET"
     assert request.get_header("Accept") == "application/json"
     assert request.get_header("Authorization") == "Bearer test-api-key"

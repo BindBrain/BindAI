@@ -33,7 +33,7 @@ class EchoProvider(ModelProvider):
 
 ProviderRegistry.register(
     "echo",
-    lambda **kwargs: EchoProvider(),
+    EchoProvider,
 )
 
 

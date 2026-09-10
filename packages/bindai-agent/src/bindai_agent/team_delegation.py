@@ -24,10 +24,7 @@ class AgentTeamDelegationTool(Tool):
     ) -> None:
         self.team = team
         self._name = name or f"delegate_to_{team.name.lower().replace(' ', '_')}"
-        self._description = (
-            description
-            or f"Delegate a task to the {team.name} agent team."
-        )
+        self._description = description or f"Delegate a task to the {team.name} agent team."
 
     @property
     def name(self) -> str:
@@ -58,9 +55,7 @@ class AgentTeamDelegationTool(Tool):
         message = context.variables.get("message")
 
         if not message:
-            return ToolResult.failed(
-                "Team delegation requires a non-empty message."
-            )
+            return ToolResult.failed("Team delegation requires a non-empty message.")
 
         result = self.team.run(str(message))
 

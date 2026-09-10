@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import SlackConnection
 
 
@@ -117,9 +116,7 @@ def test_slack_connection_sends_json_body(monkeypatch):
 
     assert request.full_url == "https://slack.com/api/chat.postMessage"
     assert request.method == "POST"
-    assert request.data == (
-        b'{"channel": "#general", "text": "Hello from BindAI"}'
-    )
+    assert request.data == (b'{"channel": "#general", "text": "Hello from BindAI"}')
     assert request.get_header("Content-type") == "application/json"
     assert result == {
         "status_code": 200,

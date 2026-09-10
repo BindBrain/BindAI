@@ -18,4 +18,4 @@ Release checklist
 
 [ ] GitHub Release
 
-[ ] Update CHANGELOG
+[x] Update CHANGELOG

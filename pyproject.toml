@@ -10,7 +10,11 @@ dependencies = [
     "bindai-cli",
     "bindai-mcp",
     "bindai-connections",
+    "bindai-provider-anthropic",
+    "bindai-provider-google",
+    "bindai-provider-groq",
     "bindai-provider-ollama",
+    "bindai-provider-openai",
     "bindai-provider-openrouter",
     "chromadb>=1.5.9",
     "openai>=2.47.0",
@@ -112,6 +116,11 @@ dev = [
 [tool.ruff]
 target-version = "py312"
 line-length = 100
+exclude = [
+    "docs/08. templates/",
+    "playground/",
+    "demo/",
+]
 
 [tool.ruff.lint]
 select = [
@@ -124,6 +133,9 @@ select = [
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+exclude = [
+    "docs/",
+]
 
 [tool.ruff.lint.per-file-ignores]
 "packages/bindai-core/src/bindai_core/events/__init__.py" = ["F403"]
@@ -140,7 +152,7 @@ python_version = "3.12"
 explicit_package_bases = true
 ignore_missing_imports = true
 
-exclude = "(templates/|playground/|demo/)"
+exclude = "(tests/|templates/|playground/|demo/)"
 
 check_untyped_defs = true
 warn_return_any = true

@@ -35,11 +35,7 @@ class TemplateRegistry:
             scaffold_name = self._scaffold_name(data["name"])
             scaffold_path = self.scaffolds_root / scaffold_name
 
-            template_data = {
-                key: value
-                for key, value in data.items()
-                if key != "scaffold"
-            }
+            template_data = {key: value for key, value in data.items() if key != "scaffold"}
 
             templates.append(
                 Template(

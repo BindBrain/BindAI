@@ -117,7 +117,6 @@ class GroqProvider(ModelProvider):
             tool_calls=GroqMapper.tool_calls(
                 response.choices[0].message,
             ),
-            
             structured_output=structured_output,
             finish_reason=response.choices[0].finish_reason,
             model=response.model,

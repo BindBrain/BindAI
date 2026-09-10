@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from openai import OpenAI
-
 from bindai_core import ProviderConfiguration
+from openai import OpenAI
 
 
 class OpenRouterClient:

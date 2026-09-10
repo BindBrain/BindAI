@@ -2,6 +2,7 @@ from .agent import Agent
 from .assistant import AssistantAgent
 from .builder import AgentBuilder
 from .configuration import AgentConfiguration
+from .delegation import AgentDelegationTool
 from .factory import (
     create_agent,
     create_agent_from_yaml,
@@ -9,7 +10,6 @@ from .factory import (
 from .registry import AgentRegistry
 from .result import AgentResult
 from .state import AgentState
-from .delegation import AgentDelegationTool
 from .team import AgentTeam
 from .team_delegation import AgentTeamDelegationTool
 

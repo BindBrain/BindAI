@@ -1,7 +1,5 @@
 from unittest.mock import Mock
 
-from pydantic import create_model
-
 from bindai_core import (
     Message,
     MessageRole,
@@ -10,6 +8,7 @@ from bindai_core import (
 )
 from bindai_core.schema import ResponseSchema
 from bindai_provider_ollama.provider import OllamaProvider
+from pydantic import create_model
 
 
 def create_provider() -> OllamaProvider:
@@ -64,6 +63,7 @@ def test_ollama_structured_output():
     assert result.usage.completion_tokens == 5
     assert result.usage.total_tokens == 15
 
+
 def test_ollama_chat():
     provider = create_provider()
 
@@ -96,6 +96,7 @@ def test_ollama_chat():
     assert result.finish_reason == "stop"
     assert result.model == "llama3.2"
 
+
 def test_ollama_streaming():
     provider = create_provider()
 
@@ -105,9 +106,7 @@ def test_ollama_streaming():
     chunk_2 = Mock()
     chunk_2.message.content = "from Ollama"
 
-    provider._client.client.chat = Mock(
-        return_value=iter([chunk_1, chunk_2])
-    )
+    provider._client.client.chat = Mock(return_value=iter([chunk_1, chunk_2]))
 
     request = ModelRequest(
         messages=[
@@ -125,6 +124,7 @@ def test_ollama_streaming():
     assert chunks[1].delta == "from Ollama"
     assert chunks[2].delta == ""
     assert chunks[2].finished is True
+
 
 def test_ollama_tool_call():
     provider = create_provider()

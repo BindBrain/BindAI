@@ -5,6 +5,7 @@ import re
 from .document import KnowledgeDocument
 from .reranker_base import Reranker
 
+
 class LexicalReranker(Reranker):
     """
     Reranks knowledge documents using query-term overlap.
@@ -24,13 +25,9 @@ class LexicalReranker(Reranker):
         scored = []
 
         for index, document in enumerate(documents):
-            document_terms = self._terms(
-                f"{document.title} {document.content}"
-            )
+            document_terms = self._terms(f"{document.title} {document.content}")
 
-            overlap = len(
-                query_terms & document_terms
-            )
+            overlap = len(query_terms & document_terms)
 
             score = overlap / len(query_terms)
 
@@ -50,10 +47,7 @@ class LexicalReranker(Reranker):
             reverse=True,
         )
 
-        return [
-            document
-            for _, _, document in scored
-        ]
+        return [document for _, _, document in scored]
 
     @staticmethod
     def _terms(text: str) -> set[str]:

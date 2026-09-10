@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pytest
-
 from bindai_connections import DiscordConnection
 
 
@@ -99,9 +98,7 @@ def test_discord_connection_sends_get_request(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://discord.com/api/v10/users/@me"
-    )
+    assert request.full_url == ("https://discord.com/api/v10/users/@me")
     assert request.method == "GET"
     assert request.get_header("Accept") == "application/json"
     assert request.get_header("Authorization") == "Bot test-token"
@@ -150,13 +147,9 @@ def test_discord_connection_sends_json_body(monkeypatch):
 
     request = request_holder["request"]
 
-    assert request.full_url == (
-        "https://discord.com/api/v10/channels/123456789/messages"
-    )
+    assert request.full_url == ("https://discord.com/api/v10/channels/123456789/messages")
     assert request.method == "POST"
-    assert request.data == (
-        b'{"content": "Hello from BindAI"}'
-    )
+    assert request.data == (b'{"content": "Hello from BindAI"}')
     assert request.get_header("Accept") == "application/json"
     assert request.get_header("Authorization") == "Bot test-token"
     assert request.get_header("Content-type") == "application/json"

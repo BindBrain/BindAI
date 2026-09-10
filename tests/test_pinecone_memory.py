@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import time
 
-from dotenv import load_dotenv
-
 from bindai_memory import MemoryRecord
 from bindai_memory.providers import PineconeMemoryProvider
-
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -15,7 +13,7 @@ TEST_NAMESPACE = "bindai-automated-test"
 
 
 def provider() -> PineconeMemoryProvider:
-    return PineconeMemoryProvider()
+    return PineconeMemoryProvider(embedding="random")
 
 
 def test_pinecone_set_get():

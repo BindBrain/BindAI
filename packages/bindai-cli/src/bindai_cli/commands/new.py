@@ -30,9 +30,7 @@ def new(
     root = Path(name)
 
     if root.exists():
-        console.print(
-            f"[red]Project '{name}' already exists.[/red]"
-        )
+        console.print(f"[red]Project '{name}' already exists.[/red]")
         raise typer.Exit(1)
 
     scaffold = Path(__file__).parent.parent / "scaffolds" / "basic"
@@ -56,9 +54,7 @@ def new(
 
     print()
 
-    console.print(
-        f"[green]✓ Project '{name}' created successfully.[/green]"
-    )
+    console.print(f"[green]✓ Project '{name}' created successfully.[/green]")
 
     console.print()
 

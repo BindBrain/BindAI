@@ -62,6 +62,6 @@ def test_connection_manager_unknown_connection():
     try:
         manager.get("missing")
     except KeyError as exc:
-        assert str(exc) == '"Connection \'missing\' is not managed."'
+        assert str(exc) == "\"Connection 'missing' is not managed.\""
     else:
         raise AssertionError("Expected KeyError")

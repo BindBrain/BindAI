@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from ollama import Client
-
 from bindai_core import ProviderConfiguration
+from ollama import Client
 
 
 class OllamaClient:
