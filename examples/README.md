@@ -68,6 +68,7 @@ uv sync
 | 28 | Event Driven Agent | Trigger agents from events |
 | 29 | Production Project Layout | Organize a production AI application |
 | 30 | Full AI Application | Complete production-style BindAI application |
+| 31 | Parallel Agents | Execute independent agent tasks concurrently
 
 ---
 
@@ -105,6 +106,7 @@ uv sync
 | 28 | `28_event_agent.py` |
 | 29 | `29_production_layout.py` |
 | 30 | `30_full_application.py` |
+| 31 | `31_parallel_agents.py` |
 
 ---
 
@@ -589,7 +591,6 @@ Application
  v
 Response
 
-
 Features:
 
 - Agent orchestration
@@ -597,6 +598,19 @@ Features:
 - Persistent memory
 - Workflow execution
 - Production project patterns
+
+---
+
+## 31 Parallel Agents
+
+Execute independent agent tasks concurrently inside an agent group.
+
+Demonstrates:
+
+- Parallel agent execution
+- Independent task execution
+- Agent group processes
+- Concurrent multi-agent workloads
 
 ---
 
@@ -675,7 +689,7 @@ python examples/<file>.py
 ## Advanced Users
 
 ```text
-15 → 16 → 17 → 18 → 23 → 30
+15 → 16 → 31 → 17 → 18 → 23 → 30
 ```
 
 ---

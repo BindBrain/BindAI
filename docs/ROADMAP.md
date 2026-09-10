@@ -232,12 +232,10 @@ Expand the agent runtime beyond individual AI assistants.
 * [x] Team delegation
 * [x] Role-based agent chains
 * [x] RAG-enabled agents
+* [x] Agent groups
+* [x] Parallel agents
+* [x] Advanced tool execution
 
-#### Partially Implemented
-
-* [~] Advanced tool execution
-* [~] Agent groups
-* [~] Parallel agents
 
 #### Remaining
 

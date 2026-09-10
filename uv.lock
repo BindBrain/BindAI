@@ -13,6 +13,7 @@ members = [
     "bindai",
     "bindai-agent",
     "bindai-application",
+    "bindai-automation",
     "bindai-cli",
     "bindai-config",
     "bindai-connections",
@@ -403,6 +404,17 @@ version = "0.1.0"
 source = { editable = "packages/bindai-application" }
 
 [[package]]
+name = "bindai-automation"
+version = "0.1.0"
+source = { editable = "packages/bindai-automation" }
+dependencies = [
+    { name = "bindai-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "bindai-core", editable = "packages/bindai-core" }]
+
+[[package]]
 name = "bindai-cli"
 version = "0.1.8"
 source = { editable = "packages/bindai-cli" }
@@ -730,6 +742,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "bindai" },
+    { name = "bindai-automation" },
     { name = "bindai-cli" },
     { name = "bindai-connections" },
     { name = "bindai-mcp" },
@@ -771,6 +784,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "bindai", editable = "packages/bindai" },
+    { name = "bindai-automation", editable = "packages/bindai-automation" },
     { name = "bindai-cli", editable = "packages/bindai-cli" },
     { name = "bindai-connections", editable = "packages/bindai-connections" },
     { name = "bindai-mcp", editable = "packages/bindai-mcp" },

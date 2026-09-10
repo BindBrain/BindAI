@@ -10,6 +10,7 @@ dependencies = [
     "bindai-cli",
     "bindai-mcp",
     "bindai-connections",
+    "bindai-automation",
     "bindai-provider-anthropic",
     "bindai-provider-google",
     "bindai-provider-groq",
@@ -39,6 +40,7 @@ members = [
     "packages/bindai",
     "packages/bindai-agent",
     "packages/bindai-application",
+    "packages/bindai-automation",
     "packages/bindai-cli",
     "packages/bindai-config",
     "packages/bindai-core",
@@ -71,6 +73,7 @@ members = [
 bindai = { workspace = true }
 bindai-agent = { workspace = true }
 bindai-application = { workspace = true }
+bindai-automation = { workspace = true }
 bindai-cli = { workspace = true }
 bindai-config = { workspace = true }
 bindai-core = { workspace = true }

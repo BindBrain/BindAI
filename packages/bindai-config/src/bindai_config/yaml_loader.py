@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import yaml
 from bindai_agent import AgentBuilder
-from bindai_group import GroupBuilder, Task
+from bindai_group import (
+    GroupBuilder,
+    ParallelProcess,
+    SequentialProcess,
+    Task,
+)
 
 from .loader import ConfigLoader
 from .models import (
@@ -125,8 +130,28 @@ class YamlLoader(ConfigLoader):
         config: GroupConfig,
     ):
 
-        builder = GroupBuilder().name(
-            config.name,
+        process_name = config.process.lower()
+
+        if process_name == "sequential":
+            process = SequentialProcess()
+
+        elif process_name == "parallel":
+            process = ParallelProcess()
+
+        else:
+            raise ValueError(
+                f'Unknown group process "{config.process}". '
+                'Expected "sequential" or "parallel".'
+            )
+
+        builder = (
+            GroupBuilder()
+            .name(
+                config.name,
+            )
+            .process(
+                process,
+            )
         )
 
         agents = self._build_agents(

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
@@ -9,67 +8,39 @@ from bindai_config.tool_loader import ToolLoader
 from bindai_core.events import EventBus
 from bindai_core.provider import ModelProvider
 from bindai_prompts import Prompt
-from bindai_providers import (
-    ProviderConfiguration,
-    ProviderRegistry,
-    bootstrap,
-)
 from bindai_tool.function_tool import FunctionTool
 from bindai_tool.tool import Tool
-from dotenv import load_dotenv
 
 from .assistant import AssistantAgent
 from .configuration import AgentConfiguration
+from .provider_resolver import resolve_provider
 from .registry import AgentRegistry
 
 
 class AgentBuilder:
     def __init__(self):
-
         self._provider: ModelProvider | None = None
-
         self._name: str = "assistant"
-
         self._prompt: Prompt = Prompt()
-
         self._tools: list[FunctionTool] = []
-
         self._memory: Any | None = None
-
         self._retriever: Any | None = None
-
         self._knowledge: Any | None = None
-
         self._middleware: list[Any] = []
-
         self._hooks: list[Any] = []
-
         self._configuration: AgentConfiguration = AgentConfiguration()
-
         self._events: EventBus = EventBus()
 
-    #
+    # ------------------------------------------------------------------
     # Providers
-    #
+    # ------------------------------------------------------------------
 
     def openai(
         self,
         model: str,
     ) -> AgentBuilder:
-
-        load_dotenv()
-
         return self.provider(
             "openai",
-            api_key=os.getenv(
-                "OPENAI_API_KEY",
-            ),
-            organization=os.getenv(
-                "OPENAI_ORGANIZATION",
-            ),
-            endpoint=os.getenv(
-                "OPENAI_BASE_URL",
-            ),
             model=model,
         )
 
@@ -89,153 +60,132 @@ class AgentBuilder:
 
         - a registered provider name (e.g. "openai", "anthropic", "ollama")
         - an instantiated ModelProvider
-        """
 
+        String provider names are resolved through the centralized provider
+        resolver so provider-specific environment configuration is handled
+        consistently.
+        """
         if isinstance(
             provider,
             str,
         ):
-            bootstrap()
-
-            configuration = ProviderConfiguration(
+            self._provider = resolve_provider(
+                provider,
                 api_key=api_key,
                 endpoint=endpoint,
                 organization=organization,
                 model=model,
             )
-
-            self._provider = ProviderRegistry.create(
-                provider,
-                configuration=configuration,
-            )
-
         else:
             self._provider = provider
 
         return self
 
-    #
+    # ------------------------------------------------------------------
     # Basic settings
-    #
+    # ------------------------------------------------------------------
 
     def name(
         self,
         value: str,
     ) -> AgentBuilder:
-
         self._name = value
-
         return self
 
     def instructions(
         self,
         value: str,
     ) -> AgentBuilder:
-
         self._prompt.system = value
-
         return self
 
-    #
+    # ------------------------------------------------------------------
     # Agent configuration
-    #
+    # ------------------------------------------------------------------
 
     def temperature(
         self,
         value: float,
     ) -> AgentBuilder:
-
         self._configuration.temperature = value
-
         return self
 
     def max_tokens(
         self,
         value: int,
     ) -> AgentBuilder:
-
         self._configuration.max_tokens = value
-
         return self
 
     def max_tool_iterations(
         self,
         value: int,
     ) -> AgentBuilder:
-
         self._configuration.max_tool_iterations = value
-
         return self
 
-    #
+    # ------------------------------------------------------------------
     # Components
-    #
+    # ------------------------------------------------------------------
 
     def memory(
         self,
         memory: Any,
     ) -> AgentBuilder:
-
         self._memory = memory
-
         return self
 
     def retriever(
         self,
         retriever: Any,
     ) -> AgentBuilder:
-
         self._retriever = retriever
-
         return self
 
     def knowledge(
         self,
         knowledge: Any,
     ) -> AgentBuilder:
-
         self._knowledge = knowledge
-
         return self
 
     def middleware(
         self,
         middleware: Any,
     ) -> AgentBuilder:
-
         self._middleware.append(
             middleware,
         )
-
         return self
 
     def hook(
         self,
         hook: Any,
     ) -> AgentBuilder:
-
         self._hooks.append(
             hook,
         )
-
         return self
 
-    #
+    # ------------------------------------------------------------------
     # Build
-    #
+    # ------------------------------------------------------------------
 
     def build(
         self,
     ) -> AssistantAgent:
-
         if self._provider is None:
             runtime = ProjectRuntime(
                 Path.cwd(),
             )
 
-            self.model(f"{runtime.config.provider}:{runtime.config.model}")
+            self.model(
+                f"{runtime.config.provider}:{runtime.config.model}",
+            )
 
-            self.temperature(runtime.config.temperature)
+            self.temperature(
+                runtime.config.temperature,
+            )
 
         agent = AssistantAgent(
             name=self._name,
@@ -244,31 +194,34 @@ class AgentBuilder:
         )
 
         agent.events = self._events
-        #
+
+        # ------------------------------------------------------------------
         # Configuration
-        #
+        # ------------------------------------------------------------------
 
         agent.configuration = self._configuration
 
-        #
+        # ------------------------------------------------------------------
         # Tools
-        #
+        # ------------------------------------------------------------------
 
         for tool in self._tools:
-            agent.tool(tool)
+            agent.tool(
+                tool,
+            )
 
-        #
+        # ------------------------------------------------------------------
         # Memory
-        #
+        # ------------------------------------------------------------------
 
         if self._memory is not None:
             agent.use_memory(
                 self._memory,
             )
 
-        #
+        # ------------------------------------------------------------------
         # Knowledge
-        #
+        # ------------------------------------------------------------------
 
         if self._retriever is not None:
             agent.use_retriever(
@@ -280,18 +233,18 @@ class AgentBuilder:
                 self._knowledge,
             )
 
-        #
+        # ------------------------------------------------------------------
         # Middleware
-        #
+        # ------------------------------------------------------------------
 
         for middleware in self._middleware:
             agent.use_middleware(
                 middleware,
             )
 
-        #
+        # ------------------------------------------------------------------
         # Hooks
-        #
+        # ------------------------------------------------------------------
 
         for hook in self._hooks:
             agent.hook(
@@ -308,21 +261,25 @@ class AgentBuilder:
         self,
         events: EventBus,
     ) -> AgentBuilder:
-
         self._events = events
-
         return self
 
     def tools(
         self,
         *tools: Any,
     ) -> AgentBuilder:
-
         for tool in tools:
-            if not isinstance(tool, Tool):
-                tool = FunctionTool(tool)
+            if not isinstance(
+                tool,
+                Tool,
+            ):
+                tool = FunctionTool(
+                    tool,
+                )
 
-            self._tools.append(tool)
+            self._tools.append(
+                tool,
+            )
 
         return self
 
@@ -341,7 +298,6 @@ class AgentBuilder:
         - ``ollama:llama3``
         - ``lmstudio:qwen3``
         """
-
         try:
             provider, model = value.split(
                 ":",
@@ -349,17 +305,25 @@ class AgentBuilder:
             )
         except ValueError as exc:
             raise ValueError(
-                "Model must be in the format '<provider>:<model>'. Example: 'openai:gpt-5'."
+                "Model must be in the format "
+                "'<provider>:<model>'. "
+                "Example: 'openai:gpt-5'."
             ) from exc
 
         if not provider:
-            raise ValueError("Provider name cannot be empty.")
+            raise ValueError(
+                "Provider name cannot be empty.",
+            )
 
         if not model:
-            raise ValueError("Model name cannot be empty.")
+            raise ValueError(
+                "Model name cannot be empty.",
+            )
 
         if provider == "openai":
-            return self.openai(model)
+            return self.openai(
+                model,
+            )
 
         return self.provider(
             provider,
@@ -370,7 +334,6 @@ class AgentBuilder:
         self,
         root: str | Path = ".",
     ) -> AgentBuilder:
-
         runtime = ProjectRuntime(
             Path(root),
         )
