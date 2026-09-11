@@ -1,9 +1,13 @@
 from bindai import Agent
 
-agent = Agent(
-    instructions="You are a helpful assistant.",
+
+agent = (
+    Agent.builder()
+    .name("assistant")
+    .instructions("You are a helpful assistant.")
+    .build()
 )
 
 response = agent.run("Hello!")
 
-print(response)
+print(response.output)

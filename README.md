@@ -2,7 +2,7 @@
 
 Build AI software, not just AI demos.
 
-BindAI is a modular Python framework for building AI applications with reusable components for agents, tools, workflows, memory, knowledge and RAG, model providers, integrations, and more.
+BindAI is a modular Python framework for building AI applications with reusable components for agents, tools, workflows, memory, knowledge and RAG, model providers, integrations, automation, and more.
 
 Whether you're building an AI assistant, document-processing application, workflow automation, or multi-agent system, BindAI provides building blocks that can grow with your application.
 
@@ -28,6 +28,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/BindBrain/BindAI.git
+
 cd BindAI
 ```
 
@@ -37,6 +38,7 @@ Install the development workspace with:
 
 ```bash
 python -m pip install uv
+
 uv sync
 ```
 
@@ -58,6 +60,7 @@ Verify the development installation:
 
 ```bash
 python -c "import bindai; print('BindAI import OK')"
+
 bindai version
 ```
 
@@ -78,7 +81,12 @@ The recommended agent construction API is `Agent.builder()`:
 ```python
 from bindai import Agent
 
-agent = Agent.builder().name("assistant").instructions("You are a helpful AI assistant.").build()
+agent = (
+    Agent.builder()
+    .name("assistant")
+    .instructions("You are a helpful AI assistant.")
+    .build()
+)
 
 response = agent.run("Explain what BindAI is.")
 
@@ -95,6 +103,7 @@ You can incrementally add capabilities such as:
 * Scheduling
 * Multiple AI providers
 * Multi-agent execution
+* Automation
 * External integrations
 * MCP tools
 
@@ -129,6 +138,7 @@ Current capabilities include:
 * Context-aware execution
 * Tool results
 * MCP-discovered tools
+* Advanced tool execution
 
 ### Workflows
 
@@ -208,35 +218,54 @@ Current integrations include:
 
 BindAI includes MCP client support for discovering and calling tools exposed through an MCP-compatible HTTP service.
 
+### Automation
+
+BindAI provides an automation layer for defining, executing, tracking, and running automations in the background.
+
+Current automation capabilities include:
+
+* Automation definitions
+* Event trigger framework
+* Unified trigger management
+* Automation execution runs
+* Persistent automation state abstractions
+* Automation run history
+* In-memory state storage
+* In-memory run history
+* Background automation workers
+
+Automation execution is built on top of BindAI's existing executable and runtime architecture rather than introducing a separate execution model.
+
 ## Package Ecosystem
 
 BindAI is built as a modular package ecosystem.
 
-| Package                 | Purpose                                |
-| ----------------------- | -------------------------------------- |
-| `bindai`                | Main framework package                 |
-| `bindai-agent`          | AI agent framework                     |
-| `bindai-application`    | Application layer                      |
-| `bindai-cli`            | Command-line interface                 |
-| `bindai-config`         | Configuration                          |
-| `bindai-connections`    | External connections and integrations  |
-| `bindai-core`           | Core framework abstractions            |
-| `bindai-embeddings`     | Embedding providers                    |
-| `bindai-group`          | Agent groups and multi-agent execution |
-| `bindai-host`           | Hosting infrastructure                 |
-| `bindai-knowledge`      | Knowledge and RAG                      |
-| `bindai-mcp`            | MCP client support                     |
-| `bindai-memory`         | Memory providers                       |
-| `bindai-model`          | Model abstractions                     |
-| `bindai-project`        | Project management                     |
-| `bindai-prompt-builder` | Prompt construction                    |
-| `bindai-prompts`        | Prompt system                          |
-| `bindai-providers`      | Provider abstractions and registry     |
-| `bindai-retrieval`      | Retrieval implementations              |
-| `bindai-runtime`        | Runtime infrastructure                 |
-| `bindai-task`           | Tasks and human tasks                  |
-| `bindai-tool`           | Tool system                            |
-| `bindai-workflow`       | Workflow engine                        |
+| Package                 | Purpose                                                                 |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `bindai`                | Main framework package                                                  |
+| `bindai-agent`          | AI agent framework                                                      |
+| `bindai-application`    | Application layer                                                       |
+| `bindai-automation`     | Automation definitions, triggers, execution state, history, and workers |
+| `bindai-cli`            | Command-line interface                                                  |
+| `bindai-config`         | Configuration                                                           |
+| `bindai-connections`    | External connections and integrations                                   |
+| `bindai-core`           | Core framework abstractions                                             |
+| `bindai-embeddings`     | Embedding providers                                                     |
+| `bindai-group`          | Agent groups and multi-agent execution                                  |
+| `bindai-host`           | Hosting infrastructure                                                  |
+| `bindai-knowledge`      | Knowledge and RAG                                                       |
+| `bindai-mcp`            | MCP client support                                                      |
+| `bindai-memory`         | Memory providers                                                        |
+| `bindai-model`          | Model abstractions                                                      |
+| `bindai-project`        | Project management                                                      |
+| `bindai-prompt-builder` | Prompt construction                                                     |
+| `bindai-prompts`        | Prompt system                                                           |
+| `bindai-providers`      | Provider abstractions and registry                                      |
+| `bindai-retrieval`      | Retrieval implementations                                               |
+| `bindai-runtime`        | Runtime infrastructure                                                  |
+| `bindai-task`           | Tasks and human tasks                                                   |
+| `bindai-tool`           | Tool system                                                             |
+| `bindai-workflow`       | Workflow engine                                                         |
 
 Provider implementations are distributed as separate packages, including:
 
@@ -253,25 +282,43 @@ Each package can evolve independently while remaining part of the BindAI ecosyst
 
 ```text
                          AI Application
-                              |
-             +----------------+----------------+
-             |                |                |
-          Agents          Workflows          Tools
-             |                |                |
-             +--------+-------+--------+-------+
-                      |                |
-                   Memory          Knowledge
-                      |                |
-                      +-------+--------+
-                              |
-                         Retrieval / RAG
-                              |
-             +----------------+----------------+
-             |                |                |
-          Providers       Connections          MCP
+                               |
+          +--------------------+--------------------+
+          |                    |                    |
+        Agents             Workflows             Tools
+          |                    |                    |
+          +--------------------+--------------------+
+                               |
+                 +-------------+-------------+
+                 |                           |
+              Memory                    Knowledge
+                 |                           |
+                 +-------------+-------------+
+                               |
+                        Retrieval / RAG
+                               |
+          +--------------------+--------------------+
+          |                    |                    |
+      Providers          Connections               MCP
+          |                    |                    |
+          +--------------------+--------------------+
+                               |
+                         Automation
+                               |
+             +-----------------+-----------------+
+             |                 |                 |
+          Triggers           Runs             Workers
+             |                 |                 |
+             +-----------------+-----------------+
+                               |
+                     Execution Infrastructure
+                               |
+                       Runtime / Core
 ```
 
 The architecture is intentionally modular. Applications can use individual components or combine them into larger AI systems.
+
+Automation builds on the same executable and runtime abstractions used by the rest of BindAI, while keeping automation state and historical run records in the automation layer.
 
 ## Project Structure
 
@@ -281,6 +328,8 @@ BindAI/
 +-- packages/
 |   +-- bindai/
 |   +-- bindai-agent/
+|   +-- bindai-application/
+|   +-- bindai-automation/
 |   +-- bindai-core/
 |   +-- bindai-memory/
 |   +-- bindai-knowledge/
@@ -329,6 +378,7 @@ The documentation currently covers:
 * Workflows
 * Projects
 * Connections
+* Automation
 * API Reference
 * Roadmap
 
@@ -384,6 +434,7 @@ Examples cover areas such as:
 * Custom memory
 * Custom retrievers
 * Configuration
+* Automation
 * Production-oriented application structure
 
 The examples are intended to demonstrate framework usage and should be evaluated according to the maturity of the underlying APIs.
@@ -454,7 +505,11 @@ The long-term vision includes:
 
 BindAI is under active development.
 
-The framework already provides a substantial foundation for agents, workflows, tools, memory, knowledge and RAG, providers, integrations, and MCP. Some roadmap areas remain under development and should not yet be considered complete production platform capabilities.
+The framework already provides a substantial foundation for agents, workflows, tools, memory, knowledge and RAG, providers, integrations, MCP, multi-agent execution, and automation.
+
+Current automation capabilities include automation definitions, event triggers, execution state, run history, and background workers.
+
+Some roadmap areas remain under development and should not yet be considered complete production platform capabilities.
 
 **Build AI Software. Scale Everywhere.**
 

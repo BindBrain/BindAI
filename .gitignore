@@ -1,64 +1,92 @@
 # Python
-__pycache__/
+
+**pycache**/
 *.py[cod]
 *.pyo
 *.pyd
 *$py.class
 
 # Caches
+
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .hypothesis/
 
 # Virtual environments
+
 .venv/
 venv/
 env/
 
 # Build
+
 build/
 dist/
 *.egg-info/
 pip-wheel-metadata/
 
 # Coverage
+
 .coverage
 .coverage.*
 coverage.xml
 htmlcov/
 
 # Environment
+
 .env
 .env.*
+!.env.example
+!.env.*.example
+
+# Secrets and credentials
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+credentials.json
+secrets.json
 
 # IDE
+
 .vscode/
 .idea/
 
 # Jupyter
+
 .ipynb_checkpoints/
 
 # OS
+
 .DS_Store
 Thumbs.db
 
 # Logs
+
 *.log
 
 # Local databases
+
 *.db
 *.sqlite
 *.sqlite3
 
 # Python version managers
+
 .python-version
 
 # Local development/test projects
+
 my-project/
 test-instructions/
 test-instructions-2/
 
 # Local package builds
+
 wheelhouse/
+
 cli-test-018/

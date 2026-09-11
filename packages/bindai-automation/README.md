@@ -1,6 +1,6 @@
 # BindAI Automation
 
-Automation definitions, execution state, and event-trigger primitives for BindAI.
+Automation definitions, execution state, run history, and event-trigger primitives for BindAI.
 
 ## Automation Definitions
 
@@ -128,6 +128,81 @@ assert store.load(run.id) is None
 
 The in-memory store is intended as the current lightweight implementation and as a foundation for future persistent storage backends.
 
+## Automation Run History
+
+`AutomationRunHistory` defines the history contract for recording and retrieving automation runs.
+
+```python
+from bindai_automation import AutomationRunHistory
+
+
+class CustomAutomationRunHistory(AutomationRunHistory):
+    def record(self, run):
+        ...
+
+    def get(self, run_id):
+        ...
+
+    def list(self):
+        ...
+```
+
+Run history is intentionally separate from `AutomationStateStore`.
+
+The state store answers:
+
+> Where is the current execution state of this run?
+
+Run history answers:
+
+> What automation runs have been recorded?
+
+This separation allows current execution state and historical records to evolve independently.
+
+The history contract provides:
+
+* `record(run)` — record an automation run
+* `get(run_id)` — retrieve a historical run by ID
+* `list()` — retrieve recorded runs in insertion order
+
+## In-Memory Run History
+
+`MemoryAutomationRunHistory` provides an in-memory implementation of `AutomationRunHistory`.
+
+```python
+from bindai_automation import MemoryAutomationRunHistory
+
+history = MemoryAutomationRunHistory()
+
+run = AutomationRun(
+    definition_id=automation.id,
+    definition_version=automation.version,
+)
+
+run.start()
+run.complete(output={"result": "done"})
+
+history.record(run)
+
+stored = history.get(run.id)
+
+assert stored is not None
+assert stored.id == run.id
+```
+
+Recorded runs are stored as snapshots. Later changes to the original `AutomationRun` do not modify the historical record.
+
+```python
+run.output = {"result": "changed"}
+
+stored = history.get(run.id)
+
+assert stored is not None
+assert stored.output == {"result": "done"}
+```
+
+The in-memory implementation is intentionally lightweight and provides the foundation for future persistent run-history backends.
+
 ## Event Triggers
 
 `EventTrigger` listens to a `bindai-core` event bus and invokes a callable target when the configured event is published.
@@ -235,16 +310,18 @@ The package currently provides:
 * `AutomationRun` — execution state for an automation run
 * `AutomationStateStore` — persistence contract for automation runs
 * `MemoryAutomationStateStore` — in-memory automation state implementation
+* `AutomationRunHistory` — history contract for recorded automation runs
+* `MemoryAutomationRunHistory` — in-memory automation run-history implementation
 * `Trigger` — base trigger abstraction
 * `EventTrigger` — event-driven trigger implementation
 * `TriggerRegistry` — registry for named triggers
 
-These primitives provide the foundation for stateful, event-driven automation in BindAI.
+These primitives provide the foundation for stateful, historical, event-driven automation in BindAI.
 
 The package currently does not provide:
 
 * persistent database-backed automation state
-* automation run history
+* persistent database-backed run history
 * background automation workers
 * scheduled execution
 * advanced event routing

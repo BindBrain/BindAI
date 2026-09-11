@@ -200,11 +200,3 @@ module = [
     "bindai_cli.scaffolds.*",
 ]
 ignore_errors = true
-
-
-
-
-
-
-
-

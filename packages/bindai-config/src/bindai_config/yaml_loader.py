@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import yaml
+
 from bindai_agent import AgentBuilder
 from bindai_group import (
     GroupBuilder,
@@ -8,6 +9,7 @@ from bindai_group import (
     SequentialProcess,
     Task,
 )
+from bindai_group.process import Process
 
 from .loader import ConfigLoader
 from .models import (
@@ -22,7 +24,6 @@ class YamlLoader(ConfigLoader):
         self,
         path: str,
     ):
-
         with open(
             path,
             encoding="utf-8",
@@ -47,7 +48,6 @@ class YamlLoader(ConfigLoader):
         self,
         data,
     ) -> GroupConfig:
-
         group_data = data["group"]
 
         config = GroupConfig(
@@ -129,15 +129,12 @@ class YamlLoader(ConfigLoader):
         self,
         config: GroupConfig,
     ):
-
         process_name = config.process.lower()
 
         if process_name == "sequential":
-            process = SequentialProcess()
-
+            process: Process = SequentialProcess()
         elif process_name == "parallel":
             process = ParallelProcess()
-
         else:
             raise ValueError(
                 f'Unknown group process "{config.process}". '
@@ -177,7 +174,6 @@ class YamlLoader(ConfigLoader):
         config: GroupConfig,
         builder: GroupBuilder,
     ):
-
         agents = {}
 
         for item in config.agents:
@@ -203,7 +199,6 @@ class YamlLoader(ConfigLoader):
                 )
 
             agent = agent_builder.build()
-
             agents[item.id] = agent
 
             builder.agent(
@@ -217,12 +212,13 @@ class YamlLoader(ConfigLoader):
         config: GroupConfig,
         agents: dict,
     ):
-
         tasks = {}
 
         for item in config.tasks:
             if item.agent not in agents:
-                raise ValueError(f'Unknown agent "{item.agent}".')
+                raise ValueError(
+                    f'Unknown agent "{item.agent}".'
+                )
 
             task = Task(
                 description=item.description,
@@ -240,15 +236,18 @@ class YamlLoader(ConfigLoader):
         config: GroupConfig,
         tasks: dict,
     ):
-
         for item in config.tasks:
             task = tasks[item.id]
 
             for dependency in item.context:
                 if dependency not in tasks:
-                    raise ValueError(f'Unknown task "{dependency}".')
+                    raise ValueError(
+                        f'Unknown task "{dependency}".'
+                    )
 
-                task.context_from(tasks[dependency])
+                task.context_from(
+                    tasks[dependency],
+                )
 
             builder.task(
                 task,

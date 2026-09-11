@@ -8,6 +8,8 @@ All notable changes to BindAI are documented here.
 
 * `Agent.builder()` as the recommended agent construction API.
 * Agent delegation and team-oriented execution patterns.
+* Agent groups and parallel multi-agent execution.
+* Advanced tool execution.
 * Selected role-chain execution for multi-agent workflows.
 * Connections and integration infrastructure.
 * Connection manager and connection registry.
@@ -25,7 +27,13 @@ All notable changes to BindAI are documented here.
 * Conversational retrieval support.
 * Retrieval and reranking improvements.
 * Expanded provider ecosystem with OpenAI, Anthropic, Google Gemini, Groq, Ollama, and OpenRouter support.
-* Expanded documentation covering agents, tools, memory, knowledge, workflows, projects, connections, and API reference.
+* Automation definitions and execution infrastructure.
+* Event trigger framework.
+* Unified trigger management.
+* Automation execution state and state-store abstractions.
+* Automation run history and history-store abstractions.
+* Background automation workers.
+* Expanded documentation covering agents, tools, memory, knowledge, workflows, projects, connections, automation, and API reference.
 * Updated roadmap and package documentation.
 * Release metadata and workspace improvements for the BindAI package ecosystem.
 
@@ -37,20 +45,25 @@ All notable changes to BindAI are documented here.
 * Google and Groq provider packages were added to the UV workspace configuration.
 * Workspace lock metadata was updated to include the complete current provider package set.
 * Documentation was aligned with the current public APIs and implemented capabilities.
+* The automation layer was extended from trigger infrastructure into execution tracking, historical run records, and background execution.
 
 ### Validation
 
-* Full workspace test suite: **145 passed, 5 skipped**.
-* Agent package tests: **21 passed**.
+* Full workspace test suite: **160 passed, 2 skipped**.
+* Agent package tests: **31 passed**.
+* Automation package tests: **52 passed**.
+* Multi-agent group tests pass for sequential and parallel execution.
 * BindAI and BindAI Agent wheels build successfully.
 * Built distributions pass `twine check`.
 * Local wheel installation verified `Agent.builder()` successfully.
 
 ### Notes
 
-This release represents the current BindAI development line and prepares the framework for a future public open-source release.
+This release represents the current BindAI development line and provides a substantial foundation for a future public open-source release.
 
-Some roadmap areas remain under active development, including advanced automation, deployment, observability, visual workflow tooling, and other future platform capabilities.
+The framework now includes agents, tools, workflows, memory, Knowledge and RAG, multiple model providers, connections, MCP support, multi-agent execution, and an automation foundation with triggers, execution state, run history, and background workers.
+
+Some roadmap areas remain under active development, including advanced event routing, planning and more advanced multi-agent coordination, deployment, observability, visual workflow tooling, and other future platform capabilities.
 
 ---
 

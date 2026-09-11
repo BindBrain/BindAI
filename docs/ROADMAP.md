@@ -236,7 +236,6 @@ Expand the agent runtime beyond individual AI assistants.
 * [x] Parallel agents
 * [x] Advanced tool execution
 
-
 #### Remaining
 
 * [ ] Planning
@@ -267,18 +266,18 @@ Bring agents, workflows, integrations, and triggers together into a unified auto
 * [x] Human approval
 * [x] Agent execution
 * [x] External service integrations
+* [x] Event trigger framework
+* [x] Unified trigger management
+* [x] Automation definitions
+* [x] Persistent automation state
+* [x] Automation run history
+* [x] Background automation workers
 
 #### Remaining
 
-* [ ] Event trigger framework
-* [ ] Unified trigger management
-* [ ] Automation definitions
-* [ ] Persistent automation state
-* [ ] Automation run history
-* [ ] Background automation workers
 * [ ] Advanced event routing
 
-This layer will allow BindAI to automate complete business processes rather than isolated AI tasks.
+The automation layer now provides the foundation for defining, executing, tracking, and running automations in the background while keeping execution state and historical run records separate.
 
 ---
 
