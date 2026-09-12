@@ -9,7 +9,23 @@ BindAI Connections provide a consistent interface for communicating with externa
 
 A connection represents an external destination that BindAI can connect to and send data through.
 
-Connections are useful for integrating AI applications and workflows with services such as GitHub, Slack, Notion, Jira, Discord, email providers, deployment platforms, and generic webhooks.
+Connections are useful for integrating AI applications and workflows with services such as GitHub, Slack, Notion, Jira, Discord, email providers, Google Workspace, deployment platforms, and generic webhooks.
+
+The current BindAI v0.1 Connections package provides integrations for:
+
+- Webhooks
+- GitHub
+- Slack
+- Notion
+- Jira
+- Discord
+- Resend
+- Vercel
+- Netlify
+- Google Sheets
+- Google Docs
+- Gmail
+- Google Drive
 
 ---
 
@@ -17,9 +33,9 @@ Connections are useful for integrating AI applications and workflows with servic
 
 The Connections package provides three core concepts:
 
-* `Connection` — the base interface for an external connection.
-* `ConnectionRegistry` — a registry of connection types available for dynamic lookup.
-* `ConnectionManager` — manages active connection instances.
+- `Connection` — the base interface for an external connection.
+- `ConnectionRegistry` — a registry of connection types available for dynamic lookup.
+- `ConnectionManager` — manages active connection instances.
 
 The architecture can be represented as:
 
@@ -52,11 +68,11 @@ from bindai_connections import Connection
 
 A connection provides:
 
-* `name`
-* `connect()`
-* `disconnect()`
-* `is_connected()`
-* `send(payload)`
+- `name`
+- `connect()`
+- `disconnect()`
+- `is_connected()`
+- `send(payload)`
 
 Conceptually:
 
@@ -141,14 +157,18 @@ The exact constructor arguments depend on the selected connection implementation
 
 The current package initialization registers these connection types:
 
-* `webhook`
-* `slack`
-* `notion`
-* `jira`
-* `discord`
-* `resend`
-* `vercel`
-* `netlify`
+- `webhook`
+- `slack`
+- `notion`
+- `jira`
+- `discord`
+- `resend`
+- `vercel`
+- `netlify`
+- `google_sheets`
+- `google_docs`
+- `gmail`
+- `google_drive`
 
 For example:
 
@@ -168,9 +188,7 @@ It can still be imported directly:
 from bindai_connections import GitHubConnection
 ```
 
-This distinction is intentional in the documentation: a publicly available connection class does not necessarily mean that the class is registered for dynamic lookup.
-
-The available integrations can grow independently from the core connection abstraction.
+This distinction is intentional: a publicly available connection class does not necessarily mean that the class is registered for dynamic lookup.
 
 ---
 
@@ -198,17 +216,17 @@ Connections can then be accessed by name:
 connection = manager.get("slack")
 ```
 
-The manager also provides operations for:
+The manager provides operations for:
 
-* Checking whether a connection exists
-* Connecting a connection
-* Disconnecting a connection
-* Disconnecting all active connections
-* Removing a connection
-* Listing managed connections
-* Listing managed connection names
-* Clearing all connections
-* Checking the number of managed connections
+- Checking whether a connection exists
+- Connecting a connection
+- Disconnecting a connection
+- Disconnecting all active connections
+- Removing a connection
+- Listing managed connections
+- Listing managed connection names
+- Clearing all connections
+- Checking the number of managed connections
 
 For example:
 
@@ -302,11 +320,11 @@ This is useful for services that expose HTTP webhook interfaces.
 
 Typical use cases include:
 
-* Automation triggers
-* Notifications
-* Workflow events
-* External system callbacks
-* Custom integrations
+- Automation triggers
+- Notifications
+- Workflow events
+- External system callbacks
+- Custom integrations
 
 Webhook connections provide a general-purpose integration point without requiring a dedicated provider-specific package.
 
@@ -334,9 +352,9 @@ result = connection.send({
 
 The GitHub connection supports request payload fields including:
 
-* `path`
-* `method`
-* `body`
+- `path`
+- `method`
+- `body`
 
 For requests with a body, the body is encoded as JSON.
 
@@ -345,8 +363,6 @@ The default GitHub API base URL is:
 ```text
 https://api.github.com
 ```
-
-The connection also sends the GitHub API version header used by the current implementation.
 
 `GitHubConnection` is publicly exported but is not currently registered with `ConnectionRegistry`.
 
@@ -358,10 +374,10 @@ The connection also sends the GitHub API version header used by the current impl
 
 Typical use cases include:
 
-* Sending notifications
-* Posting workflow results
-* Sending agent-generated messages
-* Alerting teams about workflow events
+- Sending notifications
+- Posting workflow results
+- Sending agent-generated messages
+- Alerting teams about workflow events
 
 A workflow can therefore use a Slack connection without embedding Slack-specific communication logic throughout the workflow itself.
 
@@ -373,10 +389,10 @@ A workflow can therefore use a Slack connection without embedding Slack-specific
 
 Potential application uses include:
 
-* Writing generated content
-* Updating pages
-* Publishing workflow results
-* Connecting AI workflows with workspace information
+- Writing generated content
+- Updating pages
+- Publishing workflow results
+- Connecting AI workflows with workspace information
 
 Authentication and request behavior remain specific to the Notion integration.
 
@@ -388,10 +404,10 @@ Authentication and request behavior remain specific to the Notion integration.
 
 Typical uses include:
 
-* Creating or updating issues
-* Connecting AI workflows to project-management processes
-* Automating issue-related operations
-* Sending workflow results to Jira
+- Creating or updating issues
+- Connecting AI workflows to project-management processes
+- Automating issue-related operations
+- Sending workflow results to Jira
 
 The connection abstraction keeps Jira-specific communication separate from general workflow logic.
 
@@ -403,10 +419,10 @@ The connection abstraction keeps Jira-specific communication separate from gener
 
 Typical uses include:
 
-* Sending notifications
-* Publishing workflow results
-* Alerting Discord channels
-* Connecting automated workflows with communities
+- Sending notifications
+- Publishing workflow results
+- Alerting Discord channels
+- Connecting automated workflows with communities
 
 ---
 
@@ -416,10 +432,10 @@ Typical uses include:
 
 Typical uses include:
 
-* Sending application notifications
-* Delivering workflow results
-* Sending generated messages
-* Integrating email delivery into automated workflows
+- Sending application notifications
+- Delivering workflow results
+- Sending generated messages
+- Integrating email delivery into automated workflows
 
 Email credentials and sender configuration should be supplied through secure deployment configuration.
 
@@ -442,6 +458,183 @@ This can be useful when AI workflows participate in application deployment or in
 It can connect BindAI automation with deployment-related operations supported by the integration.
 
 This makes it possible to incorporate deployment platforms into larger AI-driven workflows.
+
+---
+
+# Google Sheets
+
+`GoogleSheetsConnection` provides an HTTP integration with the Google Sheets API.
+
+The current implementation uses the Google Sheets API v4 endpoint:
+
+```text
+https://sheets.googleapis.com/v4/spreadsheets
+```
+
+The connection accepts an access token and supports configurable API base URLs and request timeouts.
+
+Conceptually:
+
+```python
+from bindai_connections import GoogleSheetsConnection
+
+connection = GoogleSheetsConnection("access-token")
+connection.connect()
+
+result = connection.send({
+    "path": "/spreadsheet-id/values/Sheet1!A1:B2",
+    "method": "GET",
+})
+```
+
+The exact request path and payload depend on the Google Sheets API operation being performed.
+
+Typical use cases include:
+
+- Reading spreadsheet data
+- Writing spreadsheet data
+- Updating spreadsheet-backed workflows
+- Using spreadsheet data in automation
+- Sending workflow results to spreadsheets
+
+The Google Sheets integration uses the supplied access token when communicating with the Google API.
+
+---
+
+# Google Docs
+
+`GoogleDocsConnection` provides an HTTP integration with the Google Docs API.
+
+The current implementation uses the Google Docs API endpoint:
+
+```text
+https://docs.googleapis.com/v1/documents
+```
+
+The connection accepts an access token and supports configurable API base URLs and request timeouts.
+
+Conceptually:
+
+```python
+from bindai_connections import GoogleDocsConnection
+
+connection = GoogleDocsConnection("access-token")
+connection.connect()
+
+result = connection.send({
+    "path": "/document-id",
+    "method": "GET",
+})
+```
+
+Typical use cases include:
+
+- Reading documents
+- Updating document content
+- Publishing generated content
+- Connecting AI workflows to Google Docs
+- Processing document-based workflows
+
+The exact request path and payload depend on the Google Docs API operation.
+
+---
+
+# Gmail
+
+`GmailConnection` provides an HTTP integration with the Gmail API.
+
+The current implementation uses the Gmail API endpoint:
+
+```text
+https://gmail.googleapis.com/gmail/v1/users
+```
+
+The connection uses a Google OAuth access token as a Bearer token.
+
+Conceptually:
+
+```python
+from bindai_connections import GmailConnection
+
+connection = GmailConnection("access-token")
+connection.connect()
+
+result = connection.send({
+    "path": "/me/profile",
+    "method": "GET",
+})
+```
+
+Typical use cases include:
+
+- Reading Gmail account information
+- Integrating email workflows
+- Processing messages
+- Connecting agent workflows to Gmail
+- Supporting email-related automation
+
+The exact request path and payload depend on the Gmail API operation.
+
+Applications should request only the Google OAuth scopes required for the operations they perform.
+
+---
+
+# Google Drive
+
+`GoogleDriveConnection` provides an HTTP integration with the Google Drive API.
+
+The current implementation uses the Google Drive API endpoint:
+
+```text
+https://www.googleapis.com/drive/v3
+```
+
+The connection uses a Google OAuth access token as a Bearer token.
+
+Conceptually:
+
+```python
+from bindai_connections import GoogleDriveConnection
+
+connection = GoogleDriveConnection("access-token")
+connection.connect()
+
+result = connection.send({
+    "path": "/files",
+    "method": "GET",
+})
+```
+
+Typical use cases include:
+
+- Listing files
+- Accessing Drive resources
+- Connecting document workflows
+- Processing files through AI applications
+- Integrating Google Drive with automation
+
+The exact request path and payload depend on the Google Drive API operation.
+
+Applications should request only the Google OAuth scopes required for their use case.
+
+---
+
+# Google Workspace Authentication
+
+The Google integrations use OAuth access tokens.
+
+The current integrations include:
+
+- Google Sheets
+- Google Docs
+- Gmail
+- Google Drive
+
+The access token should be supplied through secure application configuration.
+
+Do not place Google access tokens directly in source code.
+
+For production applications, use the deployment environment's secret-management capabilities where available.
 
 ---
 
@@ -515,11 +708,11 @@ The tool becomes the controlled interface available to the agent, while the conn
 
 This separation provides several benefits:
 
-* Provider-specific logic remains isolated.
-* Agents receive simple tool interfaces.
-* External credentials remain outside prompts.
-* Connections can be reused.
-* Tools can validate inputs before performing external actions.
+- Provider-specific logic remains isolated.
+- Agents receive simple tool interfaces.
+- External credentials remain outside prompts.
+- Connections can be reused.
+- Tools can validate inputs before performing external actions.
 
 ---
 
@@ -529,14 +722,14 @@ Connection configuration should remain outside application logic whenever possib
 
 Depending on the integration, configuration may include:
 
-* API keys
-* Access tokens
-* Webhook URLs
-* Account identifiers
-* Workspace identifiers
-* Project identifiers
-* Endpoint URLs
-* Sender information
+- API keys
+- Access tokens
+- Webhook URLs
+- Account identifiers
+- Workspace identifiers
+- Project identifiers
+- Endpoint URLs
+- Sender information
 
 Sensitive credentials should normally be supplied through environment variables or a dedicated secret-management system.
 
@@ -568,13 +761,13 @@ External services can fail for many reasons.
 
 Examples include:
 
-* Authentication failures
-* Invalid requests
-* Network failures
-* Rate limits
-* Service outages
-* Invalid payloads
-* Permission errors
+- Authentication failures
+- Invalid requests
+- Network failures
+- Rate limits
+- Service outages
+- Invalid payloads
+- Permission errors
 
 Applications should handle connection failures explicitly.
 
@@ -622,15 +815,15 @@ Connections often provide access to external systems and therefore require caref
 
 Recommended practices include:
 
-* Keep credentials outside source code.
-* Use the minimum required permissions.
-* Validate data before sending it externally.
-* Restrict write operations where possible.
-* Protect state-changing tools.
-* Avoid exposing secrets to agents.
-* Avoid placing credentials in prompts.
-* Audit important external operations.
-* Rotate credentials when appropriate.
+- Keep credentials outside source code.
+- Use the minimum required permissions.
+- Validate data before sending it externally.
+- Restrict write operations where possible.
+- Protect state-changing tools.
+- Avoid exposing secrets to agents.
+- Avoid placing credentials in prompts.
+- Audit important external operations.
+- Rotate credentials when appropriate.
 
 Connections should be treated as privileged boundaries between BindAI and external systems.
 
@@ -644,13 +837,13 @@ Connections may send or receive information from external services.
 
 Applications should consider:
 
-* Data sensitivity
-* User authorization
-* Access permissions
-* Data retention
-* Logging
-* Compliance requirements
-* Cross-system data flow
+- Data sensitivity
+- User authorization
+- Access permissions
+- Data retention
+- Logging
+- Compliance requirements
+- Cross-system data flow
 
 Only the data required for the operation should be transmitted.
 
@@ -695,9 +888,11 @@ Application
    |
    +---- GitHub Connection
    |
-   +---- Notion Connection
+   +---- Google Sheets Connection
    |
-   +---- Jira Connection
+   +---- Gmail Connection
+   |
+   +---- Google Drive Connection
 ```
 
 A failure in one integration should not unnecessarily compromise unrelated integrations.
@@ -737,40 +932,40 @@ Connections should be tested independently from the agents and workflows that us
 
 Useful tests include:
 
-* Construction
-* Configuration validation
-* Connection lifecycle
-* Connected-state behavior
-* Payload handling
-* Authentication failures
-* External-service failures
-* Invalid responses
-* Cleanup
-* Error handling
+- Construction
+- Configuration validation
+- Connection lifecycle
+- Connected-state behavior
+- Payload handling
+- Authentication failures
+- External-service failures
+- Invalid responses
+- Cleanup
+- Error handling
 
 Registry behavior should also be tested where dynamic connection lookup is used.
 
 Useful registry tests include:
 
-* Registering a connection type
-* Looking up a registered type
-* Listing registered names
-* Rejecting an empty connection name
-* Handling unknown connection names
+- Registering a connection type
+- Looking up a registered type
+- Listing registered names
+- Rejecting invalid connection names
+- Handling unknown connection names
 
 Manager behavior should also be tested independently.
 
 Useful manager tests include:
 
-* Adding connections
-* Looking up managed connections
-* Checking membership
-* Connecting and disconnecting
-* Removing connections
-* Disconnecting all connections
-* Clearing the manager
-* Listing managed names
-* Reporting manager size
+- Adding connections
+- Looking up managed connections
+- Checking membership
+- Connecting and disconnecting
+- Removing connections
+- Disconnecting all connections
+- Clearing the manager
+- Listing managed names
+- Reporting manager size
 
 External API calls should generally be mocked in unit tests.
 
@@ -782,13 +977,15 @@ Integration tests can be used separately when real external services are require
 
 During development, connections should preferably use:
 
-* Test accounts
-* Mock services
-* Development workspaces
-* Non-production credentials
-* Safe test data
+- Test accounts
+- Mock services
+- Development workspaces
+- Non-production credentials
+- Safe test data
 
 Avoid pointing development automation at production systems unless there is a deliberate reason to do so.
+
+For Google integrations, use OAuth credentials and scopes appropriate for development rather than production-wide credentials.
 
 ---
 
@@ -798,15 +995,15 @@ Production connections require additional operational considerations.
 
 These can include:
 
-* Credential management
-* Rate limits
-* Service availability
-* Network configuration
-* Monitoring
-* Failure handling
-* Retry behavior
-* Audit logging
-* Access control
+- Credential management
+- Rate limits
+- Service availability
+- Network configuration
+- Monitoring
+- Failure handling
+- Retry behavior
+- Audit logging
+- Access control
 
 Production infrastructure should be configured independently from local development environments.
 
@@ -861,16 +1058,16 @@ connection_type = ConnectionRegistry.provider("example")
 
 Good connections should:
 
-* Have a clear responsibility.
-* Hide provider-specific communication details.
-* Avoid exposing credentials.
-* Validate external input.
-* Handle failures explicitly.
-* Keep side effects predictable.
-* Support testing.
-* Avoid unnecessary global state.
-* Provide clear error information.
-* Follow the common connection interface.
+- Have a clear responsibility.
+- Hide provider-specific communication details.
+- Avoid exposing credentials.
+- Validate external input.
+- Handle failures explicitly.
+- Keep side effects predictable.
+- Support testing.
+- Avoid unnecessary global state.
+- Provide clear error information.
+- Follow the common connection interface.
 
 ---
 
@@ -878,34 +1075,42 @@ Good connections should:
 
 The current Connections package provides:
 
-### Core
+## Core
 
-* `Connection`
-* `ConnectionRegistry`
-* `ConnectionManager`
+- `Connection`
+- `ConnectionRegistry`
+- `ConnectionManager`
 
-### Public Connection Classes
+## Public Connection Classes
 
-* `WebhookConnection`
-* `GitHubConnection`
-* `SlackConnection`
-* `NotionConnection`
-* `JiraConnection`
-* `DiscordConnection`
-* `ResendConnection`
-* `VercelConnection`
-* `NetlifyConnection`
+- `WebhookConnection`
+- `GitHubConnection`
+- `SlackConnection`
+- `NotionConnection`
+- `JiraConnection`
+- `DiscordConnection`
+- `ResendConnection`
+- `VercelConnection`
+- `NetlifyConnection`
+- `GoogleSheetsConnection`
+- `GoogleDocsConnection`
+- `GmailConnection`
+- `GoogleDriveConnection`
 
-### Currently Registered Connection Types
+## Currently Registered Connection Types
 
-* Webhooks
-* Slack
-* Notion
-* Jira
-* Discord
-* Resend
-* Vercel
-* Netlify
+- `webhook`
+- `slack`
+- `notion`
+- `jira`
+- `discord`
+- `resend`
+- `vercel`
+- `netlify`
+- `google_sheets`
+- `google_docs`
+- `gmail`
+- `google_drive`
 
 `GitHubConnection` is publicly available but is not currently registered with `ConnectionRegistry`.
 
@@ -919,12 +1124,23 @@ Additional integrations can be added without changing the core connection abstra
 
 Potential future integrations include services such as:
 
-* Google Workspace
-* Stripe
-* Additional communication platforms
-* Additional project-management systems
-* Additional deployment platforms
-* Additional SaaS APIs
+- Telegram
+- Twilio
+- Outlook
+- Microsoft Teams
+- GitLab
+- Linear
+- Trello
+- Asana
+- Airtable
+- HubSpot
+- Salesforce
+- Stripe
+- Additional communication platforms
+- Additional project-management systems
+- Additional SaaS APIs
+
+These integrations are not required for the BindAI v0.1 release.
 
 Future integrations should follow the same common connection architecture where appropriate.
 
@@ -950,6 +1166,10 @@ from bindai_connections import (
     ResendConnection,
     VercelConnection,
     NetlifyConnection,
+    GoogleSheetsConnection,
+    GoogleDocsConnection,
+    GmailConnection,
+    GoogleDriveConnection,
 )
 ```
 
@@ -1005,20 +1225,26 @@ External Service
 
 `ConnectionRegistry` provides named connection types for dynamic lookup, while `ConnectionManager` manages active connection instances.
 
-Connections can be combined with tools, agents, and workflows to build AI applications that interact with external systems.
+The current BindAI v0.1 package publicly exposes integrations for:
 
-The current package publicly exposes integrations for:
-
-* Webhooks
-* GitHub
-* Slack
-* Notion
-* Jira
-* Discord
-* Resend
-* Vercel
-* Netlify
+- Webhooks
+- GitHub
+- Slack
+- Notion
+- Jira
+- Discord
+- Resend
+- Vercel
+- Netlify
+- Google Sheets
+- Google Docs
+- Gmail
+- Google Drive
 
 The package currently registers all of these except `GitHubConnection`, which remains publicly importable but is not registered for dynamic registry lookup.
+
+The Google integrations use OAuth access tokens and provide HTTP-based access to the corresponding Google APIs.
+
+Connections can be combined with tools, agents, workflows, and automation to build AI applications that interact with external systems.
 
 By keeping external-service communication behind a common interface, BindAI can add integrations incrementally while keeping application and workflow logic independent from individual service implementations.
