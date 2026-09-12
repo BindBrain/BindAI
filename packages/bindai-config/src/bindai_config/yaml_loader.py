@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import yaml
-
 from bindai_agent import AgentBuilder
 from bindai_group import (
     GroupBuilder,
@@ -31,11 +30,9 @@ class YamlLoader(ConfigLoader):
             data = yaml.safe_load(
                 file,
             )
-
         config = self._parse_group(
             data,
         )
-
         return self._build_group(
             config,
         )
@@ -49,7 +46,6 @@ class YamlLoader(ConfigLoader):
         data,
     ) -> GroupConfig:
         group_data = data["group"]
-
         config = GroupConfig(
             name=group_data.get(
                 "name",
@@ -137,8 +133,7 @@ class YamlLoader(ConfigLoader):
             process = ParallelProcess()
         else:
             raise ValueError(
-                f'Unknown group process "{config.process}". '
-                'Expected "sequential" or "parallel".'
+                f'Unknown group process "{config.process}". Expected "sequential" or "parallel".'
             )
 
         builder = (
@@ -155,7 +150,6 @@ class YamlLoader(ConfigLoader):
             config,
             builder,
         )
-
         tasks = self._build_tasks(
             config,
             agents,
@@ -216,16 +210,13 @@ class YamlLoader(ConfigLoader):
 
         for item in config.tasks:
             if item.agent not in agents:
-                raise ValueError(
-                    f'Unknown agent "{item.agent}".'
-                )
+                raise ValueError(f'Unknown agent "{item.agent}".')
 
             task = Task(
                 description=item.description,
                 expected_output=item.expected_output,
                 agent=agents[item.agent],
             )
-
             tasks[item.id] = task
 
         return tasks
@@ -241,9 +232,7 @@ class YamlLoader(ConfigLoader):
 
             for dependency in item.context:
                 if dependency not in tasks:
-                    raise ValueError(
-                        f'Unknown task "{dependency}".'
-                    )
+                    raise ValueError(f'Unknown task "{dependency}".')
 
                 task.context_from(
                     tasks[dependency],

@@ -143,13 +143,7 @@ def test_parallel_process_fails_when_task_fails():
         agent=agent,
     )
 
-    group = (
-        GroupBuilder()
-        .agent(agent)
-        .task(task)
-        .process(ParallelProcess())
-        .build()
-    )
+    group = GroupBuilder().agent(agent).task(task).process(ParallelProcess()).build()
 
     result = group.run()
 

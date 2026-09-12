@@ -1,7 +1,7 @@
-from bindai_core.context import ExecutionContext
-from bindai_core.model import ModelResponse, ToolCall
 from bindai_agent.execution.state import ExecutionState
 from bindai_agent.execution.tool_execution_step import ToolExecutionStep
+from bindai_core.context import ExecutionContext
+from bindai_core.model import ModelResponse, ToolCall
 from bindai_tool.result import ToolResult
 
 
@@ -37,7 +37,6 @@ def test_failed_tool_result_preserves_error_in_conversation():
     agent = FakeAgent(
         ToolResult.failed("boom"),
     )
-
     context = ExecutionContext()
     context.data = ExecutionState(
         response=ModelResponse(
@@ -49,9 +48,7 @@ def test_failed_tool_result_preserves_error_in_conversation():
             ]
         )
     )
-
     ToolExecutionStep().execute(agent, context)
-
     assert agent.conversation.tool_messages == [
         {
             "tool_call_id": "call-1",

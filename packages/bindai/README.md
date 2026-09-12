@@ -1,7 +1,9 @@
 <p align="center">
+
   <a href="https://bindai.dev">
     <img src="logo/light.png" alt="BindAI Logo" width="220">
   </a>
+
 </p>
 
 <h1 align="center">BindAI</h1>
@@ -15,9 +17,9 @@
 </p>
 
 <p align="center">
-  <a href="https://docs.bindai.dev"><strong>Documentation</strong></a> Â·
-  <a href="https://bindai.dev"><strong>Website</strong></a> Â·
-  <a href="https://pypi.org/project/bindai/"><strong>PyPI</strong></a> Â·
+  <a href="https://docs.bindai.dev"><strong>Documentation</strong></a> ·
+  <a href="https://bindai.dev"><strong>Website</strong></a> ·
+  <a href="https://pypi.org/project/bindai/"><strong>PyPI</strong></a> ·
   <a href="https://github.com/BindBrain/BindAI"><strong>GitHub</strong></a>
 </p>
 
@@ -41,6 +43,7 @@ The framework brings together:
 * External connections
 * MCP integration
 * CLI and project configuration
+* AI automation
 
 The architecture is modular, so applications can start with a simple agent and grow into more sophisticated AI systems without requiring a completely different application structure.
 
@@ -60,9 +63,7 @@ For development from the repository:
 
 ```bash
 git clone https://github.com/BindBrain/BindAI.git
-
 cd BindAI
-
 uv sync
 ```
 
@@ -422,21 +423,21 @@ bindai-provider-openrouter
                          |
               +----------+----------+
               |                     |
-            Memory              Knowledge
-                                    |
-                              Retrieval / RAG
-                                    |
-                         +----------+----------+
-                         |                     |
-                    Embeddings             Reranking
+           Memory               Knowledge
+                                      |
+                                Retrieval / RAG
+                                      |
+                         +------------+------------+
+                         |                         |
+                    Embeddings                 Reranking
                          |
                   Model Providers
                          |
        +---------+---------+---------+---------+
        |         |         |         |         |
-     OpenAI   Anthropic  Google    Groq     Ollama
-                                               |
-                                         OpenRouter
+     OpenAI   Anthropic  Google     Groq     Ollama
+                                             |
+                                       OpenRouter
 ```
 
 External Connections and MCP can be integrated alongside these application components.
@@ -449,25 +450,22 @@ The architecture is designed around composable packages so individual capabiliti
 
 ```text
 BindAI/
-
-â”œâ”€â”€ packages/
-â”‚   â”œâ”€â”€ bindai/
-â”‚   â”œâ”€â”€ bindai-agent/
-â”‚   â”œâ”€â”€ bindai-core/
-â”‚   â”œâ”€â”€ bindai-memory/
-â”‚   â”œâ”€â”€ bindai-tool/
-â”‚   â”œâ”€â”€ bindai-workflow/
-â”‚   â”œâ”€â”€ bindai-knowledge/
-â”‚   â”œâ”€â”€ bindai-connections/
-â”‚   â”œâ”€â”€ bindai-mcp/
-â”‚   â””â”€â”€ ...
-
-â”œâ”€â”€ docs/
-â”œâ”€â”€ scripts/
-
-â”œâ”€â”€ README.md
-â”œâ”€â”€ docs.json
-â””â”€â”€ pyproject.toml
+├── packages/
+│   ├── bindai/
+│   ├── bindai-agent/
+│   ├── bindai-core/
+│   ├── bindai-memory/
+│   ├── bindai-tool/
+│   ├── bindai-workflow/
+│   ├── bindai-knowledge/
+│   ├── bindai-connections/
+│   ├── bindai-mcp/
+│   └── ...
+├── docs/
+├── scripts/
+├── README.md
+├── docs.json
+└── pyproject.toml
 ```
 
 ---
@@ -565,11 +563,9 @@ The long-term vision is to support increasingly sophisticated AI applications wh
 ---
 
 <p align="center">
-
-<strong>Build AI Software. Scale Everywhere.</strong>
-
-Made with â¤ï¸ by <strong>BindBrain</strong>
-
-https://bindai.dev
-
+  <strong>Build AI Software. Scale Everywhere.</strong>
+  <br>
+  Made with ❤️ by <strong>BindBrain</strong>
+  <br>
+  <a href="https://bindai.dev">https://bindai.dev</a>
 </p>

@@ -3,7 +3,15 @@ from __future__ import annotations
 from typing import cast
 
 from bindai_core.context import ExecutionContext
-from bindai_core.events.agent_events import AgentFinishedEvent
+from bindai_core.events.agent_events import (
+    AgentFinishedEvent,
+    AgentStartedEvent,
+)
+from bindai_core.events.model_events import (
+    ModelRequestEvent,
+    ModelResponseEvent,
+)
+from bindai_core.events.tool_events import ToolExecutedEvent
 from bindai_core.model import (
     Message,
     MessageRole,
@@ -26,11 +34,13 @@ class AgentExecutor:
             ↓
         middleware(before)
             ↓
+        agent.started
+            ↓
         run until complete
             ↓
         middleware(after)
             ↓
-        publish event
+        agent.finished
             ↓
         complete
     """
@@ -44,7 +54,6 @@ class AgentExecutor:
         agent: Agent,
         context: ExecutionContext,
     ) -> AgentResult:
-
         try:
             self._prepare(agent)
 
@@ -53,12 +62,19 @@ class AgentExecutor:
                 context,
             )
 
+            context.events.publish(
+                AgentStartedEvent(
+                    payload={
+                        "agent": agent.name,
+                        "execution_id": context.execution_id,
+                    },
+                )
+            )
+
             #
             # Insert the initial user message exactly once.
             #
-
             user = context.variables.get("message")
-
             if user is not None:
                 agent.conversation.add_user(
                     user,
@@ -106,7 +122,6 @@ class AgentExecutor:
         agent: Agent,
         context: ExecutionContext,
     ):
-
         request = self._build_request(
             agent,
             context,
@@ -125,7 +140,6 @@ class AgentExecutor:
         agent: Agent,
         context: ExecutionContext,
     ) -> ModelResponse:
-
         iterations = 0
 
         while True:
@@ -137,7 +151,6 @@ class AgentExecutor:
             #
             # Finished
             #
-
             if not response.tool_calls:
                 return response
 
@@ -151,7 +164,6 @@ class AgentExecutor:
         agent: Agent,
         context: ExecutionContext,
     ) -> ModelResponse:
-
         request = self._build_request(
             agent,
             context,
@@ -160,6 +172,7 @@ class AgentExecutor:
         response = self._call_provider(
             agent,
             request,
+            context,
         )
 
         tool_messages = self._execute_tools(
@@ -189,14 +202,12 @@ class AgentExecutor:
         self,
         agent: Agent,
     ):
-
         agent.state = AgentState.RUNNING
 
     def _complete(
         self,
         agent: Agent,
     ):
-
         agent.state = AgentState.COMPLETED
 
     def _run_before_middleware(
@@ -204,7 +215,6 @@ class AgentExecutor:
         agent: Agent,
         context: ExecutionContext,
     ):
-
         for middleware in agent.middleware:
             middleware.before_execute(
                 agent,
@@ -217,7 +227,6 @@ class AgentExecutor:
         context: ExecutionContext,
         result: AgentResult,
     ):
-
         for middleware in agent.middleware:
             middleware.after_execute(
                 agent,
@@ -229,27 +238,49 @@ class AgentExecutor:
         self,
         agent: Agent,
         request: ModelRequest,
+        context: ExecutionContext,
     ) -> ModelResponse:
+        context.events.publish(
+            ModelRequestEvent(
+                payload={
+                    "agent": agent.name,
+                    "execution_id": context.execution_id,
+                },
+                request=request,
+            )
+        )
 
         response = agent.provider.generate(
             request,
         )
 
-        return cast(
+        response = cast(
             ModelResponse,
             response,
         )
+
+        context.events.publish(
+            ModelResponseEvent(
+                payload={
+                    "agent": agent.name,
+                    "execution_id": context.execution_id,
+                },
+                response=response,
+            )
+        )
+
+        return response
 
     def _publish_finished_event(
         self,
         agent: Agent,
         context: ExecutionContext,
     ):
-
         context.events.publish(
             AgentFinishedEvent(
                 payload={
                     "agent": agent.name,
+                    "execution_id": context.execution_id,
                 },
             )
         )
@@ -262,7 +293,6 @@ class AgentExecutor:
         self,
         agent: Agent,
     ) -> str:
-
         if agent.knowledge is not None:
             result = agent.knowledge.search_conversation(
                 agent.conversation,
@@ -298,7 +328,6 @@ class AgentExecutor:
         agent: Agent,
         context: ExecutionContext,
     ) -> ModelRequest:
-
         messages: list[Message] = []
 
         messages.append(
@@ -308,7 +337,9 @@ class AgentExecutor:
             )
         )
 
-        messages.extend(agent.conversation.messages)
+        messages.extend(
+            agent.conversation.messages,
+        )
 
         context_text = self._retrieve_context(
             agent,
@@ -339,7 +370,6 @@ class AgentExecutor:
         context: ExecutionContext,
         response: ModelResponse,
     ) -> list[Message]:
-
         messages: list[Message] = []
 
         if not response.tool_calls:
@@ -353,7 +383,6 @@ class AgentExecutor:
             #
             # Build tool execution context
             #
-
             tool_context = ExecutionContext()
 
             for key, value in call.arguments.items():
@@ -366,10 +395,20 @@ class AgentExecutor:
                 tool_context,
             )
 
+            context.events.publish(
+                ToolExecutedEvent(
+                    payload={
+                        "agent": agent.name,
+                        "execution_id": context.execution_id,
+                        "success": result.success,
+                    },
+                    tool_name=call.name,
+                )
+            )
+
             #
             # Store in execution context
             #
-
             context.variables.set(
                 call.name,
                 result,
@@ -378,12 +417,10 @@ class AgentExecutor:
             #
             # Build Tool Message
             #
-
             output = ""
 
             if result.value is not None:
                 output = str(result.value)
-
             elif result.error is not None:
                 output = result.error
 
@@ -406,14 +443,12 @@ class AgentExecutor:
         agent: Agent,
         messages: list[Message],
     ):
-
         for message in messages:
             if message.role == MessageRole.ASSISTANT:
                 if message.tool_calls:
                     agent.conversation.add_assistant_tool_call(
                         message.tool_calls,
                     )
-
                 else:
                     agent.conversation.add_assistant(
                         message.content,
@@ -441,7 +476,6 @@ class AgentExecutor:
         context: ExecutionContext,
         response: ModelResponse,
     ):
-
         agent.conversation.add_assistant(
             response.content,
         )

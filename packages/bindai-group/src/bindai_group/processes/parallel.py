@@ -78,9 +78,7 @@ class ParallelProcess(Process):
         group.state = GroupState.COMPLETED
 
         output = "\n\n".join(
-            outputs[index]
-            for index in range(len(group.tasks))
-            if index in outputs
+            outputs[index] for index in range(len(group.tasks)) if index in outputs
         )
 
         return GroupResult(
@@ -105,8 +103,7 @@ class ParallelProcess(Process):
                 continue
 
             dependencies_ready = all(
-                group.tasks.index(dependency) in completed
-                for dependency in task.context
+                group.tasks.index(dependency) in completed for dependency in task.context
             )
 
             if dependencies_ready:

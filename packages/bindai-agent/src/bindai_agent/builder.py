@@ -305,9 +305,7 @@ class AgentBuilder:
             )
         except ValueError as exc:
             raise ValueError(
-                "Model must be in the format "
-                "'<provider>:<model>'. "
-                "Example: 'openai:gpt-5'."
+                "Model must be in the format '<provider>:<model>'. Example: 'openai:gpt-5'."
             ) from exc
 
         if not provider:

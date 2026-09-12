@@ -45,12 +45,7 @@ Agents can be created using the builder API:
 ```python
 from bindai_agent import Agent
 
-agent = (
-    Agent.builder()
-    .name("assistant")
-    .instructions("You are a helpful AI assistant.")
-    .build()
-)
+agent = Agent.builder().name("assistant").instructions("You are a helpful AI assistant.").build()
 
 result = agent.run("Explain what BindAI is.")
 

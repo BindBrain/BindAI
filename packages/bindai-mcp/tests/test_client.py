@@ -41,7 +41,6 @@ async def test_list_tools():
 
 def test_tool_definition():
     client = MCPClient("http://localhost:8000")
-
     tool = MCPTool(
         client=client,
         name="search",
@@ -63,7 +62,6 @@ def test_tool_definition():
 
 def test_tool_execute():
     client = MCPClient("http://localhost:8000")
-
     tool = MCPTool(
         client=client,
         name="search",

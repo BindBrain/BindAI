@@ -66,6 +66,7 @@ The `tool` decorator provides a convenient way to define function-based tools.
 ```python id="6p1n8w"
 from bindai_tool import tool
 
+
 @tool
 def calculate_total(a: int, b: int) -> int:
     return a + b

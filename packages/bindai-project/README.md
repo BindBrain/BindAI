@@ -34,21 +34,13 @@ The recommended entry point is `ProjectBuilder`:
 ```python
 from bindai_project import ProjectBuilder
 
-project = (
-    ProjectBuilder("my-project")
-    .build()
-)
+project = ProjectBuilder("my-project").build()
 ```
 
 The builder can also register applications and shared tools:
 
 ```python
-project = (
-    ProjectBuilder("my-project")
-    .application(application)
-    .tool(tool)
-    .build()
-)
+project = ProjectBuilder("my-project").application(application).tool(tool).build()
 ```
 
 ## Applications

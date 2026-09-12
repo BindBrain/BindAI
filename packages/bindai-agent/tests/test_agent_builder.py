@@ -27,11 +27,7 @@ def test_agent_builder_provider_name_uses_resolver(monkeypatch):
         fake_resolve_provider,
     )
 
-    agent = (
-        Agent.builder()
-        .provider("anthropic")
-        .build()
-    )
+    agent = Agent.builder().provider("anthropic").build()
 
     assert agent.provider is sentinel
 
@@ -39,11 +35,7 @@ def test_agent_builder_provider_name_uses_resolver(monkeypatch):
 def test_agent_builder_provider_instance_is_preserved():
     provider = object()
 
-    agent = (
-        Agent.builder()
-        .provider(provider)
-        .build()
-    )
+    agent = Agent.builder().provider(provider).build()
 
     assert agent.provider is provider
 

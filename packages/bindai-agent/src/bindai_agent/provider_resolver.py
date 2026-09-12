@@ -61,11 +61,7 @@ def resolve_provider(
     configuration = ProviderConfiguration(
         api_key=api_key if api_key is not None else env_api_key,
         endpoint=endpoint if endpoint is not None else env_endpoint,
-        organization=(
-            organization
-            if organization is not None
-            else env_organization
-        ),
+        organization=(organization if organization is not None else env_organization),
         model=model if model is not None else project.model,
         timeout=timeout if timeout is not None else project.timeout,
     )

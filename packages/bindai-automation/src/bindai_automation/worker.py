@@ -30,16 +30,8 @@ class AutomationWorker:
         if max_workers < 1:
             raise ValueError("max_workers must be at least 1.")
 
-        self.state_store = (
-            state_store
-            if state_store is not None
-            else MemoryAutomationStateStore()
-        )
-        self.history = (
-            history
-            if history is not None
-            else MemoryAutomationRunHistory()
-        )
+        self.state_store = state_store if state_store is not None else MemoryAutomationStateStore()
+        self.history = history if history is not None else MemoryAutomationRunHistory()
         self._executor = ThreadPoolExecutor(max_workers=max_workers)
 
     def submit(
@@ -53,7 +45,24 @@ class AutomationWorker:
 
         Returns a Future that resolves to the completed AutomationRun.
         """
+        _, future = self.submit_with_run(
+            definition,
+            input=input,
+        )
+        return future
 
+    def submit_with_run(
+        self,
+        definition: AutomationDefinition,
+        *,
+        input: Any = None,
+    ) -> tuple[AutomationRun, Future[AutomationRun]]:
+        """
+        Submit an automation and return its run immediately.
+
+        The returned AutomationRun is persisted before background execution
+        starts. The Future resolves when execution completes.
+        """
         run = AutomationRun(
             definition_id=definition.id,
             definition_version=definition.version,
@@ -62,11 +71,13 @@ class AutomationWorker:
 
         self.state_store.save(run)
 
-        return self._executor.submit(
+        future = self._executor.submit(
             self._execute,
             definition,
             run,
         )
+
+        return run, future
 
     def run(
         self,
@@ -77,13 +88,11 @@ class AutomationWorker:
         """
         Execute an automation immediately in the current thread.
         """
-
         run = AutomationRun(
             definition_id=definition.id,
             definition_version=definition.version,
             input=input,
         )
-
         return self._execute(definition, run)
 
     def _execute(
@@ -100,10 +109,7 @@ class AutomationWorker:
             if getattr(result, "success", False):
                 run.complete(result.output)
             else:
-                run.fail(
-                    getattr(result, "error", None)
-                    or "Automation execution failed."
-                )
+                run.fail(getattr(result, "error", None) or "Automation execution failed.")
         except Exception as exc:
             run.fail(str(exc))
 
@@ -121,7 +127,6 @@ class AutomationWorker:
         """
         Shut down the background worker.
         """
-
         self._executor.shutdown(
             wait=wait,
             cancel_futures=cancel_futures,
@@ -137,4 +142,3 @@ class AutomationWorker:
         traceback,
     ) -> None:
         self.shutdown()
-

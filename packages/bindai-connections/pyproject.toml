@@ -9,6 +9,7 @@ build-backend = "setuptools.build_meta"
 name = "bindai-connections"
 version = "0.1.0"
 description = "Connections and integrations package for BindAI"
+readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [

@@ -81,12 +81,7 @@ The recommended agent construction API is `Agent.builder()`:
 ```python
 from bindai import Agent
 
-agent = (
-    Agent.builder()
-    .name("assistant")
-    .instructions("You are a helpful AI assistant.")
-    .build()
-)
+agent = Agent.builder().name("assistant").instructions("You are a helpful AI assistant.").build()
 
 response = agent.run("Explain what BindAI is.")
 

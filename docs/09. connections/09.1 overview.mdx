@@ -18,7 +18,7 @@ Connections are useful for integrating AI applications and workflows with servic
 The Connections package provides three core concepts:
 
 * `Connection` — the base interface for an external connection.
-* `ConnectionRegistry` — the registry of available connection types.
+* `ConnectionRegistry` — a registry of connection types available for dynamic lookup.
 * `ConnectionManager` — manages active connection instances.
 
 The architecture can be represented as:
@@ -35,6 +35,8 @@ Connection
         v
 External Service
 ```
+
+The registry provides connection types, while the manager stores concrete connection instances.
 
 This keeps external-service communication separate from agent and workflow logic.
 
@@ -67,7 +69,9 @@ if connection.is_connected():
 connection.disconnect()
 ```
 
-The exact behavior of `send()` depends on the specific connection implementation.
+The exact behavior and payload format of `send()` depend on the specific connection implementation.
+
+Connections may raise exceptions when an operation cannot be performed.
 
 ---
 
@@ -92,13 +96,17 @@ Connections do not necessarily maintain a long-lived network session.
 
 For some integrations, `connect()` may prepare or validate the connection while `send()` performs the actual external request.
 
+For other integrations, `connect()` may simply establish an internal active state.
+
 The concrete behavior depends on the integration.
+
+Applications should therefore treat `connect()` and `disconnect()` as lifecycle operations defined by each connection implementation rather than assuming a particular network behavior.
 
 ---
 
 # Connection Registry
 
-`ConnectionRegistry` stores available connection types.
+`ConnectionRegistry` stores named connection types.
 
 ```python
 from bindai_connections import ConnectionRegistry
@@ -106,7 +114,7 @@ from bindai_connections import ConnectionRegistry
 ConnectionRegistry.names()
 ```
 
-The registry can be used to inspect registered connection types.
+The registry can be used to inspect connection types registered by the Connections package.
 
 A connection type can be retrieved by name:
 
@@ -114,13 +122,24 @@ A connection type can be retrieved by name:
 connection_type = ConnectionRegistry.provider("slack")
 ```
 
+The registry returns the connection **class**, not an active connection instance.
+
 The registry is useful when applications need to work with connections dynamically.
+
+For example:
+
+```python
+connection_type = ConnectionRegistry.provider("slack")
+connection = connection_type(...)
+```
+
+The exact constructor arguments depend on the selected connection implementation.
 
 ---
 
 # Registered Connections
 
-The current Connections package includes:
+The current package initialization registers these connection types:
 
 * `webhook`
 * `slack`
@@ -131,13 +150,25 @@ The current Connections package includes:
 * `vercel`
 * `netlify`
 
-The package also exposes the corresponding connection classes.
-
 For example:
 
 ```python
-from bindai_connections import SlackConnection
+from bindai_connections import ConnectionRegistry
+
+ConnectionRegistry.names()
 ```
+
+returns the currently registered connection names.
+
+`GitHubConnection` is also publicly exposed by the package, but it is **not currently registered with `ConnectionRegistry` by the package initialization**.
+
+It can still be imported directly:
+
+```python
+from bindai_connections import GitHubConnection
+```
+
+This distinction is intentional in the documentation: a publicly available connection class does not necessarily mean that the class is registered for dynamic lookup.
 
 The available integrations can grow independently from the core connection abstraction.
 
@@ -159,6 +190,8 @@ A connection can be added to the manager:
 manager.add(connection)
 ```
 
+The connection is stored using its `name` property.
+
 Connections can then be accessed by name:
 
 ```python
@@ -173,7 +206,9 @@ The manager also provides operations for:
 * Disconnecting all active connections
 * Removing a connection
 * Listing managed connections
+* Listing managed connection names
 * Clearing all connections
+* Checking the number of managed connections
 
 For example:
 
@@ -181,6 +216,81 @@ For example:
 manager.connect("slack")
 manager.disconnect("slack")
 ```
+
+The manager operates on concrete connection instances. It does not create connection types through the registry automatically.
+
+---
+
+# Connection Manager Lifecycle
+
+A typical manager lifecycle is:
+
+```python
+manager = ConnectionManager()
+
+manager.add(connection)
+
+manager.connect(connection.name)
+
+# Use the connection...
+
+manager.disconnect(connection.name)
+```
+
+A managed connection can be removed:
+
+```python
+manager.remove(connection.name)
+```
+
+If the connection is active, `remove()` disconnects it before removing it from the manager.
+
+All active connections can be disconnected:
+
+```python
+manager.disconnect_all()
+```
+
+The manager can also be cleared completely:
+
+```python
+manager.clear()
+```
+
+`clear()` disconnects active connections and then removes all managed instances.
+
+---
+
+# Connection Lookup
+
+The manager provides direct lookup for managed instances:
+
+```python
+connection = manager.get("slack")
+```
+
+If the requested connection is not managed, `get()` raises `KeyError`.
+
+Applications can check before lookup:
+
+```python
+if manager.contains("slack"):
+    connection = manager.get("slack")
+```
+
+Managed connections can also be inspected:
+
+```python
+manager.all()
+manager.names()
+manager.size()
+```
+
+`all()` returns the managed connection instances.
+
+`names()` returns the names of managed connections.
+
+`size()` returns the number of managed connections.
 
 ---
 
@@ -204,16 +314,41 @@ Webhook connections provide a general-purpose integration point without requirin
 
 # GitHub
 
-`GitHubConnection` provides an integration with GitHub services.
+`GitHubConnection` provides an HTTP connection for the GitHub REST API.
 
-Typical use cases include:
+The connection accepts a GitHub token and supports configurable API base URLs and request timeouts.
 
-* Repository-related automation
-* GitHub API operations
-* Workflow-triggered GitHub actions
-* AI-assisted development workflows
+Conceptually:
 
-The connection encapsulates the external-service communication behind the common Connections interface.
+```python
+from bindai_connections import GitHubConnection
+
+connection = GitHubConnection("github-token")
+connection.connect()
+
+result = connection.send({
+    "path": "/user",
+    "method": "GET",
+})
+```
+
+The GitHub connection supports request payload fields including:
+
+* `path`
+* `method`
+* `body`
+
+For requests with a body, the body is encoded as JSON.
+
+The default GitHub API base URL is:
+
+```text
+https://api.github.com
+```
+
+The connection also sends the GitHub API version header used by the current implementation.
+
+`GitHubConnection` is publicly exported but is not currently registered with `ConnectionRegistry`.
 
 ---
 
@@ -423,6 +558,8 @@ Applications should not assume that an internally connected state guarantees tha
 
 Network availability, credentials, service availability, and authorization can change independently.
 
+A connection may therefore report an active local state while a subsequent external request still fails.
+
 ---
 
 # Error Handling
@@ -444,6 +581,10 @@ Applications should handle connection failures explicitly.
 For operations that have external side effects, retry behavior should be designed carefully.
 
 Blindly retrying a request can create duplicate operations when the first request actually succeeded but its response was lost.
+
+The Connections package does not provide a universal retry policy for all integrations.
+
+Retry behavior should therefore be implemented at the appropriate application or workflow layer.
 
 ---
 
@@ -471,6 +612,8 @@ Before retrying a failed external operation, determine whether repeating it is s
 
 Where supported, use idempotency keys or other mechanisms provided by the external service.
 
+Applications should avoid assuming that every failed request can safely be repeated.
+
 ---
 
 # Security
@@ -491,6 +634,8 @@ Recommended practices include:
 
 Connections should be treated as privileged boundaries between BindAI and external systems.
 
+When a connection is exposed through an agent tool, the tool should provide an intentionally limited interface rather than unrestricted external access.
+
 ---
 
 # External Data
@@ -508,6 +653,8 @@ Applications should consider:
 * Cross-system data flow
 
 Only the data required for the operation should be transmitted.
+
+Applications should also avoid unnecessarily exposing external-service responses to agents or other components.
 
 ---
 
@@ -601,6 +748,30 @@ Useful tests include:
 * Cleanup
 * Error handling
 
+Registry behavior should also be tested where dynamic connection lookup is used.
+
+Useful registry tests include:
+
+* Registering a connection type
+* Looking up a registered type
+* Listing registered names
+* Rejecting an empty connection name
+* Handling unknown connection names
+
+Manager behavior should also be tested independently.
+
+Useful manager tests include:
+
+* Adding connections
+* Looking up managed connections
+* Checking membership
+* Connecting and disconnecting
+* Removing connections
+* Disconnecting all connections
+* Clearing the manager
+* Listing managed names
+* Reporting manager size
+
 External API calls should generally be mocked in unit tests.
 
 Integration tests can be used separately when real external services are required.
@@ -670,9 +841,19 @@ class ExampleConnection(Connection):
         ...
 ```
 
-The implementation can then be registered with `ConnectionRegistry`.
+The implementation can then be registered with `ConnectionRegistry`:
+
+```python
+ConnectionRegistry.register("example", ExampleConnection)
+```
 
 The exact registration and integration details should follow the current package implementation.
+
+If registration is performed during package initialization, applications can then retrieve the connection type dynamically:
+
+```python
+connection_type = ConnectionRegistry.provider("example")
+```
 
 ---
 
@@ -703,10 +884,21 @@ The current Connections package provides:
 * `ConnectionRegistry`
 * `ConnectionManager`
 
-### Integrations
+### Public Connection Classes
+
+* `WebhookConnection`
+* `GitHubConnection`
+* `SlackConnection`
+* `NotionConnection`
+* `JiraConnection`
+* `DiscordConnection`
+* `ResendConnection`
+* `VercelConnection`
+* `NetlifyConnection`
+
+### Currently Registered Connection Types
 
 * Webhooks
-* GitHub
 * Slack
 * Notion
 * Jira
@@ -714,6 +906,8 @@ The current Connections package provides:
 * Resend
 * Vercel
 * Netlify
+
+`GitHubConnection` is publicly available but is not currently registered with `ConnectionRegistry`.
 
 These integrations provide a foundation for connecting BindAI applications and workflows to external systems.
 
@@ -738,7 +932,41 @@ Future integrations should follow the same common connection architecture where 
 
 # API Accuracy
 
-The Connections package currently provides the abstractions described in this document.
+The Connections package currently provides the abstractions and APIs described in this document.
+
+The public package exposes:
+
+```python
+from bindai_connections import (
+    Connection,
+    ConnectionManager,
+    ConnectionRegistry,
+    WebhookConnection,
+    GitHubConnection,
+    SlackConnection,
+    NotionConnection,
+    JiraConnection,
+    DiscordConnection,
+    ResendConnection,
+    VercelConnection,
+    NetlifyConnection,
+)
+```
+
+The registry and manager serve different purposes:
+
+```text
+ConnectionRegistry
+        |
+        v
+Connection Types
+        |
+        v
+ConnectionManager
+        |
+        v
+Connection Instances
+```
 
 This documentation intentionally avoids assuming higher-level APIs such as:
 
@@ -775,9 +1003,11 @@ Connection
 External Service
 ```
 
+`ConnectionRegistry` provides named connection types for dynamic lookup, while `ConnectionManager` manages active connection instances.
+
 Connections can be combined with tools, agents, and workflows to build AI applications that interact with external systems.
 
-The current package includes integrations for:
+The current package publicly exposes integrations for:
 
 * Webhooks
 * GitHub
@@ -788,5 +1018,7 @@ The current package includes integrations for:
 * Resend
 * Vercel
 * Netlify
+
+The package currently registers all of these except `GitHubConnection`, which remains publicly importable but is not registered for dynamic registry lookup.
 
 By keeping external-service communication behind a common interface, BindAI can add integrations incrementally while keeping application and workflow logic independent from individual service implementations.

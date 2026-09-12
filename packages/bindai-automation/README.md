@@ -1,6 +1,6 @@
 # BindAI Automation
 
-Automation definitions, execution state, run history, and event-trigger primitives for BindAI.
+Automation definitions, execution state, run history, background execution, and event-trigger primitives for BindAI.
 
 ## Automation Definitions
 
@@ -90,14 +90,11 @@ from bindai_automation import AutomationStateStore
 
 
 class CustomAutomationStateStore(AutomationStateStore):
-    def save(self, run):
-        ...
+    def save(self, run): ...
 
-    def load(self, run_id):
-        ...
+    def load(self, run_id): ...
 
-    def delete(self, run_id):
-        ...
+    def delete(self, run_id): ...
 ```
 
 The state store is intentionally separate from `AutomationRun`. This allows execution state to be stored in memory or backed by another persistence system without coupling the run model to a specific storage implementation.
@@ -126,7 +123,7 @@ store.delete(run.id)
 assert store.load(run.id) is None
 ```
 
-The in-memory store is intended as the current lightweight implementation and as a foundation for future persistent storage backends.
+The in-memory store is intended as a lightweight implementation and as a foundation for future persistent storage backends.
 
 ## Automation Run History
 
@@ -137,14 +134,11 @@ from bindai_automation import AutomationRunHistory
 
 
 class CustomAutomationRunHistory(AutomationRunHistory):
-    def record(self, run):
-        ...
+    def record(self, run): ...
 
-    def get(self, run_id):
-        ...
+    def get(self, run_id): ...
 
-    def list(self):
-        ...
+    def list(self): ...
 ```
 
 Run history is intentionally separate from `AutomationStateStore`.
@@ -203,6 +197,70 @@ assert stored.output == {"result": "done"}
 
 The in-memory implementation is intentionally lightweight and provides the foundation for future persistent run-history backends.
 
+## Automation Worker
+
+`AutomationWorker` executes automation definitions either synchronously or in background threads.
+
+### Synchronous execution
+
+```python
+from bindai_automation import AutomationWorker
+
+worker = AutomationWorker()
+
+run = worker.run(automation)
+
+assert run.status == "completed"
+```
+
+### Background execution
+
+Use `submit()` to execute an automation in the worker thread pool:
+
+```python
+worker = AutomationWorker(max_workers=4)
+
+future = worker.submit(automation)
+
+run = future.result(timeout=5)
+
+assert run.status == "completed"
+```
+
+The worker manages the lifecycle of each `AutomationRun`:
+
+1. Creates the run.
+2. Persists its initial state.
+3. Marks the run as `running`.
+4. Executes the automation definition.
+5. Records success or failure.
+6. Persists the final state.
+7. Records the completed or failed run in history.
+
+Custom state and history implementations can be supplied:
+
+```python
+worker = AutomationWorker(
+    state_store=custom_state_store,
+    history=custom_history,
+)
+```
+
+Workers should be shut down when they are no longer needed:
+
+```python
+worker.shutdown()
+```
+
+They can also be used as context managers:
+
+```python
+with AutomationWorker() as worker:
+    run = worker.run(automation)
+```
+
+The current worker provides lightweight in-process background execution using Python's `ThreadPoolExecutor`. Distributed workers, durable queues, and persistent worker infrastructure are future capabilities.
+
 ## Event Triggers
 
 `EventTrigger` listens to a `bindai-core` event bus and invokes a callable target when the configured event is published.
@@ -246,6 +304,7 @@ Triggers can be temporarily disabled without detaching them:
 
 ```python
 trigger.disable()
+
 trigger.enable()
 ```
 
@@ -312,17 +371,24 @@ The package currently provides:
 * `MemoryAutomationStateStore` — in-memory automation state implementation
 * `AutomationRunHistory` — history contract for recorded automation runs
 * `MemoryAutomationRunHistory` — in-memory automation run-history implementation
+* `AutomationWorker` — synchronous and in-process background automation execution
 * `Trigger` — base trigger abstraction
 * `EventTrigger` — event-driven trigger implementation
 * `TriggerRegistry` — registry for named triggers
 
 These primitives provide the foundation for stateful, historical, event-driven automation in BindAI.
 
+## Current Limitations
+
 The package currently does not provide:
 
 * persistent database-backed automation state
 * persistent database-backed run history
-* background automation workers
-* scheduled execution
+* distributed or durable background workers
+* built-in scheduled execution
 * advanced event routing
-* built-in retry handling
+* built-in retry policies
+* distributed execution queues
+* durable workflow recovery
+
+These capabilities can be added on top of the existing automation contracts without coupling the core run model to a specific persistence or execution infrastructure.

@@ -24,6 +24,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "pyyaml>=6.0.3",
     "typer>=0.27.0",
+    "bindai-api",
 ]
 
 [project.optional-dependencies]
@@ -67,6 +68,7 @@ members = [
     "packages/providers/bindai-provider-openrouter",
     "packages/providers/bindai-provider-google",
     "packages/providers/bindai-provider-groq",
+    "packages/bindai-api",
 ]
 
 [tool.uv.sources]
@@ -101,6 +103,7 @@ bindai-provider-ollama = { workspace = true, editable = true }
 bindai-provider-openrouter = { workspace = true, editable = true }
 bindai-provider-google = { workspace = true }
 bindai-provider-groq = { workspace = true }
+bindai-api = { workspace = true }
 
 [dependency-groups]
 dev = [

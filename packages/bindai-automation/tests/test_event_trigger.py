@@ -146,6 +146,7 @@ def test_detach_is_idempotent():
     trigger.detach()
     trigger.detach()
 
+
 def test_event_trigger_can_start_runtime_executable():
     bus = EventBus()
     executed = []
@@ -168,6 +169,7 @@ def test_event_trigger_can_start_runtime_executable():
     )
 
     assert executed == [{"action": "run"}]
+
 
 def test_target_failure_does_not_break_event_bus():
     bus = EventBus()

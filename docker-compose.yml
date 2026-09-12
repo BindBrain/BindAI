@@ -1,0 +1,10 @@
+services:
+  bindai-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bindai-api:0.1.0
+    ports:
+      - "8000:8000"
+    environment:
+      BINDAI_API_KEY: ${BINDAI_API_KEY}

@@ -2,6 +2,7 @@
 name = "bindai-automation"
 version = "0.1.0"
 description = "BindAI Automation and Trigger Framework"
+readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [

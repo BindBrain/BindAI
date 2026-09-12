@@ -180,4 +180,3 @@ def test_resolve_provider_explicit_values_override_defaults(monkeypatch):
     assert configuration.organization == "explicit-org"
     assert configuration.model == "explicit-model"
     assert configuration.timeout == 99
-
