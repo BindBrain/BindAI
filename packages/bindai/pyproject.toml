@@ -1,6 +1,6 @@
 [project]
 name = "bindai"
-version = "0.1.5"
+version = "0.1.6"
 description = "BindAI Framework"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
@@ -19,7 +19,27 @@ dependencies = [
     "bindai-task>=0.1.0",
     "bindai-workflow>=0.1.0",
     "bindai-retrieval>=0.1.0",
-	"bindai-cli>=0.1.0",
+    "bindai-cli>=0.1.0",
+]
+
+[project.optional-dependencies]
+anthropic = [
+    "bindai-provider-anthropic>=0.1.0",
+]
+google = [
+    "bindai-provider-google>=0.1.0",
+]
+groq = [
+    "bindai-provider-groq>=0.1.0",
+]
+ollama = [
+    "bindai-provider-ollama>=0.1.0",
+]
+openai = [
+    "bindai-provider-openai>=0.1.0",
+]
+openrouter = [
+    "bindai-provider-openrouter>=0.1.0",
 ]
 
 [build-system]

@@ -2,6 +2,7 @@
 name = "bindai-provider-google"
 version = "0.1.0"
 description = "Google Gemini provider for BindAI"
+readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [
@@ -17,4 +18,5 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [project.entry-points."bindai.providers"]
+
 google = "bindai_provider_google:register"

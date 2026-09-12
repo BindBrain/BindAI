@@ -333,7 +333,7 @@ wheels = [
 
 [[package]]
 name = "bindai"
-version = "0.1.5"
+version = "0.1.6"
 source = { editable = "packages/bindai" }
 dependencies = [
     { name = "bindai-agent" },
@@ -352,6 +352,26 @@ dependencies = [
     { name = "bindai-workflow" },
 ]
 
+[package.optional-dependencies]
+anthropic = [
+    { name = "bindai-provider-anthropic" },
+]
+google = [
+    { name = "bindai-provider-google" },
+]
+groq = [
+    { name = "bindai-provider-groq" },
+]
+ollama = [
+    { name = "bindai-provider-ollama" },
+]
+openai = [
+    { name = "bindai-provider-openai" },
+]
+openrouter = [
+    { name = "bindai-provider-openrouter" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "bindai-agent", editable = "packages/bindai-agent" },
@@ -364,11 +384,18 @@ requires-dist = [
     { name = "bindai-memory", editable = "packages/bindai-memory" },
     { name = "bindai-model", editable = "packages/bindai-model" },
     { name = "bindai-project", editable = "packages/bindai-project" },
+    { name = "bindai-provider-anthropic", marker = "extra == 'anthropic'", editable = "packages/providers/bindai-provider-anthropic" },
+    { name = "bindai-provider-google", marker = "extra == 'google'", editable = "packages/providers/bindai-provider-google" },
+    { name = "bindai-provider-groq", marker = "extra == 'groq'", editable = "packages/providers/bindai-provider-groq" },
+    { name = "bindai-provider-ollama", marker = "extra == 'ollama'", editable = "packages/providers/bindai-provider-ollama" },
+    { name = "bindai-provider-openai", marker = "extra == 'openai'", editable = "packages/providers/bindai-provider-openai" },
+    { name = "bindai-provider-openrouter", marker = "extra == 'openrouter'", editable = "packages/providers/bindai-provider-openrouter" },
     { name = "bindai-retrieval", editable = "packages/bindai-retrieval" },
     { name = "bindai-runtime", editable = "packages/bindai-runtime" },
     { name = "bindai-task", editable = "packages/bindai-task" },
     { name = "bindai-workflow", editable = "packages/bindai-workflow" },
 ]
+provides-extras = ["anthropic", "google", "groq", "ollama", "openai", "openrouter"]
 
 [[package]]
 name = "bindai-agent"
