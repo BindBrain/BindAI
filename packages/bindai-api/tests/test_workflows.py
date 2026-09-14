@@ -118,3 +118,19 @@ def test_workflow_run(monkeypatch) -> None:
     }
 
     WorkflowRegistry.clear()
+
+
+def test_workflows_require_api_key(monkeypatch) -> None:
+    monkeypatch.setenv(
+        "BINDAI_API_KEY",
+        TEST_API_KEY,
+    )
+
+    client = TestClient(app)
+
+    response = client.get("/api/v1/workflows")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid or missing API key.",
+    }

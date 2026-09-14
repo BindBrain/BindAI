@@ -82,3 +82,19 @@ def test_get_project(monkeypatch) -> None:
     assert response.json() == {
         "name": "test-project",
     }
+
+
+def test_projects_require_api_key(monkeypatch) -> None:
+    monkeypatch.setenv(
+        "BINDAI_API_KEY",
+        TEST_API_KEY,
+    )
+
+    client = TestClient(app)
+
+    response = client.get("/api/v1/projects/missing")
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "detail": "Invalid or missing API key.",
+    }
