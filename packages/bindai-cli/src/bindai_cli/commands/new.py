@@ -22,7 +22,7 @@ def new(
         "--install",
         help="Install dependencies.",
     ),
-):
+) -> None:
     """
     Create a new BindAI project.
     """
@@ -42,39 +42,68 @@ def new(
 
     console.print("[cyan]Creating virtual environment...[/cyan]")
 
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "venv",
-            str(root / ".venv"),
-        ],
-        check=False,
-    )
+    try:
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "venv",
+                str(root / ".venv"),
+            ],
+            check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        console.print(
+            "[red]Failed to create the virtual environment.[/red]"
+        )
+        console.print(
+            f"Project '{name}' was created, but setup is incomplete."
+        )
+        console.print(f"Command exited with status {exc.returncode}.")
+        raise typer.Exit(1) from exc
 
     print()
 
-    console.print(f"[green]✓ Project '{name}' created successfully.[/green]")
+    if install:
+        console.print("[cyan]Installing dependencies...[/cyan]")
 
-    console.print()
+        try:
+            subprocess.run(
+                [
+                    str(root / ".venv" / "Scripts" / "python"),
+                    "-m",
+                    "pip",
+                    "install",
+                    "-r",
+                    str(root / "requirements.txt"),
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            console.print(
+                "[red]Failed to install project dependencies.[/red]"
+            )
+            console.print(
+                f"Project '{name}' was created, but setup is incomplete."
+            )
+            console.print(f"Command exited with status {exc.returncode}.")
+            raise typer.Exit(1) from exc
+
+        print()
+
+    console.print(
+        f"[green]✓ Project '{name}' created successfully.[/green]"
+    )
+
+    print()
 
     console.print("[bold]Next steps:[/bold]")
 
     console.print(f"  cd {name}")
     console.print("  .venv\\Scripts\\activate")
-    console.print("  pip install -r requirements.txt")
+
+    if not install:
+        console.print("  pip install -r requirements.txt")
+
     console.print("  bindai doctor")
     console.print("  python main.py")
-
-    if install:
-        subprocess.run(
-            [
-                str(root / ".venv" / "Scripts" / "python"),
-                "-m",
-                "pip",
-                "install",
-                "-r",
-                str(root / "requirements.txt"),
-            ],
-            check=False,
-        )

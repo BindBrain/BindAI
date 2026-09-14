@@ -1,5 +1,8 @@
-from bindai_cli.commands.new import app
+import subprocess
+
 from typer.testing import CliRunner
+
+from bindai_cli.commands.new import app
 
 runner = CliRunner()
 
@@ -8,6 +11,7 @@ def test_new_creates_project(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     def fake_run(*args, **kwargs):
+        assert kwargs["check"] is True
         return None
 
     monkeypatch.setattr(
@@ -62,3 +66,59 @@ def test_new_replaces_project_name_placeholder(tmp_path, monkeypatch):
     assert "my-agent" in bindai_toml
     assert "{{ project_name }}" not in bindai_toml
     assert "{{PROJECT_NAME}}" not in bindai_toml
+
+
+def test_new_reports_virtual_environment_failure(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def fail_run(*args, **kwargs):
+        assert kwargs["check"] is True
+        raise subprocess.CalledProcessError(
+            returncode=1,
+            cmd=args[0],
+        )
+
+    monkeypatch.setattr(
+        "bindai_cli.commands.new.subprocess.run",
+        fail_run,
+    )
+
+    result = runner.invoke(app, ["demo"])
+
+    assert result.exit_code == 1
+    assert "Failed to create the virtual environment" in result.stdout
+    assert "setup is incomplete" in result.stdout
+    assert "created successfully" not in result.stdout
+    assert (tmp_path / "demo").exists()
+
+
+def test_new_reports_dependency_install_failure(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    calls = []
+
+    def fail_install(args, **kwargs):
+        assert kwargs["check"] is True
+        calls.append(args)
+
+        if len(calls) == 1:
+            return None
+
+        raise subprocess.CalledProcessError(
+            returncode=1,
+            cmd=args,
+        )
+
+    monkeypatch.setattr(
+        "bindai_cli.commands.new.subprocess.run",
+        fail_install,
+    )
+
+    result = runner.invoke(app, ["--install", "demo"])
+
+    assert result.exit_code == 1
+    assert "Failed to install project dependencies" in result.stdout
+    assert "setup is incomplete" in result.stdout
+    assert "created successfully" not in result.stdout
+    assert len(calls) == 2
+    assert (tmp_path / "demo").exists()
