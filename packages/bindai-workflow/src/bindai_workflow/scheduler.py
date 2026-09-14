@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from .schedule import WorkflowSchedule
 
@@ -27,7 +27,7 @@ class WorkflowScheduler:
         self,
     ) -> list[WorkflowSchedule]:
 
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
 
         due = []
 
