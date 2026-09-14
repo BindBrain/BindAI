@@ -102,6 +102,21 @@ class WorkflowExecutor:
                 "Workflow is not waiting.",
             )
 
+        task = context.task
+
+        if task is not None and getattr(
+            task,
+            "completed",
+            False,
+        ):
+            node = instance.workflow.get(
+                task.node_id,
+            )
+
+            context.execution_queue.extend(
+                node.next_nodes,
+            )
+
         context.waiting = False
 
         return self._run(

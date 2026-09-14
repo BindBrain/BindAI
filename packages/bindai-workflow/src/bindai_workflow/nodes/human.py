@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from ..node import WorkflowNode
 from ..task import HumanTask
@@ -38,7 +38,8 @@ class HumanTaskNode(
             ),
             workflow_instance=context.instance.id,
             node_id=self.id,
-            created_at=datetime.utcnow(),
+            assignee=self.assignee,
+            created_at=datetime.now(UTC),
         )
 
         context.task = task
