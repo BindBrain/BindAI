@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from bindai_workflow import (
     WorkflowBuilder,
@@ -48,18 +48,9 @@ workflow = (
 
 scheduler = WorkflowScheduler()
 
-#
-# NOTE
-#
-# WorkflowScheduler currently uses datetime.utcnow()
-# internally, so this template intentionally uses the
-# same naive datetime until the scheduler is migrated
-# to timezone-aware timestamps.
-#
-
 schedule = WorkflowSchedule(
     workflow_id=workflow.id,
-    next_run=datetime.utcnow(),
+    next_run=datetime.now(UTC),
     interval_seconds=60,
 )
 

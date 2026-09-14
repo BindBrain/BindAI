@@ -1,1 +1,0 @@
-WorkflowScheduler should migrate from datetime.utcnow() to datetime.now(UTC) to match the rest of the workflow package.

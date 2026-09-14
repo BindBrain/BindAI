@@ -4,12 +4,11 @@ Demonstrates the built-in workflow scheduler.
 
 ## Flow
 
-```
+```text
 Scheduler
     │
     ▼
 Workflow
-```
 
 The scheduler keeps a list of workflow schedules.
 
