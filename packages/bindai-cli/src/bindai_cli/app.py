@@ -2,7 +2,7 @@ import typer
 
 from bindai_cli.commands.doctor import app as doctor_app
 from bindai_cli.commands.inspect import app as inspect_app
-from bindai_cli.commands.new import app as new_app
+from bindai_cli.commands.new import new
 from bindai_cli.commands.run import app as run_app
 from bindai_cli.commands.template import app as template_app
 from bindai_cli.commands.version import app as version_app
@@ -23,10 +23,9 @@ app.add_typer(
     name="doctor",
 )
 
-app.add_typer(
-    new_app,
+app.command(
     name="new",
-)
+)(new)
 
 app.add_typer(
     run_app,

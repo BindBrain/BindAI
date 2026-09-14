@@ -10,10 +10,6 @@ from bindai_cli.utils.scaffold import copy_scaffold
 
 console = Console()
 
-app = typer.Typer(
-    invoke_without_command=True,
-)
-
 
 def _venv_python(root: Path) -> Path:
     bin_dir = "Scripts" if os.name == "nt" else "bin"
@@ -26,7 +22,6 @@ def _activation_command() -> str:
     return "source .venv/bin/activate"
 
 
-@app.callback()
 def new(
     name: str,
     install: bool = typer.Option(
