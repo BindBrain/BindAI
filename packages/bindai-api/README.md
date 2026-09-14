@@ -19,3 +19,8 @@ Set:
 
 ```text
 BINDAI_API_KEY=your-api-key
+
+## Deployment notes
+
+- The API does not provide built-in rate limiting. Production deployments should place it behind an appropriate reverse proxy, API gateway, or rate-limiting layer.
+- Application, project, and automation state is kept in process memory. Run the API with a single worker unless this state is managed externally.
