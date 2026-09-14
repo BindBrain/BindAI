@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hmac
 import os
 
 from fastapi import Header, HTTPException, status
@@ -15,7 +16,7 @@ def require_api_key(
 
     expected = f"Bearer {configured_key}"
 
-    if authorization != expected:
+    if not hmac.compare_digest(authorization or "", expected):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API key.",

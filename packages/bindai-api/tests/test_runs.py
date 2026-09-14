@@ -214,3 +214,24 @@ def test_runs_require_api_key(monkeypatch) -> None:
     assert response.json() == {
         "detail": "Invalid or missing API key.",
     }
+
+
+def test_runs_fail_when_api_key_is_not_configured(monkeypatch) -> None:
+    monkeypatch.delenv(
+        "BINDAI_API_KEY",
+        raising=False,
+    )
+
+    client = TestClient(app)
+
+    try:
+        client.get(
+            "/api/v1/runs/missing",
+            headers=AUTH_HEADERS,
+        )
+    except RuntimeError as exc:
+        assert str(exc) == "BINDAI_API_KEY is not configured."
+    else:
+        raise AssertionError(
+            "Expected RuntimeError when BINDAI_API_KEY is not configured."
+        )
