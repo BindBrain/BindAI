@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +13,17 @@ console = Console()
 app = typer.Typer(
     invoke_without_command=True,
 )
+
+
+def _venv_python(root: Path) -> Path:
+    bin_dir = "Scripts" if os.name == "nt" else "bin"
+    return root / ".venv" / bin_dir / "python"
+
+
+def _activation_command() -> str:
+    if os.name == "nt":
+        return ".venv\\Scripts\\activate"
+    return "source .venv/bin/activate"
 
 
 @app.callback()
@@ -70,7 +82,7 @@ def new(
         try:
             subprocess.run(
                 [
-                    str(root / ".venv" / "Scripts" / "python"),
+                    str(_venv_python(root)),
                     "-m",
                     "pip",
                     "install",
@@ -100,7 +112,7 @@ def new(
     console.print("[bold]Next steps:[/bold]")
 
     console.print(f"  cd {name}")
-    console.print("  .venv\\Scripts\\activate")
+    console.print(f"  {_activation_command()}")
 
     if not install:
         console.print("  pip install -r requirements.txt")

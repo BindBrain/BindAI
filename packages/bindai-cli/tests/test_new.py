@@ -1,8 +1,9 @@
+import os
 import subprocess
 
 from typer.testing import CliRunner
 
-from bindai_cli.commands.new import app
+from bindai_cli.commands.new import app, _activation_command, _venv_python
 
 runner = CliRunner()
 
@@ -122,3 +123,31 @@ def test_new_reports_dependency_install_failure(tmp_path, monkeypatch):
     assert "created successfully" not in result.stdout
     assert len(calls) == 2
     assert (tmp_path / "demo").exists()
+
+
+def test_venv_python_uses_windows_layout(tmp_path, monkeypatch):
+    monkeypatch.setattr("bindai_cli.commands.new.os.name", "nt")
+
+    assert _venv_python(tmp_path) == (
+        tmp_path / ".venv" / "Scripts" / "python"
+    )
+
+
+def test_venv_python_uses_posix_layout(tmp_path, monkeypatch):
+    monkeypatch.setattr("bindai_cli.commands.new.os.name", "posix")
+
+    assert _venv_python(tmp_path) == (
+        tmp_path / ".venv" / "bin" / "python"
+    )
+
+
+def test_activation_command_uses_windows_layout(monkeypatch):
+    monkeypatch.setattr("bindai_cli.commands.new.os.name", "nt")
+
+    assert _activation_command() == ".venv\\Scripts\\activate"
+
+
+def test_activation_command_uses_posix_layout(monkeypatch):
+    monkeypatch.setattr("bindai_cli.commands.new.os.name", "posix")
+
+    assert _activation_command() == "source .venv/bin/activate"
