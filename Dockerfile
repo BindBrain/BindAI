@@ -4,9 +4,12 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --no-cache-dir uv
+RUN pip install --no-cache-dir uv \
+    && uv sync --frozen \
+    && useradd --create-home --shell /bin/bash bindai \
+    && chown -R bindai:bindai /app
 
-RUN uv sync --frozen
+USER bindai
 
 EXPOSE 8000
 
