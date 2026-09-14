@@ -8,7 +8,7 @@ The CLI is designed to provide a convenient developer workflow around the BindAI
 
 The BindAI CLI provides commands for common development tasks, including:
 
-* Project initialization
+* Project creation
 * Project scaffolding
 * BindAI environment inspection
 * Framework diagnostics
@@ -50,14 +50,6 @@ Inspect the current BindAI environment or project:
 
 ```bash
 bindai inspect
-```
-
-### Initialize
-
-Initialize a BindAI project:
-
-```bash
-bindai init
 ```
 
 ### Create a Project
