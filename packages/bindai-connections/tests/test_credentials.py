@@ -14,89 +14,105 @@ def test_in_memory_store_implements_provider_credential_store():
 def test_store_and_get_credential():
     store = InMemoryProviderCredentialStore()
 
-    store.set("openai", "secret-key")
+    store.set("work", "secret-key")
 
-    assert store.get("openai") == "secret-key"
+    assert store.get("work") == "secret-key"
 
 
-def test_provider_names_are_case_insensitive():
+def test_connection_names_are_case_insensitive():
     store = InMemoryProviderCredentialStore()
 
-    store.set("OpenAI", "secret-key")
+    store.set("Work", "secret-key")
 
-    assert store.get("openai") == "secret-key"
-    assert store.get("OPENAI") == "secret-key"
-    assert store.exists("OpenAI")
+    assert store.get("work") == "secret-key"
+    assert store.get("WORK") == "secret-key"
+    assert store.exists("Work")
 
 
-def test_provider_names_are_trimmed():
+def test_connection_names_are_trimmed():
     store = InMemoryProviderCredentialStore()
 
-    store.set("  openai  ", "secret-key")
+    store.set("  work  ", "secret-key")
 
-    assert store.get("openai") == "secret-key"
+    assert store.get("work") == "secret-key"
+
+
+def test_multiple_connections_can_store_independent_credentials():
+    store = InMemoryProviderCredentialStore()
+
+    store.set("work", "work-secret")
+    store.set("personal", "personal-secret")
+
+    assert store.get("work") == "work-secret"
+    assert store.get("personal") == "personal-secret"
 
 
 def test_missing_credential_returns_none():
     store = InMemoryProviderCredentialStore()
 
-    assert store.get("openai") is None
-    assert not store.exists("openai")
+    assert store.get("work") is None
+    assert not store.exists("work")
 
 
 def test_delete_removes_credential():
     store = InMemoryProviderCredentialStore()
 
-    store.set("openai", "secret-key")
-    store.delete("openai")
+    store.set("work", "secret-key")
+    store.delete("work")
 
-    assert store.get("openai") is None
-    assert not store.exists("openai")
+    assert store.get("work") is None
+    assert not store.exists("work")
 
 
 def test_delete_missing_credential_is_safe():
     store = InMemoryProviderCredentialStore()
 
-    store.delete("openai")
+    store.delete("work")
 
-    assert not store.exists("openai")
+    assert not store.exists("work")
 
 
-def test_list_returns_provider_names_only():
+def test_list_returns_connection_names_only():
     store = InMemoryProviderCredentialStore()
 
-    store.set("openai", "openai-secret")
-    store.set("anthropic", "anthropic-secret")
+    store.set("work", "work-secret")
+    store.set("personal", "personal-secret")
 
-    providers = store.list()
+    connections = store.list()
 
-    assert providers == ["openai", "anthropic"]
-    assert "openai-secret" not in providers
-    assert "anthropic-secret" not in providers
+    assert connections == ["work", "personal"]
+    assert "work-secret" not in connections
+    assert "personal-secret" not in connections
 
 
-def test_set_replaces_existing_credential():
+def test_set_replaces_existing_connection_credential():
     store = InMemoryProviderCredentialStore()
 
-    store.set("openai", "old-secret")
-    store.set("openai", "new-secret")
+    store.set("work", "old-secret")
+    store.set("work", "new-secret")
 
-    assert store.get("openai") == "new-secret"
+    assert store.get("work") == "new-secret"
 
 
 @pytest.mark.parametrize(
-    "provider",
+    "connection_name",
     ["", "   "],
 )
-def test_empty_provider_is_rejected(provider):
+def test_empty_connection_name_is_rejected(connection_name):
     store = InMemoryProviderCredentialStore()
 
-    with pytest.raises(ValueError, match="Provider cannot be empty"):
-        store.set(provider, "secret-key")
+    with pytest.raises(
+        ValueError,
+        match="Connection name cannot be empty",
+    ):
+        store.set(connection_name, "secret-key")
 
 
 def test_empty_credential_is_rejected():
     store = InMemoryProviderCredentialStore()
 
-    with pytest.raises(ValueError, match="Credential cannot be empty"):
-        store.set("openai", "")
+    with pytest.raises(
+        ValueError,
+        match="Credential cannot be empty",
+    ):
+        store.set("work", "")

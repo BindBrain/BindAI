@@ -4,7 +4,7 @@ from .credentials import ProviderCredentialStore
 
 
 class KeyringProviderCredentialStore(ProviderCredentialStore):
-    """Store provider credentials using the operating system credential store."""
+    """Store connection credentials using the operating system credential store."""
 
     SERVICE_NAME = "bindai"
 
@@ -14,42 +14,46 @@ class KeyringProviderCredentialStore(ProviderCredentialStore):
 
         self._service_name = service_name
 
-    def set(self, provider: str, credential: str) -> None:
-        self._validate_provider(provider)
+    def set(self, connection_name: str, credential: str) -> None:
+        self._validate_connection_name(connection_name)
         self._validate_credential(credential)
 
         self._keyring().set_password(
             self._service_name,
-            self._normalize_provider(provider),
+            self._normalize_connection_name(connection_name),
             credential,
         )
 
-    def get(self, provider: str) -> str | None:
-        provider_name = self._normalize_provider(provider)
+    def get(self, connection_name: str) -> str | None:
+        normalized_name = self._normalize_connection_name(
+            connection_name,
+        )
 
         return self._keyring().get_password(
             self._service_name,
-            provider_name,
+            normalized_name,
         )
 
-    def delete(self, provider: str) -> None:
-        provider_name = self._normalize_provider(provider)
+    def delete(self, connection_name: str) -> None:
+        normalized_name = self._normalize_connection_name(
+            connection_name,
+        )
         keyring = self._keyring()
 
         try:
             keyring.delete_password(
                 self._service_name,
-                provider_name,
+                normalized_name,
             )
         except keyring.errors.PasswordDeleteError:
             return
 
-    def exists(self, provider: str) -> bool:
-        return self.get(provider) is not None
+    def exists(self, connection_name: str) -> bool:
+        return self.get(connection_name) is not None
 
     def list(self) -> list[str]:
         """
-        Return provider names stored by this backend.
+        Return connection names stored by this backend.
 
         The keyring API does not provide a portable way to enumerate
         credentials, so this backend intentionally does not attempt it.
@@ -57,17 +61,17 @@ class KeyringProviderCredentialStore(ProviderCredentialStore):
         return []
 
     @staticmethod
-    def _normalize_provider(provider: str) -> str:
-        provider_name = provider.strip().lower()
+    def _normalize_connection_name(connection_name: str) -> str:
+        normalized_name = connection_name.strip().lower()
 
-        if not provider_name:
-            raise ValueError("Provider cannot be empty.")
+        if not normalized_name:
+            raise ValueError("Connection name cannot be empty.")
 
-        return provider_name
+        return normalized_name
 
     @classmethod
-    def _validate_provider(cls, provider: str) -> None:
-        cls._normalize_provider(provider)
+    def _validate_connection_name(cls, connection_name: str) -> None:
+        cls._normalize_connection_name(connection_name)
 
     @staticmethod
     def _validate_credential(credential: str) -> None:

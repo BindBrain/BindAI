@@ -32,7 +32,7 @@ def add_connection(
     ),
 ) -> None:
     """
-    Store a provider credential and register its non-secret metadata.
+    Store a connection credential and register its non-secret metadata.
     """
     provider_name = provider.strip().lower()
 
@@ -65,7 +65,7 @@ def add_connection(
     )
 
     store.set(
-        provider_name,
+        connection_name,
         credential,
     )
 
@@ -101,7 +101,7 @@ def list_connections() -> None:
     for connection in connections:
         credential_status = (
             "Configured"
-            if store.exists(connection.provider)
+            if store.exists(connection.name)
             else "Missing"
         )
 
@@ -122,7 +122,7 @@ def remove_connection(
     ),
 ) -> None:
     """
-    Remove a provider connection and its stored credential.
+    Remove a named provider connection and its stored credential.
     """
     manifest = ConnectionManifest(
         Path.cwd() / ".bindai" / "connections.toml",
@@ -136,25 +136,7 @@ def remove_connection(
             f'Connection "{name}" not found.',
         )
 
-    provider_connections = [
-        existing
-        for existing in manifest.list()
-        if existing.provider == connection.provider
-        and existing.name != connection.name
-    ]
-
-    if provider_connections:
-        names = ", ".join(
-            existing.name
-            for existing in provider_connections
-        )
-
-        raise typer.BadParameter(
-            f'Cannot remove "{connection.name}" because provider '
-            f'"{connection.provider}" is also used by: {names}.',
-        )
-
-    store.delete(connection.provider)
+    store.delete(connection.name)
     manifest.remove(connection.name)
 
     console.print(
