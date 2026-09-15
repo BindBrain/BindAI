@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from bindai_config import ProjectConfig, ProjectRuntime, TomlLoader
 
 
@@ -87,7 +88,7 @@ knowledge = ".knowledge"
 templates = ".templates"
 workflows = ".workflows"
 agents = ".agents"
-tools = ".tools"
+tools = "tools"
 """.strip()
         + "\n",
         encoding="utf-8",
@@ -107,7 +108,7 @@ tools = ".tools"
         templates=".templates",
         workflows=".workflows",
         agents=".agents",
-        tools=".tools",
+        tools="tools",
     )
 
 
@@ -174,3 +175,81 @@ name = "Assistant"
     assert config.agent.name == "Assistant"
     assert config.agent.instructions == ""
     assert config.agent.model is None
+
+
+def test_toml_loader_loads_application_without_agent(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+[project]
+name = "data-service"
+description = "A data service"
+type = "application"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    config = TomlLoader().load_application(config_path)
+
+    assert config.name == "data-service"
+    assert config.description == "A data service"
+    assert config.type == "application"
+    assert config.agent is None
+
+
+def test_toml_loader_rejects_missing_project(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+[agent]
+name = "Assistant"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match='Missing required "project" section',
+    ):
+        TomlLoader().load_application(config_path)
+
+
+def test_toml_loader_rejects_missing_project_name(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+[project]
+description = "Missing project name"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match='Missing required "project.name"',
+    ):
+        TomlLoader().load_application(config_path)
+
+
+def test_toml_loader_rejects_missing_agent_name(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+[project]
+name = "customer-support"
+
+[agent]
+instructions = "Help customers."
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match='Missing required "agent.name"',
+    ):
+        TomlLoader().load_application(config_path)

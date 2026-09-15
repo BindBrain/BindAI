@@ -18,15 +18,33 @@ class TomlLoader:
         with open(path, "rb") as f:
             data = tomllib.load(f)
 
-        project = data.get("project", {})
+        project = data.get("project")
+
+        if project is None:
+            raise ValueError(
+                'Missing required "project" section.'
+            )
+
+        if "name" not in project:
+            raise ValueError(
+                'Missing required "project.name".'
+            )
+
         agent = data.get("agent")
 
-        model = None
+        if agent is None:
+            agent_config = None
+        else:
+            if "name" not in agent:
+                raise ValueError(
+                    'Missing required "agent.name".'
+                )
 
-        if agent is not None:
             model_data = agent.get("model")
 
-            if model_data is not None:
+            if model_data is None:
+                model = None
+            else:
                 model = ModelConfig(**model_data)
 
             agent_config = ApplicationAgentConfig(
@@ -34,8 +52,6 @@ class TomlLoader:
                 instructions=agent.get("instructions", ""),
                 model=model,
             )
-        else:
-            agent_config = None
 
         return ApplicationConfig(
             name=project["name"],
