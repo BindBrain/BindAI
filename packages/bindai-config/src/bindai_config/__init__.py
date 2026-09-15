@@ -3,6 +3,11 @@ from .application import (
     ApplicationConfig,
     ModelConfig,
 )
+from .connections import (
+    ProviderConnection,
+    get_provider_connection,
+    list_provider_connections,
+)
 from .loader import ConfigLoader
 from .project import ProjectConfig
 from .resolver import ConfigResolver, ConfigValue
@@ -21,4 +26,7 @@ __all__ = [
     "ApplicationAgentConfig",
     "ApplicationConfig",
     "TomlWriter",
+    "ProviderConnection",
+    "get_provider_connection",
+    "list_provider_connections",
 ]

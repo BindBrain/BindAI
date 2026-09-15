@@ -3,22 +3,16 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from bindai_config import ProjectRuntime
+from bindai_config import (
+    ProjectRuntime,
+    get_provider_connection,
+)
 from bindai_providers import (
     ProviderConfiguration,
     ProviderRegistry,
     bootstrap,
 )
 from dotenv import load_dotenv
-
-_PROVIDER_ENV_KEYS = {
-    "openai": "OPENAI_API_KEY",
-    "anthropic": "ANTHROPIC_API_KEY",
-    "google": "GEMINI_API_KEY",
-    "groq": "GROQ_API_KEY",
-    "ollama": "OLLAMA_HOST",
-    "openrouter": "OPENROUTER_API_KEY",
-}
 
 
 def resolve_provider(
@@ -37,6 +31,7 @@ def resolve_provider(
     bootstrap()
 
     provider_name = provider.lower()
+    connection = get_provider_connection(provider_name)
 
     project = ProjectRuntime(Path.cwd()).config
 
@@ -44,26 +39,39 @@ def resolve_provider(
     env_endpoint = None
     env_organization = None
 
-    env_key = _PROVIDER_ENV_KEYS.get(provider_name)
+    if connection.api_key_env:
+        env_api_key = os.getenv(
+            connection.api_key_env,
+        )
 
-    if env_key:
-        value = os.getenv(env_key)
+    if connection.endpoint_env:
+        env_endpoint = os.getenv(
+            connection.endpoint_env,
+        )
 
-        if provider_name == "ollama":
-            env_endpoint = value
-        else:
-            env_api_key = value
-
-    if provider_name == "openai":
-        env_endpoint = os.getenv("OPENAI_BASE_URL")
-        env_organization = os.getenv("OPENAI_ORGANIZATION")
+    if connection.organization_env:
+        env_organization = os.getenv(
+            connection.organization_env,
+        )
 
     configuration = ProviderConfiguration(
         api_key=api_key if api_key is not None else env_api_key,
         endpoint=endpoint if endpoint is not None else env_endpoint,
-        organization=(organization if organization is not None else env_organization),
-        model=model if model is not None else project.model,
-        timeout=timeout if timeout is not None else project.timeout,
+        organization=(
+            organization
+            if organization is not None
+            else env_organization
+        ),
+        model=(
+            model
+            if model is not None
+            else project.model
+        ),
+        timeout=(
+            timeout
+            if timeout is not None
+            else project.timeout
+        ),
     )
 
     return ProviderRegistry.create(

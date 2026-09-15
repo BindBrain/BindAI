@@ -180,3 +180,23 @@ def test_resolve_provider_explicit_values_override_defaults(monkeypatch):
     assert configuration.organization == "explicit-org"
     assert configuration.model == "explicit-model"
     assert configuration.timeout == 99
+
+def test_resolve_provider_uses_connection_metadata(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "connection-key")
+
+    captured = {}
+
+    def fake_create(name, configuration=None, **kwargs):
+        captured["name"] = name
+        captured["configuration"] = configuration
+        return object()
+
+    monkeypatch.setattr(
+        "bindai_agent.provider_resolver.ProviderRegistry.create",
+        fake_create,
+    )
+
+    resolve_provider("openai")
+
+    assert captured["name"] == "openai"
+    assert captured["configuration"].api_key == "connection-key"
