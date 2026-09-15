@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from bindai_config import ProjectConfig, ProjectRuntime, TomlLoader
+from bindai_config import ProjectConfig, ProjectRuntime, TomlLoader, TomlWriter
 
 
 def test_project_config_defaults() -> None:
@@ -11,6 +11,7 @@ def test_project_config_defaults() -> None:
 
     assert config.name == "BindAI Project"
     assert config.provider == "openai"
+    assert config.connection is None
     assert config.model == "gpt-4.1-mini"
     assert config.temperature == 0.7
     assert config.timeout == 60
@@ -27,6 +28,7 @@ def test_project_config_accepts_custom_values() -> None:
     config = ProjectConfig(
         name="Custom Project",
         provider="anthropic",
+        connection="work",
         model="claude-sonnet",
         temperature=0.2,
         timeout=120,
@@ -41,6 +43,7 @@ def test_project_config_accepts_custom_values() -> None:
 
     assert config.name == "Custom Project"
     assert config.provider == "anthropic"
+    assert config.connection == "work"
     assert config.model == "claude-sonnet"
     assert config.temperature == 0.2
     assert config.timeout == 120
@@ -53,7 +56,9 @@ def test_project_config_accepts_custom_values() -> None:
     assert config.tools == ".tools"
 
 
-def test_project_runtime_uses_defaults_without_config(tmp_path: Path) -> None:
+def test_project_runtime_uses_defaults_without_config(
+    tmp_path: Path,
+) -> None:
     runtime = ProjectRuntime(tmp_path)
 
     assert runtime.project == ProjectConfig()
@@ -79,6 +84,7 @@ def test_toml_loader_loads_project_config(tmp_path: Path) -> None:
         """
 name = "Example Project"
 provider = "openai"
+connection = "work"
 model = "gpt-4.1"
 temperature = 0.4
 timeout = 90
@@ -99,6 +105,7 @@ tools = "tools"
     assert config == ProjectConfig(
         name="Example Project",
         provider="openai",
+        connection="work",
         model="gpt-4.1",
         temperature=0.4,
         timeout=90,
@@ -253,11 +260,14 @@ instructions = "Help customers."
         match='Missing required "agent.name"',
     ):
         TomlLoader().load_application(config_path)
+
+
 def test_toml_loader_loads_project_fields(tmp_path: Path) -> None:
     config_path = tmp_path / "bindai.toml"
     config_path.write_text(
         """
 name = "Example Project"
+connection = "work"
 temperature = 0.7
 """.strip()
         + "\n",
@@ -269,9 +279,11 @@ temperature = 0.7
     )
 
     assert config.name == "Example Project"
+    assert config.connection == "work"
     assert config.temperature == 0.7
     assert configured_fields == {
         "name",
+        "connection",
         "temperature",
     }
 
@@ -281,6 +293,7 @@ def test_project_runtime_tracks_configured_fields(tmp_path: Path) -> None:
     config_path.write_text(
         """
 name = "Example Project"
+connection = "work"
 temperature = 0.7
 """.strip()
         + "\n",
@@ -291,6 +304,7 @@ temperature = 0.7
 
     assert runtime.configured_fields == {
         "name",
+        "connection",
         "temperature",
     }
 
@@ -300,6 +314,7 @@ def test_project_runtime_resolver_reports_sources(tmp_path: Path) -> None:
     config_path.write_text(
         """
 name = "Example Project"
+connection = "work"
 temperature = 0.7
 """.strip()
         + "\n",
@@ -309,6 +324,7 @@ temperature = 0.7
     runtime = ProjectRuntime(tmp_path)
 
     assert runtime.resolver.resolve("name").source == "bindai.toml"
+    assert runtime.resolver.resolve("connection").source == "bindai.toml"
     assert runtime.resolver.resolve("temperature").source == "bindai.toml"
     assert runtime.resolver.resolve("model").source == "default"
 
@@ -321,6 +337,7 @@ def test_project_runtime_resolver_uses_environment(
     config_path.write_text(
         """
 model = "gpt-5"
+connection = "default"
 """.strip()
         + "\n",
         encoding="utf-8",
@@ -337,3 +354,25 @@ model = "gpt-5"
 
     assert result.value == "gpt-5-mini"
     assert result.source == "environment:BINDAI_MODEL"
+
+
+def test_toml_writer_sets_connection(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        'provider = "openai"\n'
+        'model = "gpt-4.1-mini"\n',
+        encoding="utf-8",
+    )
+
+    TomlWriter().set(
+        config_path,
+        "connection",
+        "work",
+    )
+
+    assert (
+        config_path.read_text(encoding="utf-8")
+        == 'provider = "openai"\n'
+        'model = "gpt-4.1-mini"\n'
+        'connection = "work"\n'
+    )

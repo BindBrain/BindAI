@@ -6,7 +6,7 @@ import tempfile
 import tomllib
 from dataclasses import fields
 from pathlib import Path
-from typing import Any, get_type_hints
+from typing import Any, get_args, get_type_hints
 
 from .project import ProjectConfig
 
@@ -84,7 +84,7 @@ class TomlWriter:
 
         self._atomic_write(path, content)
 
-    def _field_type(self, name: str) -> type[Any]:
+    def _field_type(self, name: str) -> Any:
         config_fields = {
             field.name: field
             for field in fields(ProjectConfig)
@@ -101,8 +101,26 @@ class TomlWriter:
         self,
         name: str,
         value: Any,
-        expected_type: type[Any],
+        expected_type: Any,
     ) -> None:
+        expected_types = get_args(expected_type)
+
+        if expected_types:
+            if type(value) not in expected_types:
+                type_names = ", ".join(
+                    expected_type.__name__
+                    for expected_type in expected_types
+                    if hasattr(expected_type, "__name__")
+                )
+
+                raise TypeError(
+                    f'Invalid value for configuration field "{name}": '
+                    f"expected {type_names}, "
+                    f"got {type(value).__name__}.",
+                )
+
+            return
+
         if type(value) is not expected_type:
             raise TypeError(
                 f'Invalid value for configuration field "{name}": '

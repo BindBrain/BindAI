@@ -9,6 +9,8 @@ class ProjectConfig:
 
     provider: str = "openai"
 
+    connection: str | None = None
+
     model: str = "gpt-4.1-mini"
 
     temperature: float = 0.7
