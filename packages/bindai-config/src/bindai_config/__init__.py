@@ -8,6 +8,7 @@ from .project import ProjectConfig
 from .resolver import ConfigResolver, ConfigValue
 from .runtime import ProjectRuntime
 from .toml_loader import TomlLoader
+from .toml_writer import TomlWriter
 
 __all__ = [
     "ConfigLoader",
@@ -19,4 +20,5 @@ __all__ = [
     "ModelConfig",
     "ApplicationAgentConfig",
     "ApplicationConfig",
+    "TomlWriter",
 ]

@@ -169,6 +169,7 @@ def test_config_get_rejects_unknown_field(
     assert result.exit_code != 0
     assert 'Unknown configuration field "unknown".' in result.output
 
+
 def test_config_path_shows_bindai_toml_path(
     tmp_path: Path,
     monkeypatch,
@@ -217,3 +218,216 @@ def test_config_help_lists_path_command():
     assert "list" in result.stdout
     assert "get" in result.stdout
     assert "path" in result.stdout
+
+
+def test_config_set_updates_existing_string_value(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+provider = "openai"
+model = "gpt-4.1-mini"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "provider", "anthropic"],
+    )
+
+    assert result.exit_code == 0
+    assert 'provider = "anthropic"' in config_path.read_text(
+        encoding="utf-8",
+    )
+
+
+def test_config_set_updates_typed_values(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        'temperature = 0.7\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "temperature", "0.3"],
+    )
+
+    assert result.exit_code == 0
+
+    content = config_path.read_text(encoding="utf-8")
+    assert "temperature = 0.3" in content
+
+
+def test_config_set_adds_missing_known_field(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        'provider = "openai"\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "timeout", "120"],
+    )
+
+    assert result.exit_code == 0
+
+    content = config_path.read_text(encoding="utf-8")
+    assert 'provider = "openai"' in content
+    assert "timeout = 120" in content
+
+
+def test_config_set_preserves_comments_and_unrelated_content(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+# Project configuration
+name = "demo"
+
+# Model configuration
+provider = "openai" # Current provider
+model = "gpt-4.1-mini"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "provider", "anthropic"],
+    )
+
+    assert result.exit_code == 0
+
+    content = config_path.read_text(encoding="utf-8")
+    assert "# Project configuration" in content
+    assert "# Model configuration" in content
+    assert 'provider = "anthropic" # Current provider' in content
+    assert 'model = "gpt-4.1-mini"' in content
+
+
+def test_config_set_rejects_unknown_field_without_modifying_file(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    original = 'provider = "openai"\n'
+    config_path.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "unknown", "value"],
+    )
+
+    assert result.exit_code != 0
+    assert 'Unknown configuration field "unknown".' in result.output
+    assert config_path.read_text(encoding="utf-8") == original
+
+
+def test_config_set_rejects_invalid_value_without_modifying_file(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    original = "temperature = 0.7\n"
+    config_path.write_text(original, encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "temperature", "not-a-number"],
+    )
+
+    assert result.exit_code != 0
+    assert "Invalid value" in result.output
+    assert config_path.read_text(encoding="utf-8") == original
+
+
+def test_config_set_requires_bindai_toml(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "provider", "anthropic"],
+    )
+
+    assert result.exit_code != 0
+    assert "No bindai.toml found in" in result.output
+
+
+def test_config_set_only_changes_toml_when_environment_overrides_value(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        'provider = "openai"\n',
+        encoding="utf-8",
+    )
+
+    monkeypatch.setenv(
+        "BINDAI_PROVIDER",
+        "anthropic",
+    )
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "provider", "google"],
+    )
+
+    assert result.exit_code == 0
+    assert 'provider = "google"' in config_path.read_text(
+        encoding="utf-8",
+    )
+
+    get_result = runner.invoke(
+        app,
+        ["config", "get", "provider"],
+    )
+
+    assert get_result.exit_code == 0
+    assert "provider = anthropic" in get_result.stdout
+    assert "source = environment:BINDAI_PROVIDER" in get_result.stdout
+
+
+def test_config_help_lists_set_command():
+    result = runner.invoke(
+        app,
+        ["config", "--help"],
+    )
+
+    assert result.exit_code == 0
+    assert "list" in result.stdout
+    assert "get" in result.stdout
+    assert "path" in result.stdout
+    assert "set" in result.stdout
