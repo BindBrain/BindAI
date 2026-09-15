@@ -7,6 +7,10 @@ from bindai_config import (
     ProjectRuntime,
     get_provider_connection,
 )
+from bindai_connections import (
+    ConnectionManifest,
+    KeyringProviderCredentialStore,
+)
 from bindai_providers import (
     ProviderConfiguration,
     ProviderRegistry,
@@ -23,6 +27,7 @@ def resolve_provider(
     organization: str | None = None,
     model: str | None = None,
     timeout: int | None = None,
+    connection: str | None = None,
 ):
     if not isinstance(provider, str):
         return provider
@@ -31,7 +36,7 @@ def resolve_provider(
     bootstrap()
 
     provider_name = provider.lower()
-    connection = get_provider_connection(provider_name)
+    provider_connection = get_provider_connection(provider_name)
 
     project = ProjectRuntime(Path.cwd()).config
 
@@ -39,24 +44,62 @@ def resolve_provider(
     env_endpoint = None
     env_organization = None
 
-    if connection.api_key_env:
+    if provider_connection.api_key_env:
         env_api_key = os.getenv(
-            connection.api_key_env,
+            provider_connection.api_key_env,
         )
 
-    if connection.endpoint_env:
+    if provider_connection.endpoint_env:
         env_endpoint = os.getenv(
-            connection.endpoint_env,
+            provider_connection.endpoint_env,
         )
 
-    if connection.organization_env:
+    if provider_connection.organization_env:
         env_organization = os.getenv(
-            connection.organization_env,
+            provider_connection.organization_env,
+        )
+
+    connection_api_key = None
+
+    if connection is not None:
+        manifest = ConnectionManifest(
+            Path.cwd() / ".bindai" / "connections.toml",
+        )
+
+        metadata = manifest.get(connection)
+
+        if metadata is None:
+            raise ValueError(
+                f'Connection "{connection}" is not configured.',
+            )
+
+        if metadata.provider != provider_name:
+            raise ValueError(
+                f'Connection "{connection}" uses provider '
+                f'"{metadata.provider}", not "{provider_name}".',
+            )
+
+        store = KeyringProviderCredentialStore()
+
+        connection_api_key = store.get(
+            metadata.name,
         )
 
     configuration = ProviderConfiguration(
-        api_key=api_key if api_key is not None else env_api_key,
-        endpoint=endpoint if endpoint is not None else env_endpoint,
+        api_key=(
+            api_key
+            if api_key is not None
+            else (
+                connection_api_key
+                if connection_api_key is not None
+                else env_api_key
+            )
+        ),
+        endpoint=(
+            endpoint
+            if endpoint is not None
+            else env_endpoint
+        ),
         organization=(
             organization
             if organization is not None

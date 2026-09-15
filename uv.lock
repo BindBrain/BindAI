@@ -403,6 +403,7 @@ version = "0.1.2"
 source = { editable = "packages/bindai-agent" }
 dependencies = [
     { name = "bindai-config" },
+    { name = "bindai-connections" },
     { name = "bindai-core" },
     { name = "bindai-memory" },
     { name = "bindai-prompt-builder" },
@@ -416,6 +417,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "bindai-config", editable = "packages/bindai-config" },
+    { name = "bindai-connections", editable = "packages/bindai-connections" },
     { name = "bindai-core", editable = "packages/bindai-core" },
     { name = "bindai-memory", editable = "packages/bindai-memory" },
     { name = "bindai-prompt-builder", editable = "packages/bindai-prompt-builder" },
