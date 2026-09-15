@@ -1,6 +1,10 @@
 """BindAI connections and integrations."""
 
 from .connection import Connection
+from .credentials import (
+    InMemoryProviderCredentialStore,
+    ProviderCredentialStore,
+)
 from .discord import DiscordConnection
 from .github import GitHubConnection
 from .gmail import GmailConnection
@@ -35,6 +39,8 @@ __version__ = "0.1.0"
 __all__ = [
     "Connection",
     "ConnectionManager",
+    "ProviderCredentialStore",
+    "InMemoryProviderCredentialStore",
     "ConnectionRegistry",
     "WebhookConnection",
     "GitHubConnection",
