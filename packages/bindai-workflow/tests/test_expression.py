@@ -1,5 +1,4 @@
 import pytest
-
 from bindai_workflow.expression import WorkflowExpression
 
 

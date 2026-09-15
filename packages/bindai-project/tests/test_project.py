@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-
 from bindai_application import Application
 from bindai_application.configuration import ApplicationConfiguration
 from bindai_project import Project, ProjectBuilder, ProjectConfiguration

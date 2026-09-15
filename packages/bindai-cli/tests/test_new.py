@@ -1,13 +1,11 @@
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from unittest.mock import patch
-
-from typer.testing import CliRunner
 
 from bindai_cli.app import app
 from bindai_cli.commands.new import _activation_command, _venv_python
-
+from typer.testing import CliRunner
 
 runner = CliRunner()
 
