@@ -9,6 +9,7 @@ from bindai_connections import (
     KeyringProviderCredentialStore,
 )
 from rich.console import Console
+from rich.table import Table
 
 app = typer.Typer(
     help="Manage provider connections.",
@@ -77,3 +78,37 @@ def add_connection(
         f'Connection "{connection_name}" added for provider '
         f'"{provider_name}".',
     )
+
+
+@app.command(name="list")
+def list_connections() -> None:
+    """
+    List configured provider connections and credential status.
+    """
+    manifest = ConnectionManifest(
+        Path.cwd() / ".bindai" / "connections.toml",
+    )
+    store = KeyringProviderCredentialStore()
+
+    connections = manifest.list()
+
+    table = Table(title="BindAI Connections")
+
+    table.add_column("Name", style="cyan")
+    table.add_column("Provider")
+    table.add_column("Credential")
+
+    for connection in connections:
+        credential_status = (
+            "Configured"
+            if store.exists(connection.provider)
+            else "Missing"
+        )
+
+        table.add_row(
+            connection.name,
+            connection.provider,
+            credential_status,
+        )
+
+    console.print(table)
