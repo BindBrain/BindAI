@@ -168,3 +168,52 @@ def test_config_get_rejects_unknown_field(
 
     assert result.exit_code != 0
     assert 'Unknown configuration field "unknown".' in result.output
+
+def test_config_path_shows_bindai_toml_path(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        'provider = "openai"\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["config", "path"],
+    )
+
+    assert result.exit_code == 0
+    assert "bindai.toml" in result.stdout
+    assert str(tmp_path) in result.stdout.replace("\n", "")
+
+
+def test_config_path_fails_when_bindai_toml_is_missing(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(
+        app,
+        ["config", "path"],
+    )
+
+    assert result.exit_code != 0
+    assert "No bindai.toml found in" in result.output
+    assert "bindai.toml" in result.output
+
+
+def test_config_help_lists_path_command():
+    result = runner.invoke(
+        app,
+        ["config", "--help"],
+    )
+
+    assert result.exit_code == 0
+    assert "list" in result.stdout
+    assert "get" in result.stdout
+    assert "path" in result.stdout

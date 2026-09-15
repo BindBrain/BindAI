@@ -15,9 +15,7 @@ app = typer.Typer(
 console = Console()
 
 
-@app.command(
-    name="list",
-)
+@app.command(name="list")
 def list_config() -> None:
     """
     List effective project configuration and its source.
@@ -25,10 +23,7 @@ def list_config() -> None:
     runtime = ProjectRuntime(Path.cwd())
     values = runtime.resolver.all()
 
-    table = Table(
-        title="Configuration",
-    )
-
+    table = Table(title="Configuration")
     table.add_column("Name", style="cyan")
     table.add_column("Value")
     table.add_column("Source")
@@ -43,9 +38,7 @@ def list_config() -> None:
     console.print(table)
 
 
-@app.command(
-    name="get",
-)
+@app.command(name="get")
 def get_config(
     name: str = typer.Argument(
         ...,
@@ -64,9 +57,20 @@ def get_config(
             f'Unknown configuration field "{name}".',
         ) from exc
 
-    console.print(
-        f"{name} = {config_value.value}",
-    )
-    console.print(
-        f"source = {config_value.source}",
-    )
+    console.print(f"{name} = {config_value.value}")
+    console.print(f"source = {config_value.source}")
+
+
+@app.command(name="path")
+def config_path() -> None:
+    """
+    Show the path to the active bindai.toml file.
+    """
+    config_path = Path.cwd() / "bindai.toml"
+
+    if not config_path.exists():
+        raise typer.BadParameter(
+            f'No bindai.toml found in "{Path.cwd()}".',
+        )
+
+    console.print(config_path.resolve())
