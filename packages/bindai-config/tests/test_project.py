@@ -109,3 +109,68 @@ tools = ".tools"
         agents=".agents",
         tools=".tools",
     )
+
+
+def test_toml_loader_loads_application_config(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+[project]
+name = "customer-support"
+description = "Customer support assistant"
+type = "assistant"
+
+[agent]
+name = "Support Agent"
+instructions = "Help customers."
+
+[agent.model]
+provider = "openai"
+model = "gpt-5"
+temperature = 0.2
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    config = TomlLoader().load_application(config_path)
+
+    assert config.name == "customer-support"
+    assert config.description == "Customer support assistant"
+    assert config.type == "assistant"
+
+    assert config.agent is not None
+    assert config.agent.name == "Support Agent"
+    assert config.agent.instructions == "Help customers."
+
+    assert config.agent.model is not None
+    assert config.agent.model.provider == "openai"
+    assert config.agent.model.model == "gpt-5"
+    assert config.agent.model.temperature == 0.2
+    assert config.agent.model.max_tokens is None
+
+
+def test_toml_loader_loads_application_defaults(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+[project]
+name = "minimal-app"
+
+[agent]
+name = "Assistant"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    config = TomlLoader().load_application(config_path)
+
+    assert config.name == "minimal-app"
+    assert config.description == ""
+    assert config.type == "assistant"
+
+    assert config.agent is not None
+    assert config.agent.name == "Assistant"
+    assert config.agent.instructions == ""
+    assert config.agent.model is None
