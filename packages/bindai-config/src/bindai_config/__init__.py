@@ -5,6 +5,7 @@ from .application import (
 )
 from .loader import ConfigLoader
 from .project import ProjectConfig
+from .resolver import ConfigResolver, ConfigValue
 from .runtime import ProjectRuntime
 from .toml_loader import TomlLoader
 
@@ -13,6 +14,8 @@ __all__ = [
     "TomlLoader",
     "ProjectConfig",
     "ProjectRuntime",
+    "ConfigResolver",
+    "ConfigValue",
     "ModelConfig",
     "ApplicationAgentConfig",
     "ApplicationConfig",

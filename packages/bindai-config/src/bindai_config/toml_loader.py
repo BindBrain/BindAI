@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tomllib
 from pathlib import Path
+from typing import Any
 
 from .application import ApplicationAgentConfig, ApplicationConfig, ModelConfig
 from .project import ProjectConfig
@@ -9,14 +10,22 @@ from .project import ProjectConfig
 
 class TomlLoader:
     def load(self, path: str | Path) -> ProjectConfig:
-        with open(path, "rb") as f:
-            data = tomllib.load(f)
+        data = self._load_data(path)
 
         return ProjectConfig(**data)
 
+    def load_with_fields(
+        self,
+        path: str | Path,
+    ) -> tuple[ProjectConfig, frozenset[str]]:
+        data = self._load_data(path)
+
+        config = ProjectConfig(**data)
+
+        return config, frozenset(data)
+
     def load_application(self, path: str | Path) -> ApplicationConfig:
-        with open(path, "rb") as f:
-            data = tomllib.load(f)
+        data = self._load_data(path)
 
         project = data.get("project")
 
@@ -59,3 +68,7 @@ class TomlLoader:
             type=project.get("type", "assistant"),
             agent=agent_config,
         )
+
+    def _load_data(self, path: str | Path) -> dict[str, Any]:
+        with open(path, "rb") as f:
+            return tomllib.load(f)

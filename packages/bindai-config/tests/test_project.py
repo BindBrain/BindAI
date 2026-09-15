@@ -253,3 +253,87 @@ instructions = "Help customers."
         match='Missing required "agent.name"',
     ):
         TomlLoader().load_application(config_path)
+def test_toml_loader_loads_project_fields(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+name = "Example Project"
+temperature = 0.7
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    config, configured_fields = TomlLoader().load_with_fields(
+        config_path,
+    )
+
+    assert config.name == "Example Project"
+    assert config.temperature == 0.7
+    assert configured_fields == {
+        "name",
+        "temperature",
+    }
+
+
+def test_project_runtime_tracks_configured_fields(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+name = "Example Project"
+temperature = 0.7
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    runtime = ProjectRuntime(tmp_path)
+
+    assert runtime.configured_fields == {
+        "name",
+        "temperature",
+    }
+
+
+def test_project_runtime_resolver_reports_sources(tmp_path: Path) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+name = "Example Project"
+temperature = 0.7
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    runtime = ProjectRuntime(tmp_path)
+
+    assert runtime.resolver.resolve("name").source == "bindai.toml"
+    assert runtime.resolver.resolve("temperature").source == "bindai.toml"
+    assert runtime.resolver.resolve("model").source == "default"
+
+
+def test_project_runtime_resolver_uses_environment(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+model = "gpt-5"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setenv(
+        "BINDAI_MODEL",
+        "gpt-5-mini",
+    )
+
+    runtime = ProjectRuntime(tmp_path)
+
+    result = runtime.resolver.resolve("model")
+
+    assert result.value == "gpt-5-mini"
+    assert result.source == "environment:BINDAI_MODEL"
