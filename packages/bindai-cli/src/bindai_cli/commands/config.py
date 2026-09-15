@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import fields
 from pathlib import Path
-from typing import Any, get_type_hints
+from typing import Any, get_args, get_type_hints
 
 import typer
 from bindai_config import ProjectConfig, ProjectRuntime, TomlWriter
@@ -125,7 +125,7 @@ def config_path() -> None:
     console.print(config_path.resolve())
 
 
-def _field_type(name: str) -> type[Any]:
+def _field_type(name: str) -> Any:
     config_fields = {
         field.name: field
         for field in fields(ProjectConfig)
@@ -142,8 +142,28 @@ def _field_type(name: str) -> type[Any]:
 def _convert_value(
     name: str,
     value: str,
-    expected_type: type[Any],
+    expected_type: Any,
 ) -> Any:
+    expected_types = get_args(expected_type)
+
+    if expected_types:
+        non_none_types = tuple(
+            item
+            for item in expected_types
+            if item is not type(None)
+        )
+
+        if len(non_none_types) == 1:
+            return _convert_value(
+                name,
+                value,
+                non_none_types[0],
+            )
+
+        raise ValueError(
+            f'Unsupported configuration type for "{name}".',
+        )
+
     if expected_type is str:
         return value
 

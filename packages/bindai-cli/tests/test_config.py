@@ -431,3 +431,31 @@ def test_config_help_lists_set_command():
     assert "get" in result.stdout
     assert "path" in result.stdout
     assert "set" in result.stdout
+
+def test_config_set_updates_connection_value(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    config_path = tmp_path / "bindai.toml"
+    config_path.write_text(
+        """
+provider = "openai"
+model = "gpt-4.1-mini"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["config", "set", "connection", "work"],
+    )
+
+    assert result.exit_code == 0
+
+    content = config_path.read_text(encoding="utf-8")
+    assert 'connection = "work"' in content
+    assert 'provider = "openai"' in content
+    assert 'model = "gpt-4.1-mini"' in content
