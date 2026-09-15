@@ -38,10 +38,13 @@ class AgentBuilder:
     def openai(
         self,
         model: str,
+        *,
+        connection: str | None = None,
     ) -> AgentBuilder:
         return self.provider(
             "openai",
             model=model,
+            connection=connection,
         )
 
     def provider(
@@ -52,6 +55,7 @@ class AgentBuilder:
         endpoint: str | None = None,
         organization: str | None = None,
         model: str | None = None,
+        connection: str | None = None,
     ) -> AgentBuilder:
         """
         Configure the provider.
@@ -75,6 +79,7 @@ class AgentBuilder:
                 endpoint=endpoint,
                 organization=organization,
                 model=model,
+                connection=connection,
             )
         else:
             self._provider = provider
@@ -181,6 +186,7 @@ class AgentBuilder:
 
             self.model(
                 f"{runtime.config.provider}:{runtime.config.model}",
+                connection=runtime.config.connection,
             )
 
             self.temperature(
@@ -286,6 +292,8 @@ class AgentBuilder:
     def model(
         self,
         value: str,
+        *,
+        connection: str | None = None,
     ) -> AgentBuilder:
         """
         Configure the provider from a ``"<provider>:<model>"`` string.
@@ -321,11 +329,13 @@ class AgentBuilder:
         if provider == "openai":
             return self.openai(
                 model,
+                connection=connection,
             )
 
         return self.provider(
             provider,
             model=model,
+            connection=connection,
         )
 
     def from_project(
@@ -346,6 +356,7 @@ class AgentBuilder:
 
         self.model(
             f"{config.provider}:{config.model}",
+            connection=config.connection,
         )
 
         self.temperature(
