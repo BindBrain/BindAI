@@ -85,6 +85,15 @@ def resolve_provider(
             metadata.name,
         )
 
+        if (
+            provider_connection.api_key_env
+            and connection_api_key is None
+            and api_key is None
+        ):
+            raise ValueError(
+                f'Connection "{metadata.name}" has no stored credential.',
+            )
+
     configuration = ProviderConfiguration(
         api_key=(
             api_key

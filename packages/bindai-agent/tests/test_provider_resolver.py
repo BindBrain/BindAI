@@ -424,3 +424,53 @@ def test_resolve_provider_rejects_missing_connection(monkeypatch):
         raise AssertionError(
             "Expected missing connection to raise ValueError.",
         )
+
+def test_resolve_provider_rejects_connection_without_credential(
+    monkeypatch,
+):
+    monkeypatch.setenv(
+        "OPENAI_API_KEY",
+        "environment-key",
+    )
+
+    class FakeManifest:
+        def __init__(self, path):
+            pass
+
+        def get(self, name):
+            return type(
+                "Connection",
+                (),
+                {
+                    "name": "work",
+                    "provider": "openai",
+                },
+            )()
+
+    class FakeStore:
+        def get(self, name):
+            assert name == "work"
+            return None
+
+    monkeypatch.setattr(
+        "bindai_agent.provider_resolver.ConnectionManifest",
+        FakeManifest,
+    )
+    monkeypatch.setattr(
+        "bindai_agent.provider_resolver.KeyringProviderCredentialStore",
+        FakeStore,
+    )
+
+    try:
+        resolve_provider(
+            "openai",
+            connection="work",
+        )
+    except ValueError as exc:
+        assert str(exc) == (
+            'Connection "work" has no stored credential.'
+        )
+    else:
+        raise AssertionError(
+            "Expected missing connection credential to raise ValueError.",
+        )
