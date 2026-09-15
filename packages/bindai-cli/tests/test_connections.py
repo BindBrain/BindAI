@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-def test_connections_help_lists_add_and_list():
+def test_connections_help_lists_add_list_and_remove():
     result = runner.invoke(
         app,
         ["connections", "--help"],
@@ -15,6 +15,7 @@ def test_connections_help_lists_add_and_list():
     assert result.exit_code == 0
     assert "add" in result.stdout
     assert "list" in result.stdout
+    assert "remove" in result.stdout
 
 
 def test_connections_add_stores_credential_and_manifest(
@@ -162,14 +163,11 @@ def test_connections_list_shows_configured_credentials(
 ):
     monkeypatch.chdir(tmp_path)
 
-    manifest = (
-        tmp_path
-        / ".bindai"
-        / "connections.toml"
-    )
     from bindai_connections import ConnectionManifest
 
-    ConnectionManifest(manifest).add(
+    ConnectionManifest(
+        tmp_path / ".bindai" / "connections.toml",
+    ).add(
         "work",
         "openai",
     )
@@ -243,3 +241,100 @@ def test_connections_list_empty_manifest(
 
     assert result.exit_code == 0
     assert "BindAI Connections" in result.stdout
+
+
+def test_connections_remove_deletes_credential_and_manifest(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    from bindai_connections import ConnectionManifest
+
+    manifest = ConnectionManifest(
+        tmp_path / ".bindai" / "connections.toml",
+    )
+    manifest.add("work", "openai")
+
+    stored: dict[tuple[str, str], str] = {
+        ("bindai", "openai"): "secret-key",
+    }
+
+    class FakeKeyring:
+        def get_password(self, service, username):
+            return stored.get((service, username))
+
+        def delete_password(self, service, username):
+            stored.pop((service, username), None)
+
+    monkeypatch.setattr(
+        "bindai_connections.keyring_credentials.KeyringProviderCredentialStore._keyring",
+        staticmethod(lambda: FakeKeyring()),
+    )
+
+    result = runner.invoke(
+        app,
+        ["connections", "remove", "work"],
+    )
+
+    assert result.exit_code == 0
+    assert 'Connection "work" removed.' in result.stdout
+
+    assert stored == {}
+    assert manifest.list() == []
+
+
+def test_connections_remove_rejects_missing_connection(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(
+        app,
+        ["connections", "remove", "missing"],
+    )
+
+    assert result.exit_code != 0
+    assert 'Connection "missing" not found.' in result.output
+
+
+def test_connections_remove_rejects_shared_provider(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    from bindai_connections import ConnectionManifest
+
+    manifest = ConnectionManifest(
+        tmp_path / ".bindai" / "connections.toml",
+    )
+    manifest.add("work", "openai")
+    manifest.add("personal", "openai")
+
+    deleted = False
+
+    class FakeKeyring:
+        def delete_password(self, service, username):
+            nonlocal deleted
+            deleted = True
+
+        def get_password(self, service, username):
+            return "secret-key"
+
+    monkeypatch.setattr(
+        "bindai_connections.keyring_credentials.KeyringProviderCredentialStore._keyring",
+        staticmethod(lambda: FakeKeyring()),
+    )
+
+    result = runner.invoke(
+        app,
+        ["connections", "remove", "work"],
+    )
+
+    assert result.exit_code != 0
+    assert 'provider "openai" is also used' in result.output
+    assert "by: personal." in result.output
+    assert deleted is False
+    assert len(manifest.list()) == 2

@@ -112,3 +112,51 @@ def list_connections() -> None:
         )
 
     console.print(table)
+
+
+@app.command(name="remove")
+def remove_connection(
+    name: str = typer.Argument(
+        ...,
+        help="Connection name to remove.",
+    ),
+) -> None:
+    """
+    Remove a provider connection and its stored credential.
+    """
+    manifest = ConnectionManifest(
+        Path.cwd() / ".bindai" / "connections.toml",
+    )
+    store = KeyringProviderCredentialStore()
+
+    connection = manifest.get(name)
+
+    if connection is None:
+        raise typer.BadParameter(
+            f'Connection "{name}" not found.',
+        )
+
+    provider_connections = [
+        existing
+        for existing in manifest.list()
+        if existing.provider == connection.provider
+        and existing.name != connection.name
+    ]
+
+    if provider_connections:
+        names = ", ".join(
+            existing.name
+            for existing in provider_connections
+        )
+
+        raise typer.BadParameter(
+            f'Cannot remove "{connection.name}" because provider '
+            f'"{connection.provider}" is also used by: {names}.',
+        )
+
+    store.delete(connection.provider)
+    manifest.remove(connection.name)
+
+    console.print(
+        f'Connection "{connection.name}" removed.',
+    )
