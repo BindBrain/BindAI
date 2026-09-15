@@ -14,6 +14,7 @@ from .google_sheets import GoogleSheetsConnection
 from .jira import JiraConnection
 from .keyring_credentials import KeyringProviderCredentialStore
 from .manager import ConnectionManager
+from .manifest import ConnectionManifest, ConnectionMetadata
 from .netlify import NetlifyConnection
 from .notion import NotionConnection
 from .registry import ConnectionRegistry
@@ -43,6 +44,8 @@ __all__ = [
     "ProviderCredentialStore",
     "InMemoryProviderCredentialStore",
     "KeyringProviderCredentialStore",
+    "ConnectionManifest",
+    "ConnectionMetadata",
     "ConnectionRegistry",
     "WebhookConnection",
     "GitHubConnection",

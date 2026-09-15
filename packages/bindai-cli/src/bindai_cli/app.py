@@ -1,6 +1,7 @@
 import typer
 
 from bindai_cli.commands.config import app as config_app
+from bindai_cli.commands.connections import app as connections_app
 from bindai_cli.commands.doctor import app as doctor_app
 from bindai_cli.commands.inspect import app as inspect_app
 from bindai_cli.commands.new import new
@@ -51,4 +52,9 @@ app.add_typer(
 app.add_typer(
     config_app,
     name="config",
+)
+
+app.add_typer(
+    connections_app,
+    name="connections",
 )
