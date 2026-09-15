@@ -503,8 +503,17 @@ dependencies = [
     { name = "bindai-core" },
 ]
 
+[package.optional-dependencies]
+credentials = [
+    { name = "keyring" },
+]
+
 [package.metadata]
-requires-dist = [{ name = "bindai-core", editable = "packages/bindai-core" }]
+requires-dist = [
+    { name = "bindai-core", editable = "packages/bindai-core" },
+    { name = "keyring", marker = "extra == 'credentials'", specifier = ">=25.6" },
+]
+provides-extras = ["credentials"]
 
 [[package]]
 name = "bindai-core"
@@ -818,6 +827,7 @@ fastapi = [
 [package.dev-dependencies]
 dev = [
     { name = "build" },
+    { name = "keyring" },
     { name = "mypy" },
     { name = "pyright" },
     { name = "pytest" },
@@ -858,6 +868,7 @@ provides-extras = ["fastapi"]
 [package.metadata.requires-dev]
 dev = [
     { name = "build", specifier = ">=1.3.0" },
+    { name = "keyring", specifier = ">=25.7.0" },
     { name = "mypy", specifier = ">=2.3.0" },
     { name = "pyright", specifier = ">=1.1.411" },
     { name = "pytest", specifier = ">=8.4" },

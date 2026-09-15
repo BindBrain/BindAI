@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools>=68",
-    "wheel"
+    "wheel",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -16,7 +16,12 @@ dependencies = [
     "bindai-core",
 ]
 
+[project.optional-dependencies]
+credentials = [
+    "keyring>=25.6",
+]
+
 [tool.setuptools.packages.find]
 where = [
-    "src"
+    "src",
 ]

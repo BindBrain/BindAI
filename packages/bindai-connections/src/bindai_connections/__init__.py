@@ -12,6 +12,7 @@ from .google_docs import GoogleDocsConnection
 from .google_drive import GoogleDriveConnection
 from .google_sheets import GoogleSheetsConnection
 from .jira import JiraConnection
+from .keyring_credentials import KeyringProviderCredentialStore
 from .manager import ConnectionManager
 from .netlify import NetlifyConnection
 from .notion import NotionConnection
@@ -41,6 +42,7 @@ __all__ = [
     "ConnectionManager",
     "ProviderCredentialStore",
     "InMemoryProviderCredentialStore",
+    "KeyringProviderCredentialStore",
     "ConnectionRegistry",
     "WebhookConnection",
     "GitHubConnection",
