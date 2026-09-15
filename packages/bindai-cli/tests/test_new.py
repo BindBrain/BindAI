@@ -135,6 +135,7 @@ def test_new_reports_dependency_install_failure(tmp_path, monkeypatch):
     project = tmp_path / "demo"
     assert project.is_dir()
 
+
 def test_new_install_uses_project_python(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -169,6 +170,7 @@ def test_new_install_uses_project_python(tmp_path, monkeypatch):
         str(Path("demo") / "requirements.txt"),
     ]
 
+
 def test_new_generates_expected_requirements(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -180,7 +182,7 @@ def test_new_generates_expected_requirements(tmp_path, monkeypatch):
         tmp_path / "demo" / "requirements.txt"
     ).read_text(encoding="utf-8")
 
-    assert "bindai>=0.1.3" in requirements
+    assert "bindai[openai]>=0.1.6" in requirements
 
 
 def test_new_does_not_install_without_flag(tmp_path, monkeypatch):

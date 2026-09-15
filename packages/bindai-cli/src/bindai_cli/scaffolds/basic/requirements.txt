@@ -1,1 +1,1 @@
-bindai>=0.1.3
+bindai[openai]>=0.1.6
