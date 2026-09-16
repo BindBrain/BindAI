@@ -3,8 +3,13 @@ from __future__ import annotations
 import os
 import platform
 import sys
+from pathlib import Path
 
 import typer
+from bindai_connections import (
+    ConnectionManifest,
+    KeyringProviderCredentialStore,
+)
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.table import Table
@@ -64,6 +69,11 @@ def doctor() -> None:
         table.add_row("Default Provider", config.provider)
 
         table.add_row("Default Model", config.model)
+
+        _add_connection_checks(
+            table,
+            config.connection,
+        )
     else:
         table.add_row(
             "Configuration",
@@ -120,3 +130,46 @@ def doctor() -> None:
     )
 
     console.print(table)
+
+
+def _add_connection_checks(
+    table: Table,
+    connection_name: str | None,
+) -> None:
+    if connection_name is None:
+        table.add_row(
+            "Connection",
+            "Not configured",
+        )
+        return
+
+    table.add_row(
+        "Connection",
+        connection_name,
+    )
+
+    manifest = ConnectionManifest(
+        Path.cwd() / ".bindai" / "connections.toml",
+    )
+
+    connection = manifest.get(connection_name)
+
+    if connection is None:
+        table.add_row(
+            "Connection Credential",
+            "Connection not configured",
+        )
+        return
+
+    store = KeyringProviderCredentialStore()
+
+    if store.exists(connection.name):
+        table.add_row(
+            "Connection Credential",
+            "Configured",
+        )
+    else:
+        table.add_row(
+            "Connection Credential",
+            "Missing",
+        )
