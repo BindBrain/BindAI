@@ -1,13 +1,13 @@
 [project]
 name = "bindai-agent"
-version = "0.1.2"
+version = "0.2.0"
 requires-python = ">=3.12"
 readme = "README.md"
 
 dependencies = [
     "bindai-core",
-    "bindai-config",
-    "bindai-connections",
+    "bindai-config>=0.2.0",
+    "bindai-connections>=0.2.0",
     "bindai-memory",
     "bindai-prompts",
     "bindai-prompt-builder",

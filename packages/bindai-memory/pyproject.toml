@@ -1,13 +1,16 @@
 [project]
 name = "bindai-memory"
-version = "0.1.0"
+version = "0.1.1"
 description = "BindAI Memory"
+readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [
     "bindai-core",
     "bindai-embeddings",
     "pinecone>=7.0",
+    "chromadb>=1.5.9",
+    "psycopg[binary]>=3.2",
 ]
 
 [build-system]

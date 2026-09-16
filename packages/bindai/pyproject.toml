@@ -1,25 +1,25 @@
 [project]
 name = "bindai"
-version = "0.1.6"
+version = "0.1.7"
 description = "BindAI Framework"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
 
 dependencies = [
     "bindai-core>=0.1.0",
-    "bindai-agent>=0.1.2",
+    "bindai-agent>=0.2.0",
     "bindai-application>=0.1.0",
-    "bindai-config>=0.1.1",
+    "bindai-config>=0.2.0",
     "bindai-group>=0.1.0",
-    "bindai-knowledge>=0.1.0",
-    "bindai-memory>=0.1.0",
+    "bindai-knowledge>=0.2.0",
+    "bindai-memory>=0.1.1",
     "bindai-model>=0.1.0",
     "bindai-project>=0.1.0",
     "bindai-runtime>=0.1.0",
     "bindai-task>=0.1.0",
-    "bindai-workflow>=0.1.0",
+    "bindai-workflow>=0.2.0",
     "bindai-retrieval>=0.1.0",
-    "bindai-cli>=0.1.0",
+    "bindai-cli>=0.2.0",
 ]
 
 [project.optional-dependencies]

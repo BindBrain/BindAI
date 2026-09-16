@@ -333,7 +333,7 @@ wheels = [
 
 [[package]]
 name = "bindai"
-version = "0.1.6"
+version = "0.1.7"
 source = { editable = "packages/bindai" }
 dependencies = [
     { name = "bindai-agent" },
@@ -399,7 +399,7 @@ provides-extras = ["anthropic", "google", "groq", "ollama", "openai", "openroute
 
 [[package]]
 name = "bindai-agent"
-version = "0.1.2"
+version = "0.2.0"
 source = { editable = "packages/bindai-agent" }
 dependencies = [
     { name = "bindai-config" },
@@ -465,10 +465,11 @@ requires-dist = [{ name = "bindai-core", editable = "packages/bindai-core" }]
 
 [[package]]
 name = "bindai-cli"
-version = "0.1.8"
+version = "0.2.0"
 source = { editable = "packages/bindai-cli" }
 dependencies = [
     { name = "bindai-config" },
+    { name = "bindai-connections", extra = ["credentials"] },
     { name = "python-dotenv" },
     { name = "rich" },
     { name = "typer" },
@@ -477,6 +478,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "bindai-config", editable = "packages/bindai-config" },
+    { name = "bindai-connections", extras = ["credentials"], editable = "packages/bindai-connections" },
     { name = "python-dotenv", specifier = ">=1.0" },
     { name = "rich", specifier = ">=14.0" },
     { name = "typer", specifier = ">=0.16" },
@@ -484,7 +486,7 @@ requires-dist = [
 
 [[package]]
 name = "bindai-config"
-version = "0.1.2"
+version = "0.2.0"
 source = { editable = "packages/bindai-config" }
 dependencies = [
     { name = "bindai-group" },
@@ -499,7 +501,7 @@ requires-dist = [
 
 [[package]]
 name = "bindai-connections"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/bindai-connections" }
 dependencies = [
     { name = "bindai-core" },
@@ -561,7 +563,7 @@ source = { editable = "packages/bindai-host" }
 
 [[package]]
 name = "bindai-knowledge"
-version = "0.1.4"
+version = "0.2.0"
 source = { editable = "packages/bindai-knowledge" }
 dependencies = [
     { name = "pypdf" },
@@ -587,19 +589,23 @@ requires-dist = [
 
 [[package]]
 name = "bindai-memory"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "packages/bindai-memory" }
 dependencies = [
     { name = "bindai-core" },
     { name = "bindai-embeddings" },
+    { name = "chromadb" },
     { name = "pinecone" },
+    { name = "psycopg", extra = ["binary"] },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "bindai-core", editable = "packages/bindai-core" },
     { name = "bindai-embeddings", editable = "packages/bindai-embeddings" },
+    { name = "chromadb", specifier = ">=1.5.9" },
     { name = "pinecone", specifier = ">=7.0" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
 ]
 
 [[package]]
@@ -791,7 +797,7 @@ requires-dist = [{ name = "bindai-core", editable = "packages/bindai-core" }]
 
 [[package]]
 name = "bindai-workflow"
-version = "0.1.1"
+version = "0.2.0"
 source = { editable = "packages/bindai-workflow" }
 
 [[package]]

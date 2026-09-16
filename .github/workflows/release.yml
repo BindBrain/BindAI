@@ -6,7 +6,7 @@ on:
       - published
 
 jobs:
-  publish-agent:
+  publish-config:
     runs-on: ubuntu-latest
 
     permissions:
@@ -25,97 +25,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build bindai-agent
+      - name: Build bindai-config
         run: |
-          uv build --package bindai-agent --no-sources --out-dir dist
+          uv build --package bindai-config --no-sources --out-dir dist
 
-      - name: Publish bindai-agent to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-
-  publish-bindai:
-    runs-on: ubuntu-latest
-    needs: publish-agent
-
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Build bindai
-        run: |
-          uv build --package bindai --no-sources --out-dir dist
-
-      - name: Publish bindai to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-
-  publish-cli:
-    runs-on: ubuntu-latest
-    needs: publish-bindai
-
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Build bindai-cli
-        run: |
-          uv build --package bindai-cli --no-sources --out-dir dist
-
-      - name: Publish bindai-cli to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-
-  publish-automation:
-    runs-on: ubuntu-latest
-    needs: publish-bindai
-
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Build bindai-automation
-        run: |
-          uv build --package bindai-automation --no-sources --out-dir dist
-
-      - name: Publish bindai-automation to PyPI
+      - name: Publish bindai-config to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
   publish-connections:
     runs-on: ubuntu-latest
-    needs: publish-bindai
+    needs: publish-config
 
     permissions:
       contents: read
@@ -140,9 +59,9 @@ jobs:
       - name: Publish bindai-connections to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
-  publish-mcp:
+  publish-memory:
     runs-on: ubuntu-latest
-    needs: publish-bindai
+    needs: publish-connections
 
     permissions:
       contents: read
@@ -160,18 +79,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build bindai-mcp
+      - name: Build bindai-memory
         run: |
-          uv build --package bindai-mcp --no-sources --out-dir dist
+          uv build --package bindai-memory --no-sources --out-dir dist
 
-      - name: Publish bindai-mcp to PyPI
+      - name: Publish bindai-memory to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
-  publish-api:
+  publish-knowledge:
     runs-on: ubuntu-latest
-    needs:
-      - publish-bindai
-      - publish-automation
+    needs: publish-memory
 
     permissions:
       contents: read
@@ -189,9 +106,117 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build bindai-api
+      - name: Build bindai-knowledge
         run: |
-          uv build --package bindai-api --no-sources --out-dir dist
+          uv build --package bindai-knowledge --no-sources --out-dir dist
 
-      - name: Publish bindai-api to PyPI
+      - name: Publish bindai-knowledge to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-workflow:
+    runs-on: ubuntu-latest
+    needs: publish-knowledge
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build bindai-workflow
+        run: |
+          uv build --package bindai-workflow --no-sources --out-dir dist
+
+      - name: Publish bindai-workflow to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-agent:
+    runs-on: ubuntu-latest
+    needs: publish-workflow
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build bindai-agent
+        run: |
+          uv build --package bindai-agent --no-sources --out-dir dist
+
+      - name: Publish bindai-agent to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-cli:
+    runs-on: ubuntu-latest
+    needs: publish-agent
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build bindai-cli
+        run: |
+          uv build --package bindai-cli --no-sources --out-dir dist
+
+      - name: Publish bindai-cli to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-bindai:
+    runs-on: ubuntu-latest
+    needs: publish-cli
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build bindai
+        run: |
+          uv build --package bindai --no-sources --out-dir dist
+
+      - name: Publish bindai to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
