@@ -4,9 +4,9 @@ Use this checklist before publishing a BindAI release or making the repository p
 
 ## Repository and Documentation
 
-* [ ] Review roadmap status
+* [x] Review roadmap status
 * [ ] Review README
-* [ ] Review CHANGELOG
+* [x] Review CHANGELOG
 * [ ] Verify LICENSE
 * [ ] Verify CONTRIBUTING
 * [ ] Verify CODE_OF_CONDUCT
@@ -16,7 +16,7 @@ Use this checklist before publishing a BindAI release or making the repository p
 
 ## Framework Validation
 
-* [ ] Run the complete test suite
+* [x] Run the complete test suite
 * [ ] Run `bindai doctor`
 * [ ] Run `bindai inspect`
 * [ ] Run `bindai init`
@@ -27,22 +27,22 @@ Use this checklist before publishing a BindAI release or making the repository p
 
 ## Code Quality
 
-* [ ] Run Ruff checks
+* [x] Run Ruff checks
 * [ ] Check Ruff formatting
 * [ ] Run Pyright
 * [ ] Run mypy
-* [ ] Review warnings and determine whether any are release blockers
+* [x] Review warnings and determine whether any are release blockers
 
 ## Package Validation
 
-* [ ] Build all workspace packages
-* [ ] Build the `bindai` distribution
-* [ ] Build affected package distributions
-* [ ] Run `twine check` on built distributions
-* [ ] Verify package metadata
-* [ ] Verify package contents
-* [ ] Test installation from built wheels
-* [ ] Test installation in a clean environment
+* [x] Build all workspace packages
+* [x] Build the `bindai` distribution
+* [x] Build affected package distributions
+* [x] Run `twine check` on built distributions
+* [x] Verify package metadata
+* [x] Verify package contents
+* [x] Test installation from built wheels
+* [x] Test installation in a clean environment
 
 ## Security and Repository Hygiene
 
@@ -56,10 +56,10 @@ Use this checklist before publishing a BindAI release or making the repository p
 
 ## Release
 
-* [ ] Update `CHANGELOG.md`
+* [x] Update `CHANGELOG.md`
 * [ ] Create or verify the release tag
-* [ ] Publish packages to PyPI
-* [ ] Verify packages install successfully from PyPI
+* [x] Publish packages to PyPI
+* [x] Verify packages install successfully from PyPI
 * [ ] Create GitHub Release
 * [ ] Attach or reference release artifacts where appropriate
 * [ ] Verify documentation after release
@@ -71,23 +71,23 @@ Before making the repository public:
 
 * [ ] Complete the repository hygiene audit
 * [ ] Complete the security audit
-* [ ] Complete the package and build audit
+* [x] Complete the package and build audit
 * [ ] Complete the documentation audit
 * [ ] Confirm no private or development-only material remains
 * [ ] Confirm the public README accurately reflects the current project
-* [ ] Confirm the roadmap accurately reflects implemented and remaining work
+* [x] Confirm the roadmap accurately reflects implemented and remaining work
 * [ ] Confirm the repository can be cloned and developed from a clean environment
 
 ## Current Progress
 
-* [ ] All tests pass
+* [x] All tests pass
 * [ ] `bindai doctor`
 * [ ] `bindai inspect`
 * [ ] `bindai init`
 * [ ] `bindai new my-project`
 * [ ] Build docs
-* [ ] Build wheels
-* [ ] Publish PyPI
+* [x] Build wheels
+* [x] Publish PyPI
 * [ ] GitHub Release
 * [x] Update CHANGELOG
 

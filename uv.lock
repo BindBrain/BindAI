@@ -333,7 +333,7 @@ wheels = [
 
 [[package]]
 name = "bindai"
-version = "0.1.7"
+version = "0.1.8"
 source = { editable = "packages/bindai" }
 dependencies = [
     { name = "bindai-agent" },
@@ -486,7 +486,7 @@ requires-dist = [
 
 [[package]]
 name = "bindai-config"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "packages/bindai-config" }
 dependencies = [
     { name = "bindai-group" },
@@ -547,7 +547,7 @@ requires-dist = [{ name = "openai", specifier = ">=2.47.0" }]
 
 [[package]]
 name = "bindai-group"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/bindai-group" }
 dependencies = [
     { name = "bindai-agent" },

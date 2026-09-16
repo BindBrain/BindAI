@@ -2,13 +2,13 @@
 
 All notable changes to BindAI are documented here.
 
-## BindAI 2.0 Milestone � 2026-09-16
+## BindAI 2.0 Milestone — 2026-09-16
 
 This milestone prepares the current BindAI package ecosystem for the next public release line. Package versions remain independently managed rather than being synchronized to a single `2.0.0` PyPI version.
 
 ### Package Versions
 
-The distributions included in this release are:
+The distributions included in the initial release publication were:
 
 * `bindai` **0.1.7**
 * `bindai-agent` **0.2.0**
@@ -36,10 +36,10 @@ Other BindAI distributions retain their existing published versions.
 
 ### Changed
 
-* `bindai` advanced from `0.1.6` to `0.1.7`.
+* `bindai` advanced from `0.1.6` to `0.1.7` in the initial publication.
 * `bindai-agent` advanced from `0.1.2` to `0.2.0`.
 * `bindai-cli` advanced from `0.1.8` to `0.2.0`.
-* `bindai-config` advanced from `0.1.2` to `0.2.0`.
+* `bindai-config` advanced from `0.1.2` to `0.2.0` in the initial publication.
 * `bindai-connections` advanced from `0.1.0` to `0.2.0`.
 * `bindai-knowledge` advanced from `0.1.4` to `0.2.0`.
 * `bindai-memory` advanced from `0.1.0` to `0.1.1`.
@@ -48,7 +48,7 @@ Other BindAI distributions retain their existing published versions.
 * `bindai-cli` now declares the `credentials` extra from `bindai-connections` because the CLI uses the OS-backed credential store.
 * `bindai-memory` now declares its PostgreSQL, ChromaDB, and Pinecone runtime dependencies explicitly.
 * Package metadata now exposes populated package READMEs for `bindai-memory` and `bindai-knowledge`.
-* The release workflow now publishes only the distributions whose versions changed in this release.
+* The release workflow now publishes only the distributions whose versions changed in the initial release.
 
 ### Validation
 
@@ -58,17 +58,42 @@ Other BindAI distributions retain their existing published versions.
 * All 31 workspace packages built successfully.
 * 62 distribution artifacts were produced: one wheel and one source distribution for each package.
 * All built distributions passed `twine check`.
-* Clean installation from built wheels was previously verified successfully after correcting the `bindai-memory` dependency metadata.
+* Clean installation from built wheels was verified successfully after correcting the `bindai-memory` dependency metadata.
 * Connection resolution was verified using an OS keyring credential without an environment API key.
 * Connection error paths were verified for unknown connections, provider mismatches, and missing credentials.
 
-### Notes
+## Corrective Dependency Release — 2026-09-16
 
-This milestone represents a package-ecosystem release point rather than a synchronized `2.0.0` version across every distribution.
+A fresh public PyPI installation exposed a dependency metadata problem in the initial `bindai` 0.1.7 release: the public `bindai-group` 0.1.0 artifact did not contain the `ParallelProcess` implementation required by the current BindAI package source.
 
-Only packages whose metadata or implementation changed are being republished. Packages that did not change retain their existing PyPI versions.
+The dependency graph was corrected and republished with:
 
-The documentation roadmap will be updated after the PyPI publication and final release verification so that the public documentation reflects the actual published state.
+* `bindai` **0.1.8**
+* `bindai-config` **0.2.1**
+* `bindai-group` **0.2.0**
+
+### Corrective Changes
+
+* `bindai-group` was advanced to `0.2.0` with the current `ParallelProcess` implementation included.
+* `bindai-config` was advanced to `0.2.1` and now requires `bindai-group>=0.2.0`.
+* `bindai` was advanced to `0.1.8` and now requires `bindai-config>=0.2.1` and `bindai-group>=0.2.0`.
+
+### Validation
+
+* Corrective distributions passed `twine check`.
+* Corrective wheel metadata and package contents were inspected before publication.
+* `uv lock --check`: **passed**.
+* Ruff validation: **passed**.
+* Full workspace test suite: **160 passed, 2 skipped**.
+* Fresh public PyPI installation of `bindai==0.1.8`: **passed**.
+* Public imports of `bindai`, `bindai_config`, and `bindai_group`: **passed**.
+* `ParallelProcess` imported successfully from the public PyPI installation.
+* Verified public package versions:
+  * `bindai` **0.1.8**
+  * `bindai-config` **0.2.1**
+  * `bindai-group` **0.2.0**
+
+The corrective release resolves the public dependency mismatch identified after the initial publication.
 
 ---
 

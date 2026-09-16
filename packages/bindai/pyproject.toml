@@ -1,6 +1,6 @@
 [project]
 name = "bindai"
-version = "0.1.7"
+version = "0.1.8"
 description = "BindAI Framework"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
@@ -9,8 +9,8 @@ dependencies = [
     "bindai-core>=0.1.0",
     "bindai-agent>=0.2.0",
     "bindai-application>=0.1.0",
-    "bindai-config>=0.2.0",
-    "bindai-group>=0.1.0",
+    "bindai-config>=0.2.1",
+    "bindai-group>=0.2.0",
     "bindai-knowledge>=0.2.0",
     "bindai-memory>=0.1.1",
     "bindai-model>=0.1.0",

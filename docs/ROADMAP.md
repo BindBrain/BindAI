@@ -171,6 +171,12 @@ BindAI provides a unified connections architecture for integrating applications 
 - [x] Authentication configuration
 - [x] HTTP-based integration patterns
 - [x] Integration testing
+- [x] Project-scoped provider connections
+- [x] Connection manifest metadata
+- [x] Secure OS-backed provider credentials
+- [x] CLI connection management
+- [x] Connection-aware provider resolution
+- [x] Connection validation in `bindai doctor`
 
 #### Integrations
 
@@ -473,14 +479,15 @@ The initial public release is focused on making the core framework, API, deploym
 - [x] PyPI artifact validation
 - [x] GitHub release-preparation checkpoint
 
-### Remaining release work
+### Release status
 
-- [ ] Final package version reconciliation
-- [ ] Final dependency graph validation
-- [ ] Release workflow update
-- [ ] Final package builds
-- [ ] Final clean-install validation
-- [ ] PyPI publication of updated package versions
+- [x] Package version reconciliation for the published release line
+- [x] Dependency graph validation
+- [x] Release workflow preparation
+- [x] Final package builds
+- [x] Final clean-install validation
+- [x] PyPI publication of updated package versions
+- [x] Fresh public PyPI installation verification
 - [ ] Final GitHub release/tag
 - [ ] Final release announcement
 

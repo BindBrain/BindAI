@@ -737,6 +737,28 @@ Never commit credentials to source control.
 
 ---
 
+# Project-Scoped Provider Connections
+
+BindAI also supports named provider connections for project-level AI provider credentials.
+
+These provider connections are separate from the external-service `Connection` classes described above. They provide a secure way for a project to select a stored provider credential without placing the credential directly in `bindai.toml` or source code.
+
+A project provider connection consists of:
+
+- A connection name.
+- A provider name.
+- Connection metadata stored in `.bindai/connections.toml`.
+- The provider credential stored in the operating system credential store.
+
+The CLI can create and manage these connections:
+
+```text
+bindai connections add
+bindai connections list
+bindai connections remove
+
+---
+
 # Connection State
 
 The base interface exposes:
