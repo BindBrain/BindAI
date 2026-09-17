@@ -465,7 +465,7 @@ requires-dist = [{ name = "bindai-core", editable = "packages/bindai-core" }]
 
 [[package]]
 name = "bindai-cli"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "packages/bindai-cli" }
 dependencies = [
     { name = "bindai-config" },

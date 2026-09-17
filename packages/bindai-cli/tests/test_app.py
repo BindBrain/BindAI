@@ -15,3 +15,10 @@ def test_help_lists_commands():
     assert "workflow" in result.stdout
     assert "inspect" in result.stdout
     assert "version" in result.stdout
+
+
+def test_version_command():
+    result = runner.invoke(app, ["version"])
+
+    assert result.exit_code == 0
+    assert result.stdout.strip() == "BindAI CLI 0.2.1"

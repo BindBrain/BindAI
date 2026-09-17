@@ -2,6 +2,19 @@
 
 All notable changes to BindAI are documented here.
 
+## bindai-cli 0.2.1 — 2026-09-17
+
+This patch release corrects the CLI's reported version so it matches the published package version.
+
+### Fixed
+
+* Corrected `bindai version` to report `BindAI CLI 0.2.1` instead of the stale `0.1.8` value.
+
+### Validation
+
+* CLI version regression test: **passed**.
+* `bindai-cli` package version is synchronized at `0.2.1`.
+
 ## bindai 0.1.9 — 2026-09-17
 
 This patch release synchronizes the published `bindai` package README with the current repository documentation and corrects the documentation homepage Quick Start example.
