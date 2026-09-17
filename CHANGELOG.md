@@ -2,6 +2,25 @@
 
 All notable changes to BindAI are documented here.
 
+## bindai 0.1.9 — 2026-09-17
+
+This patch release synchronizes the published `bindai` package README with the current repository documentation and corrects the documentation homepage Quick Start example.
+
+### Changed
+
+* Updated the PyPI package README to match the current `Agent.builder()` API, provider connections, MCP, integrations, package ecosystem, and project documentation.
+* Corrected the documentation homepage Quick Start example to use `.instructions()` and `result.output`.
+* Advanced `bindai` from `0.1.8` to `0.1.9` for the documentation and packaging correction.
+
+### Validation
+
+* `uv build packages/bindai`: **passed**.
+* Both `bindai` 0.1.9 wheel and source distribution passed `twine check`.
+* Wheel metadata contains the updated Markdown README.
+* Public PyPI `bindai==0.1.9` installation: **passed**.
+* Public `bindai` import: **passed**.
+* Public `Agent` import: **passed**.
+
 ## BindAI 2.0 Milestone — 2026-09-16
 
 This milestone prepares the current BindAI package ecosystem for the next public release line. Package versions remain independently managed rather than being synchronized to a single `2.0.0` PyPI version.

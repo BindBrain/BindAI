@@ -59,12 +59,12 @@ from bindai import Agent
 agent = (
     Agent.builder()
     .openai("gpt-4.1-mini")
-    .system_prompt("You are a helpful assistant.")
+    .instructions("You are a helpful assistant.")
     .build()
 )
 
 result = agent.run("Hello!")
-print(result.text)
+print(result.output)
 ```
 
 ---

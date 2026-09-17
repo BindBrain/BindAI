@@ -1,571 +1,467 @@
-<p align="center">
+# BindAI
 
-  <a href="https://bindai.dev">
-    <img src="logo/light.png" alt="BindAI Logo" width="220">
-  </a>
+Build production-ready AI applications with a modern Python framework for AI agents, workflows, tools, memory, knowledge, and retrieval.
 
-</p>
+BindAI provides a composable Python API for building AI applications while keeping providers, workflows, memory, tools, and project configuration modular.
 
-<h1 align="center">BindAI</h1>
+## Installation
 
-<p align="center">
-  <strong>Build AI applications with agents, tools, workflows, memory, knowledge, and retrieval.</strong>
-</p>
-
-<p align="center">
-  A modular Python framework for building AI applications from assistants and RAG systems to automation and multi-agent workflows.
-</p>
-
-<p align="center">
-  <a href="https://docs.bindai.dev"><strong>Documentation</strong></a> ·
-  <a href="https://bindai.dev"><strong>Website</strong></a> ·
-  <a href="https://pypi.org/project/bindai/"><strong>PyPI</strong></a> ·
-  <a href="https://github.com/BindBrain/BindAI"><strong>GitHub</strong></a>
-</p>
-
----
-
-# Overview
-
-BindAI is an open-source Python framework for building AI applications from composable components.
-
-The framework brings together:
-
-* AI agents
-* Model providers
-* Tool calling
-* Workflows
-* Memory
-* Knowledge and RAG
-* Embeddings
-* Retrieval
-* Multi-agent delegation and teams
-* External connections
-* MCP integration
-* CLI and project configuration
-* AI automation
-
-The architecture is modular, so applications can start with a simple agent and grow into more sophisticated AI systems without requiring a completely different application structure.
-
----
-
-# Installation
-
-Install the main framework package:
+Install the core framework from PyPI:
 
 ```bash
 pip install bindai
 ```
 
-The BindAI ecosystem also provides separate packages for providers and integrations.
-
-For development from the repository:
+Provider implementations are installed through optional extras:
 
 ```bash
-git clone https://github.com/BindBrain/BindAI.git
-cd BindAI
-uv sync
+pip install "bindai[openai]"
 ```
 
-The repository root is a uv workspace. The root workspace itself is not installed with `pip install -e .`.
+Available provider extras:
 
----
-
-# Quick Start
-
-The recommended programmatic construction API is `Agent.builder()`:
-
-```python
-from bindai import Agent
-
-agent = (
-    Agent.builder()
-    .name("assistant")
-    .instructions("You are a helpful AI assistant.")
-    .provider("openai", model="gpt-4.1-mini")
-    .build()
-)
-
-result = agent.run("Explain what BindAI is.")
-
-print(result.output)
-```
-
-Provider/model selection can also use the `provider:model` format:
-
-```python
-from bindai import Agent
-
-agent = (
-    Agent.builder()
-    .name("assistant")
-    .instructions("You are a helpful AI assistant.")
-    .model("openai:gpt-4.1-mini")
-    .build()
-)
-```
-
-Set the required provider environment variable before running the application.
+- `openai`
+- `anthropic`
+- `google`
+- `groq`
+- `ollama`
+- `openrouter`
 
 For example:
 
 ```bash
-OPENAI_API_KEY=your-key
+pip install "bindai[anthropic]"
 ```
 
-See the documentation for provider-specific configuration and additional providers.
+BindAI requires Python 3.12 or newer.
 
----
+## Quick Start
 
-# Core Capabilities
+Configure your provider credentials through the environment:
 
-## Agents
+```bash
+export OPENAI_API_KEY="your-api-key"
+```
 
-BindAI agents provide the primary runtime abstraction for AI application logic.
-
-Agents support:
-
-* Instructions and prompts
-* Model providers
-* Tool calling
-* Structured output
-* Streaming
-* Memory
-* Knowledge and retrieval
-* Middleware
-* Hooks and events
-* Agent delegation
-* Multi-agent teams
-* Workflow integration
-
-Example:
+Then create an agent:
 
 ```python
 from bindai import Agent
 
 agent = (
     Agent.builder()
-    .name("researcher")
-    .instructions("You are a research assistant.")
-    .model("openai:gpt-4.1-mini")
+    .openai("gpt-4.1-mini")
+    .instructions("You are a helpful assistant.")
     .build()
 )
 
-result = agent.run("Explain retrieval-augmented generation.")
+result = agent.run("Hello!")
 
 print(result.output)
 ```
 
----
+The same agent API can be configured through project configuration and provider connections.
 
-## Tools
+## Core Capabilities
 
-Tools allow agents to call application-defined Python functions and external services.
+### AI Agents
+
+Build agents with configurable providers, models, instructions, tools, memory, and execution behavior.
 
 ```python
 from bindai import Agent
 
-
-def get_status() -> str:
-    return "All systems operational."
-
-
 agent = (
     Agent.builder()
-    .name("assistant")
+    .openai("gpt-4.1-mini")
     .instructions("You are a helpful assistant.")
-    .model("openai:gpt-4.1-mini")
-    .tool(get_status)
     .build()
 )
 ```
 
-Tools can be combined with workflows, Memory, Knowledge, Connections, and multi-agent systems.
+### Workflows
 
----
+Compose multi-step AI processes using workflow nodes, conditions, loops, parallel execution, retries, timeouts, scheduling, and human tasks.
 
-## Workflows
+```python
+from bindai import Workflow
 
-BindAI provides workflow orchestration capabilities for composing AI and application operations.
+workflow = Workflow.builder() \
+    .name("research-workflow") \
+    .build()
+```
 
-Supported workflow patterns include:
+### Tools
 
-* Sequential execution
-* Conditional branching
-* Loops
-* Parallel execution
-* Retries
-* Timeouts
-* Human-in-the-loop tasks
-* Scheduling
-* External integrations
+Extend agents with Python functions and reusable tools.
 
-Workflows can coordinate agents, tools, retrieval, memory, and external services.
+```python
+from bindai import tool
 
----
+@tool
+def get_weather(city: str) -> str:
+    return f"Weather information for {city}"
+```
 
-## Memory
+### Memory
 
-Memory provides provider-based storage and retrieval of application records.
+Store and retrieve conversational or application state through BindAI memory providers.
 
-Current memory providers include:
+Supported memory capabilities include:
 
-* In-memory
-* SQLite
-* PostgreSQL
-* Vector memory
-* Pinecone
-* Chroma
+- In-memory storage
+- SQLite-backed storage
+- PostgreSQL-backed storage
+- Vector memory
+- Custom memory providers
 
-Memory can store application state, long-term information, metadata, relationships, embeddings, and other records.
+### Knowledge and Retrieval
 
-Example:
+Build retrieval-augmented applications from documents, embeddings, and retrievers.
+
+BindAI provides building blocks for:
+
+- Document ingestion
+- Embeddings
+- Retrievers
+- Retrieval pipelines
+- RAG applications
+
+### Multi-Agent Systems
+
+Compose multiple agents and tasks for applications that require specialized roles or coordinated execution.
+
+## Provider Connections
+
+BindAI supports project-scoped provider connections so API credentials do not need to be stored directly in project configuration.
+
+A connection consists of provider metadata in the project manifest and a credential stored through the operating system credential store.
+
+Create a connection with the CLI:
+
+```bash
+bindai connections add work --provider openai
+```
+
+List configured connections:
+
+```bash
+bindai connections list
+```
+
+Remove a connection:
+
+```bash
+bindai connections remove work
+```
+
+The project manifest is stored at:
+
+```text
+.bindai/connections.toml
+```
+
+The credential itself is stored through the operating system credential store rather than in the project manifest.
+
+Select the connection in `bindai.toml`:
+
+```toml
+provider = "openai"
+connection = "work"
+model = "gpt-4.1-mini"
+```
+
+Agents created through the project configuration can then resolve the configured provider connection.
+
+For example:
 
 ```python
 from bindai import Agent
-from bindai_memory import Memory, SQLiteMemoryProvider
 
+agent = Agent.builder().build()
+result = agent.run("Hello!")
 
-memory = Memory(SQLiteMemoryProvider("memory.db"))
-
-agent = (
-    Agent.builder()
-    .name("assistant")
-    .instructions("You are a helpful assistant.")
-    .model("openai:gpt-4.1-mini")
-    .memory(memory)
-    .build()
-)
+print(result.output)
 ```
 
----
+Provider credential resolution follows this precedence:
 
-## Knowledge and RAG
+1. Explicit API key supplied to the builder
+2. Credential from the configured project connection
+3. Provider environment variable
 
-BindAI includes a Knowledge layer for retrieval-augmented applications.
+For example, an OpenAI provider normally uses:
 
-The Knowledge and retrieval stack supports:
+```text
+OPENAI_API_KEY
+OPENAI_BASE_URL
+OPENAI_ORGANIZATION
+```
 
-* Document loading
-* Ingestion
-* Parsing
-* Chunking
-* Metadata
-* Embeddings
-* Vector retrieval
-* BM25 retrieval
-* Hybrid retrieval
-* Metadata filtering
-* Reranking
-* Conversational retrieval
-* Knowledge pipelines
-* Agent integration
+Validate project configuration and connection state with:
 
-The framework also provides an OpenAI embedding provider and a deterministic local embedding provider for development and testing.
-
----
-
-## Embeddings and Retrieval
-
-Embeddings and retrieval are available as modular packages.
-
-Retrieval capabilities include:
-
-* Vector search
-* BM25 search
-* Hybrid search
-* Similarity scoring
-* Metadata filtering
-* Search configuration
-* Reranking
-
-These components can be used independently or combined with the Knowledge and agent layers.
-
----
-
-## Multi-Agent Systems
-
-Agents can delegate work to other agents and participate in agent teams.
-
-Current capabilities include:
-
-* Agent delegation
-* Team delegation
-* Specialist agents
-* Role-based chains
-* Retrieval-enabled agents
-
-More advanced planning and hierarchical coordination remain part of the roadmap.
-
----
+```bash
+bindai doctor
+```
 
 ## External Connections
 
-The Connections package provides a common abstraction for integrating external services.
+BindAI also provides connection capabilities for external application services. These are separate from model-provider connections.
 
-Current integrations include:
+Supported integrations include:
 
-* Webhooks
-* GitHub
-* Slack
-* Notion
-* Jira
-* Discord
-* Resend
-* Vercel
-* Netlify
+- Webhooks
+- GitHub
+- Slack
+- Notion
+- Jira
+- Discord
+- Resend
+- Vercel
+- Netlify
+- Google Sheets
+- Google Docs
+- Gmail
+- Google Drive
 
-Connections are modular and can be used by application logic, tools, workflows, and agents.
-
----
+These integrations can be used by applications and tools to interact with external services.
 
 ## MCP
 
-BindAI includes a basic MCP client integration for connecting applications to MCP-compatible tool services.
+BindAI includes Model Context Protocol (MCP) support for connecting agents and applications to MCP-based tools and services.
 
-Current MCP capabilities include:
+MCP capabilities include:
 
-* Tool discovery
-* Tool calling
-* Basic HTTP connections
+- MCP client support
+- Tool discovery
+- Tool invocation
+- Basic HTTP-based MCP connectivity
 
-Additional MCP capabilities are planned as the integration evolves.
+## AI Providers
 
----
+BindAI supports multiple model providers through separate provider packages.
 
-# AI Providers
+### OpenAI
 
-BindAI currently includes provider integrations for:
-
-* OpenAI
-* Anthropic
-* Google Gemini
-* Groq
-* Ollama
-* OpenRouter
-
-Providers are packaged independently so applications can select the provider they need.
-
-Typical model identifiers use:
-
-```text
-provider:model
+```bash
+pip install "bindai[openai]"
 ```
 
-Examples:
+```python
+from bindai import Agent
 
-```text
-openai:gpt-4.1-mini
-anthropic:claude-sonnet-4
-google:gemini-2.5-flash
-groq:llama-3.3-70b-versatile
-ollama:llama3
-openrouter:openai/gpt-4.1-mini
+agent = (
+    Agent.builder()
+    .openai("gpt-4.1-mini")
+    .instructions("You are a helpful assistant.")
+    .build()
+)
 ```
 
-Provider packages are separate from the main `bindai` package.
+### Anthropic
 
----
-
-# Package Ecosystem
-
-BindAI is organized as a modular package ecosystem.
-
-| Package                 | Purpose                      |
-| ----------------------- | ---------------------------- |
-| `bindai`                | Main framework               |
-| `bindai-agent`          | AI agents                    |
-| `bindai-application`    | Application abstractions     |
-| `bindai-cli`            | Command-line interface       |
-| `bindai-config`         | Configuration                |
-| `bindai-connections`    | External service connections |
-| `bindai-core`           | Core framework primitives    |
-| `bindai-embeddings`     | Embedding providers          |
-| `bindai-group`          | Agent groups                 |
-| `bindai-host`           | Hosting-related components   |
-| `bindai-knowledge`      | Knowledge and RAG            |
-| `bindai-mcp`            | MCP integration              |
-| `bindai-memory`         | Memory providers             |
-| `bindai-model`          | Model abstractions           |
-| `bindai-project`        | Project abstractions         |
-| `bindai-prompt-builder` | Prompt construction          |
-| `bindai-prompts`        | Prompt system                |
-| `bindai-providers`      | Provider infrastructure      |
-| `bindai-retrieval`      | Retrieval                    |
-| `bindai-runtime`        | Runtime                      |
-| `bindai-task`           | Tasks                        |
-| `bindai-tool`           | Tool system                  |
-| `bindai-workflow`       | Workflow orchestration       |
-
-Provider integrations are packaged separately under the provider namespace:
-
-```text
-bindai-provider-openai
-bindai-provider-anthropic
-bindai-provider-google
-bindai-provider-groq
-bindai-provider-ollama
-bindai-provider-openrouter
+```bash
+pip install "bindai[anthropic]"
 ```
 
----
+### Google Gemini
 
-# Architecture
-
-```text
-                    Application
-                         |
-             +-----------+-----------+
-             |           |           |
-           Agent      Workflow     Tools
-             |           |           |
-             +-----------+-----------+
-                         |
-              +----------+----------+
-              |                     |
-           Memory               Knowledge
-                                      |
-                                Retrieval / RAG
-                                      |
-                         +------------+------------+
-                         |                         |
-                    Embeddings                 Reranking
-                         |
-                  Model Providers
-                         |
-       +---------+---------+---------+---------+
-       |         |         |         |         |
-     OpenAI   Anthropic  Google     Groq     Ollama
-                                             |
-                                       OpenRouter
+```bash
+pip install "bindai[google]"
 ```
 
-External Connections and MCP can be integrated alongside these application components.
+### Groq
 
-The architecture is designed around composable packages so individual capabilities can evolve independently.
-
----
-
-# Project Structure
-
-```text
-BindAI/
-├── packages/
-│   ├── bindai/
-│   ├── bindai-agent/
-│   ├── bindai-core/
-│   ├── bindai-memory/
-│   ├── bindai-tool/
-│   ├── bindai-workflow/
-│   ├── bindai-knowledge/
-│   ├── bindai-connections/
-│   ├── bindai-mcp/
-│   └── ...
-├── docs/
-├── scripts/
-├── README.md
-├── docs.json
-└── pyproject.toml
+```bash
+pip install "bindai[groq]"
 ```
 
----
+### Ollama
 
-# Documentation
+```bash
+pip install "bindai[ollama]"
+```
 
-Complete documentation is available at:
+### OpenRouter
 
-**https://docs.bindai.dev**
+```bash
+pip install "bindai[openrouter]"
+```
 
-Documentation includes:
+Provider implementations are distributed independently from the shared provider registry and configuration layer.
 
-* Getting Started
-* Installation
-* Core Concepts
-* Agents
-* Tools
-* Memory
-* Knowledge and RAG
-* Workflows
-* Projects
-* Connections
-* MCP
-* API Reference
+## Package Ecosystem
 
----
+BindAI is organized as a collection of focused packages.
 
-# Roadmap
+| Package | Purpose |
+| --- | --- |
+| `bindai` | Main framework distribution |
+| `bindai-core` | Core abstractions and shared types |
+| `bindai-agent` | Agent construction and execution |
+| `bindai-application` | Application-level functionality |
+| `bindai-config` | Project configuration and resolution |
+| `bindai-connections` | Connection abstractions and credential storage |
+| `bindai-group` | Multi-agent groups |
+| `bindai-knowledge` | Knowledge and document capabilities |
+| `bindai-memory` | Memory abstractions and providers |
+| `bindai-model` | Model abstractions |
+| `bindai-project` | Project runtime and project configuration |
+| `bindai-retrieval` | Retrieval functionality |
+| `bindai-runtime` | Runtime support |
+| `bindai-task` | Task abstractions |
+| `bindai-workflow` | Workflow construction and execution |
+| `bindai-providers` | Provider registry and shared provider infrastructure |
+| `bindai-provider-openai` | OpenAI provider implementation |
+| `bindai-provider-anthropic` | Anthropic provider implementation |
+| `bindai-provider-google` | Google provider implementation |
+| `bindai-provider-groq` | Groq provider implementation |
+| `bindai-provider-ollama` | Ollama provider implementation |
+| `bindai-provider-openrouter` | OpenRouter provider implementation |
+| `bindai-cli` | BindAI command-line interface |
 
-BindAI is being developed incrementally.
+The `bindai` distribution installs the core framework packages. Provider implementations are available through the corresponding optional extras.
 
-Current roadmap areas include:
+## Architecture
 
-* AI application foundation
-* AI provider ecosystem
-* Memory, storage, and retrieval
-* Advanced Knowledge and RAG
-* Connections and integrations
-* MCP
-* Advanced agents and multi-agent systems
-* AI automation
-* Public API and deployment
-* Observability
+BindAI separates application concerns into focused layers:
 
-Future areas include:
+```text
+Application
+    │
+    ├── Agents
+    ├── Workflows
+    ├── Tasks
+    ├── Tools
+    ├── Memory
+    └── Knowledge
+          │
+          ▼
+       Runtime
+          │
+          ▼
+      Model Layer
+          │
+          ▼
+   Provider Registry
+          │
+          ├── OpenAI
+          ├── Anthropic
+          ├── Google
+          ├── Groq
+          ├── Ollama
+          └── OpenRouter
+```
 
-* Enterprise capabilities
-* Visual workflow platform
-* Voice AI
-* Templates and business solutions
+This structure allows individual components to evolve independently while providing a unified framework API.
 
-See the current roadmap in the documentation for implementation status and upcoming work.
+## Project Structure
 
----
+A BindAI project can contain application configuration, agents, workflows, tools, memory, knowledge, and templates:
 
-# Contributing
+```text
+my-project/
+├── bindai.toml
+├── .bindai/
+│   └── connections.toml
+├── agents/
+├── workflows/
+├── tools/
+├── memory/
+├── knowledge/
+└── templates/
+```
+
+Project configuration can define the default provider, model, connection, and runtime settings.
+
+Example:
+
+```toml
+name = "My BindAI Project"
+provider = "openai"
+connection = "work"
+model = "gpt-4.1-mini"
+temperature = 0.7
+timeout = 60
+```
+
+## Documentation
+
+Full documentation is available at:
+
+https://docs.bindai.dev
+
+The documentation covers:
+
+- Getting started
+- Agents
+- Prompts
+- Execution
+- Providers
+- Results
+- Events
+- Tools
+- MCP
+- Memory
+- Knowledge and RAG
+- Workflows
+- Projects
+- Templates
+- Connections
+- API reference
+- Automation
+
+## Roadmap
+
+BindAI is evolving toward a complete framework for production AI applications.
+
+Current development areas include:
+
+- Agent and workflow reliability
+- Provider integrations
+- Project configuration
+- Secure provider connections
+- Memory and knowledge systems
+- MCP integrations
+- Automation
+- Service APIs
+- Deployment and observability
+
+See the repository roadmap for the current project status and planned work.
+
+## Examples
+
+Example applications and workflow templates are maintained in the BindAI repository.
+
+Repository:
+
+https://github.com/BindBrain/BindAI
+
+## Contributing
 
 Contributions are welcome.
 
-To contribute:
+Before submitting changes:
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Implement your changes.
-4. Add or update tests when appropriate.
-5. Verify the test suite.
-6. Submit a pull request.
+1. Create a focused branch.
+2. Make the smallest appropriate change.
+3. Add or update tests when behavior changes.
+4. Run the relevant test suite.
+5. Run the project linting and validation checks.
+6. Open a pull request with a clear description of the change.
 
-Bug reports, documentation improvements, feature requests, and code contributions are welcome.
+## Community
 
----
+Issues, feature requests, and discussions are managed through the BindAI GitHub repository.
 
-# Community
+https://github.com/BindBrain/BindAI
 
-* Documentation: https://docs.bindai.dev
-* Website: https://bindai.dev
-* GitHub: https://github.com/BindBrain/BindAI
+## License
 
-Follow BindAI and BindBrain for project updates and future ecosystem announcements.
+BindAI is released under the project's open-source license.
 
----
+See the repository `LICENSE` file for the complete license text.
 
-# License
+## Vision
 
-BindAI is released under the **MIT License**.
-
----
-
-# Vision
-
-BindAI aims to provide an open-source foundation for building AI software with composable, provider-independent components.
-
-The long-term vision is to support increasingly sophisticated AI applications while keeping the underlying architecture modular, testable, and extensible.
-
----
-
-<p align="center">
-  <strong>Build AI Software. Scale Everywhere.</strong>
-  <br>
-  Made with ❤️ by <strong>BindBrain</strong>
-  <br>
-  <a href="https://bindai.dev">https://bindai.dev</a>
-</p>
+BindAI aims to provide a practical foundation for building AI applications that combine agents, tools, workflows, memory, knowledge, model providers, and external services in a single composable Python framework.

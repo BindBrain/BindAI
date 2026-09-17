@@ -1,6 +1,6 @@
 [project]
 name = "bindai"
-version = "0.1.8"
+version = "0.1.9"
 description = "BindAI Framework"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
