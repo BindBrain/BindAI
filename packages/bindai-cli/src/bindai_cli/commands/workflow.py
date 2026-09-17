@@ -27,8 +27,8 @@ def resolve_workflow(
 
 @app.command("run")
 def run(
-    workflow: str | None = typer.Argument(
-        None,
+    workflow: str = typer.Argument(
+        ...,
         help="Workflow entrypoint.",
     ),
 ):
@@ -74,13 +74,13 @@ def validate(
         print()
 
         for error in errors:
-            print(f"[red]✗ {error}[/red]")
+            print(f"[red]âœ— {error}[/red]")
 
         raise typer.Exit(1)
 
     print()
 
-    print("[green]✓ Workflow is valid.[/green]")
+    print("[green]âœ“ Workflow is valid.[/green]")
 
 
 @app.command("graph")

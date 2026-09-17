@@ -2,6 +2,22 @@
 
 All notable changes to BindAI are documented here.
 
+## bindai-cli 0.2.2 — 2026-09-17
+
+This patch release corrects `bindai workflow run` so it requires an explicit workflow entrypoint instead of falling back to the project's normal application entrypoint.
+
+### Fixed
+
+* Prevented `bindai workflow run` from launching the project's `main.py` when no workflow path is provided.
+* `bindai workflow run` now requires an explicit workflow entrypoint.
+
+### Validation
+
+* Workflow CLI regression test: **passed**.
+* Full `bindai-cli` test suite: **65 passed**.
+* Ruff validation: **passed**.
+* `bindai-cli` package version is synchronized at `0.2.2`.
+
 ## bindai-cli 0.2.1 — 2026-09-17
 
 This patch release corrects the CLI's reported version so it matches the published package version.
