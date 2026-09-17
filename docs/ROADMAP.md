@@ -489,7 +489,7 @@ The initial public release is focused on making the core framework, API, deploym
 - [x] PyPI publication of updated package versions
 - [x] `bindai` 0.1.9 PyPI publication
 - [x] Fresh public PyPI installation verification for `bindai==0.1.9`
-- [ ] Fresh public PyPI installation verification for `bindai-cli==0.2.1`
+- [x] Fresh public PyPI installation verification for `bindai-cli==0.2.2`
 - [x] Published PyPI README synchronization
 - [x] Documentation homepage Quick Start correction
 - [ ] Final GitHub release/tag
