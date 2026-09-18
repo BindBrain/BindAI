@@ -1,3 +1,5 @@
+import os
+import sys
 from pathlib import Path
 
 from bindai_cli.app import app
@@ -55,10 +57,13 @@ def test_workflow_validate_uses_visible_check_mark(
     assert result.exit_code == 0
     assert "✓ Workflow is valid." in result.output
 
-def test_workflow_run_forwards_arguments(
+
+def test_workflow_run_forwards_arguments_and_project_root(
     tmp_path: Path,
     monkeypatch,
 ):
+    monkeypatch.chdir(tmp_path)
+
     workflow_file = tmp_path / "workflow.py"
     workflow_file.write_text(
         "",
@@ -87,16 +92,62 @@ def test_workflow_run_forwards_arguments(
     )
 
     assert result.exit_code == 0
-    assert calls == [
-        (
-            (
-                [
-                    __import__("sys").executable,
-                    str(workflow_file),
-                    "hello",
-                    "world",
-                ],
-            ),
-            {"check": True},
-        )
-    ]
+    assert calls[0][0] == (
+        [
+            sys.executable,
+            str(workflow_file),
+            "hello",
+            "world",
+        ],
+    )
+    assert calls[0][1]["check"] is True
+
+    pythonpath = calls[0][1]["env"]["PYTHONPATH"]
+    assert pythonpath.split(os.pathsep)[0] == str(tmp_path)
+
+def test_workflow_name_resolves_to_workflow_file(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    workflows_dir = tmp_path / "workflows"
+    workflows_dir.mkdir()
+
+    workflow_file = workflows_dir / "research.py"
+    workflow_file.write_text(
+        "",
+        encoding="utf-8",
+    )
+
+    calls = []
+
+    def fake_run(*args, **kwargs):
+        calls.append((args, kwargs))
+
+    monkeypatch.setattr(
+        "bindai_cli.commands.workflow.subprocess.run",
+        fake_run,
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "research",
+            "hello",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert calls[0][0] == (
+        [
+            sys.executable,
+            str(workflow_file),
+            "hello",
+        ],
+    )
+    assert calls[0][1]["check"] is True
+
+    pythonpath = calls[0][1]["env"]["PYTHONPATH"]
+    assert pythonpath.split(os.pathsep)[0] == str(tmp_path)
