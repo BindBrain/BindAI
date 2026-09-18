@@ -2,6 +2,35 @@
 
 All notable changes to BindAI are documented here.
 
+## bindai-cli 0.2.5 — 2026-09-18
+
+This corrective release synchronizes the published package version with the runtime `bindai_cli.__version__`.
+
+### Fixed
+
+* Corrected the runtime package version from `0.2.3` to `0.2.5`.
+* Preserved the `bindai workflow run` command-line argument forwarding introduced in `0.2.4`.
+
+### Validation
+
+* Full `bindai-cli` test suite: **68 passed**.
+* Ruff validation: **passed**.
+* Public PyPI installation verification: pending.
+
+## bindai-cli 0.2.5 � 2026-09-18
+
+This corrective release synchronizes the published package version with the runtime `bindai_cli.__version__`.
+
+### Fixed
+
+* Corrected the runtime package version from `0.2.3` to `0.2.5`.
+* Preserved the `bindai workflow run` command-line argument forwarding introduced in `0.2.4`.
+
+### Validation
+
+* Full `bindai-cli` test suite: **68 passed**.
+* Ruff validation: **passed**.
+* Public PyPI installation verification: pending.
 ## bindai-cli 0.2.4 — 2026-09-18
 
 This patch release allows `bindai workflow run` to pass command-line arguments to workflow entrypoints.
