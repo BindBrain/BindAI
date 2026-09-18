@@ -31,6 +31,10 @@ def run(
         ...,
         help="Workflow entrypoint.",
     ),
+    args: list[str] = typer.Argument(
+        None,
+        help="Arguments passed to the workflow entrypoint.",
+    ),
 ):
 
     path = resolve_workflow(
@@ -46,6 +50,7 @@ def run(
         [
             sys.executable,
             str(path),
+            *args,
         ],
         check=True,
     )
@@ -74,13 +79,13 @@ def validate(
         print()
 
         for error in errors:
-            print(f"[red]âœ— {error}[/red]")
+            print(f"[red]Ã¢Å“â€” {error}[/red]")
 
         raise typer.Exit(1)
 
     print()
 
-    print("[green]âœ“ Workflow is valid.[/green]")
+    print("[green]✓ Workflow is valid.[/green]")
 
 
 @app.command("graph")

@@ -2,6 +2,36 @@
 
 All notable changes to BindAI are documented here.
 
+## bindai-cli 0.2.4 — 2026-09-18
+
+This patch release allows `bindai workflow run` to pass command-line arguments to workflow entrypoints.
+
+### Fixed
+
+* `bindai workflow run` now accepts additional arguments after the workflow entrypoint.
+* Workflow arguments are forwarded unchanged to the workflow Python process.
+
+### Validation
+
+* Full `bindai-cli` test suite: **68 passed**.
+* Ruff validation: **passed**.
+* Real demo workflow execution with a prompt: **passed**.
+
+## bindai-cli 0.2.3 — 2026-09-17
+
+This patch release corrects the workflow validation success message so the check mark renders as the intended visible Unicode symbol.
+
+### Fixed
+
+* Replaced the corrupted workflow validation check mark with `✓`.
+* Added a regression test covering the visible check mark.
+
+### Validation
+
+* Workflow CLI tests: **passed**.
+* Ruff validation: **passed**.
+* `bindai-cli` package version is synchronized at `0.2.3`.
+
 ## bindai-cli 0.2.2 — 2026-09-17
 
 This patch release corrects `bindai workflow run` so it requires an explicit workflow entrypoint instead of falling back to the project's normal application entrypoint.

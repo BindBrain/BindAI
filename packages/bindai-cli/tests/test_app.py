@@ -21,4 +21,4 @@ def test_version_command():
     result = runner.invoke(app, ["version"])
 
     assert result.exit_code == 0
-    assert result.stdout.strip() == "BindAI CLI 0.2.2"
+    assert result.stdout.strip() == "BindAI CLI 0.2.4"
