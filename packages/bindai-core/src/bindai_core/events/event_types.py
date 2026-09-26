@@ -19,6 +19,7 @@ class EventTypes:
 
     WORKFLOW_STARTED = "workflow.started"
     WORKFLOW_FINISHED = "workflow.finished"
+    WORKFLOW_FAILED = "workflow.failed"
 
     NODE_STARTED = "node.started"
     NODE_COMPLETED = "node.completed"

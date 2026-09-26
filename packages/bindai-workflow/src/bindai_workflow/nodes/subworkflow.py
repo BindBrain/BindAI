@@ -32,3 +32,28 @@ class SubWorkflowNode(
         context.subworkflow = self.workflow_id
 
         return context
+
+    def to_dict(
+        self,
+    ) -> dict:
+
+        data = super().to_dict()
+
+        data.update(
+            {
+                "workflow_id": self.workflow_id,
+            }
+        )
+
+        return data
+
+    def load_dict(
+        self,
+        data: dict,
+    ) -> None:
+
+        super().load_dict(
+            data,
+        )
+
+        self.workflow_id = data["workflow_id"]

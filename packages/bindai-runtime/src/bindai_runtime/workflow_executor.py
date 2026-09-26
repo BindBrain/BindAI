@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from bindai_core import ExecutionContext
 from bindai_workflow import Workflow
 
 
 class WorkflowExecutor:
     """
-    Executes a Workflow sequentially.
+    Runtime adapter for BindAI workflows.
+
+    The workflow package owns the actual workflow execution lifecycle.
+    This class only adapts the runtime ExecutionContext to the
+    WorkflowInstance/WorkflowContext model used by WorkflowExecutor.
     """
 
     def __init__(
@@ -16,19 +21,34 @@ class WorkflowExecutor:
 
     def execute(
         self,
-        context,
+        context: ExecutionContext,
     ):
-        node_id = self.workflow.start_node
+        instance = self.workflow.create_instance()
 
-        while node_id is not None:
-            node = self.workflow.get(
-                node_id,
-            )
+        #
+        # Transfer runtime variables into the workflow context.
+        #
 
-            node.execute(
-                context,
-            )
+        instance.context.variables.update(
+            context.variables,
+        )
 
-            node_id = node.next_node
+        #
+        # Execute through the workflow package's real executor.
+        #
+        # Do not implement another workflow loop here.
+        #
 
-        return context
+        result = self.workflow.executor.execute(
+            instance,
+        )
+
+        #
+        # Transfer resulting variables back into the runtime context.
+        #
+
+        context.variables.update(
+            instance.context.variables,
+        )
+
+        return result

@@ -1,5 +1,6 @@
 import typer
 
+from bindai_cli.commands.add import app as add_app
 from bindai_cli.commands.config import app as config_app
 from bindai_cli.commands.connections import app as connections_app
 from bindai_cli.commands.doctor import app as doctor_app
@@ -28,6 +29,11 @@ app.add_typer(
 app.command(
     name="new",
 )(new)
+
+app.add_typer(
+    add_app,
+    name="add",
+)
 
 app.add_typer(
     run_app,

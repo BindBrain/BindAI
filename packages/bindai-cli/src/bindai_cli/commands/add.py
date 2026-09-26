@@ -1,11 +1,14 @@
 from pathlib import Path
 
-from ..app import app
+import typer
+
 from ..generators import (
     generate_agent,
     generate_tool,
     generate_workflow,
 )
+
+app = typer.Typer()
 
 
 @app.command("agent")

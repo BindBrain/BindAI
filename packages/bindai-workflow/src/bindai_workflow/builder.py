@@ -79,16 +79,17 @@ class WorkflowBuilder:
     def build(
         self,
     ) -> Workflow:
-
         validator = WorkflowValidator()
-
-        errors = validator.validate(
+        diagnostics = validator.validate(
             self._workflow,
         )
 
-        if errors:
+        if diagnostics:
             raise ValueError(
-                "\n".join(errors),
+                "\n".join(
+                    diagnostic.message
+                    for diagnostic in diagnostics
+                ),
             )
 
         return self._workflow

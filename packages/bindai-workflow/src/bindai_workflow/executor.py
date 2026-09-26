@@ -18,17 +18,45 @@ if TYPE_CHECKING:
 class WorkflowExecutor:
     """
     Executes workflow instances.
+
+    The workflow executor remains the source of truth for workflow
+    execution and lifecycle events.
+
+    An optional event_handler can be supplied by the runtime layer to
+    observe workflow lifecycle events without introducing a second
+    execution engine or event system.
     """
 
     def __init__(
         self,
         store: WorkflowStore,
         history_store: WorkflowHistoryStore | None = None,
+        event_handler=None,
     ):
-
         self.store = store
-
         self.history_store = history_store or MemoryHistoryStore()
+        self.event_handler = event_handler
+
+    #
+    # Event handling
+    #
+
+    def _emit_event(
+        self,
+        event: WorkflowEvent,
+    ) -> None:
+        """
+        Notify an optional external event handler.
+
+        WorkflowContext.events remains the workflow-local event history.
+        The external handler allows the runtime layer to bridge these
+        events into the BindAI runtime EventBus.
+        """
+
+        if self.event_handler is not None:
+            self.event_handler(
+                event,
+            )
 
     #
     # Public API
@@ -38,9 +66,7 @@ class WorkflowExecutor:
         self,
         instance: WorkflowInstance,
     ) -> WorkflowResult:
-
         workflow = instance.workflow
-
         context = instance.context
 
         #
@@ -55,14 +81,20 @@ class WorkflowExecutor:
         # Workflow started
         #
 
+        event = WorkflowEvent(
+            type="workflow.started",
+            timestamp=datetime.now(UTC),
+            workflow_id=workflow.id,
+            workflow_version=workflow.version,
+            instance_id=instance.id,
+        )
+
         context.events.append(
-            WorkflowEvent(
-                type="workflow.started",
-                timestamp=datetime.now(UTC),
-                workflow_id=workflow.id,
-                workflow_version=workflow.version,
-                instance_id=instance.id,
-            )
+            event,
+        )
+
+        self._emit_event(
+            event,
         )
 
         #
@@ -131,12 +163,11 @@ class WorkflowExecutor:
         self,
         instance: WorkflowInstance,
     ) -> WorkflowResult:
-
         workflow = instance.workflow
-
         context = instance.context
 
         while not context.completed:
+
             #
             # Timeout
             #
@@ -176,15 +207,21 @@ class WorkflowExecutor:
             # Node started
             #
 
+            event = WorkflowEvent(
+                type="node.started",
+                timestamp=datetime.now(UTC),
+                workflow_id=workflow.id,
+                workflow_version=workflow.version,
+                instance_id=instance.id,
+                node_id=node.id,
+            )
+
             context.events.append(
-                WorkflowEvent(
-                    type="node.started",
-                    timestamp=datetime.now(UTC),
-                    workflow_id=workflow.id,
-                    workflow_version=workflow.version,
-                    instance_id=instance.id,
-                    node_id=node.id,
-                )
+                event,
+            )
+
+            self._emit_event(
+                event,
             )
 
             #
@@ -204,6 +241,7 @@ class WorkflowExecutor:
             #
 
             if context.subworkflow is not None:
+
                 if instance.project is None:
                     return self._failure(
                         instance,
@@ -257,11 +295,11 @@ class WorkflowExecutor:
             #
 
             if context.waiting:
+
                 if node.__class__.__name__ == "JoinNode":
                     #
                     # Branch finished.
                     #
-
                     continue
 
                 return WorkflowResult(
@@ -273,15 +311,21 @@ class WorkflowExecutor:
             # Node completed
             #
 
+            event = WorkflowEvent(
+                type="node.completed",
+                timestamp=datetime.now(UTC),
+                workflow_id=workflow.id,
+                workflow_version=workflow.version,
+                instance_id=instance.id,
+                node_id=node.id,
+            )
+
             context.events.append(
-                WorkflowEvent(
-                    type="node.completed",
-                    timestamp=datetime.now(UTC),
-                    workflow_id=workflow.id,
-                    workflow_version=workflow.version,
-                    instance_id=instance.id,
-                    node_id=node.id,
-                )
+                event,
+            )
+
+            self._emit_event(
+                event,
             )
 
             #
@@ -306,14 +350,20 @@ class WorkflowExecutor:
 
         context.finished_at = datetime.now(UTC)
 
+        event = WorkflowEvent(
+            type="workflow.completed",
+            timestamp=context.finished_at,
+            workflow_id=workflow.id,
+            workflow_version=workflow.version,
+            instance_id=instance.id,
+        )
+
         context.events.append(
-            WorkflowEvent(
-                type="workflow.completed",
-                timestamp=context.finished_at,
-                workflow_id=workflow.id,
-                workflow_version=workflow.version,
-                instance_id=instance.id,
-            )
+            event,
+        )
+
+        self._emit_event(
+            event,
         )
 
         #
@@ -357,7 +407,9 @@ class WorkflowExecutor:
         context = instance.context
 
         while True:
+
             try:
+
                 #
                 # Execute the node
                 #
@@ -375,6 +427,7 @@ class WorkflowExecutor:
                 return None
 
             except Exception as ex:
+
                 #
                 # Retry policy
                 #
@@ -410,6 +463,8 @@ class WorkflowExecutor:
                 # exponential backoff
                 # retry event
                 #
+
+                #
                 # Loop continues automatically
                 #
 
@@ -424,7 +479,6 @@ class WorkflowExecutor:
     ) -> WorkflowResult:
 
         context = instance.context
-
         workflow = instance.workflow
 
         #
@@ -432,6 +486,7 @@ class WorkflowExecutor:
         #
 
         while context.compensations:
+
             compensation = context.compensations.pop()
 
             try:
@@ -457,21 +512,26 @@ class WorkflowExecutor:
         )
 
         context.completed = True
-
         context.finished_at = datetime.now(UTC)
 
         #
         # Workflow failed event
         #
 
+        event = WorkflowEvent(
+            type="workflow.failed",
+            timestamp=context.finished_at,
+            workflow_id=workflow.id,
+            workflow_version=workflow.version,
+            instance_id=instance.id,
+        )
+
         context.events.append(
-            WorkflowEvent(
-                type="workflow.failed",
-                timestamp=context.finished_at,
-                workflow_id=workflow.id,
-                workflow_version=workflow.version,
-                instance_id=instance.id,
-            )
+            event,
+        )
+
+        self._emit_event(
+            event,
         )
 
         #

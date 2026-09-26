@@ -9,10 +9,6 @@ if TYPE_CHECKING:
 
 
 class JoinNode(WorkflowNode):
-    """
-    Synchronizes parallel branches.
-    """
-
     def __init__(
         self,
         node_id: str,
@@ -23,14 +19,12 @@ class JoinNode(WorkflowNode):
             node_id=node_id,
             name=name,
         )
-
         self.expected = expected
 
     def execute(
         self,
         context: WorkflowContext,
     ) -> WorkflowContext:
-
         current = context.join_state.get(
             self.id,
             0,
@@ -40,17 +34,9 @@ class JoinNode(WorkflowNode):
 
         context.join_state[self.id] = current
 
-        #
-        # Not all branches have arrived yet.
-        #
-
         if current < self.expected:
             context.waiting = True
             return context
-
-        #
-        # Reset state for future executions.
-        #
 
         context.join_state.pop(
             self.id,
@@ -60,3 +46,22 @@ class JoinNode(WorkflowNode):
         context.waiting = False
 
         return context
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+
+        data.update(
+            {
+                "expected": self.expected,
+            }
+        )
+
+        return data
+
+    def load_dict(
+        self,
+        data: dict,
+    ) -> None:
+        super().load_dict(data)
+
+        self.expected = data["expected"]
