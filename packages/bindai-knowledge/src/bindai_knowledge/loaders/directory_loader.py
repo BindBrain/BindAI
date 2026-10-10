@@ -36,11 +36,26 @@ class DirectoryLoader(DocumentLoader):
             suffix = file.suffix.lower()
 
             if suffix == ".txt":
-                documents.extend(TextLoader(str(file)).load())
-
+                documents.extend(
+                    TextLoader(str(file)).load()
+                )
             elif suffix == ".md":
                 from .markdown_loader import MarkdownLoader
 
-                documents.extend(MarkdownLoader(str(file)).load())
+                documents.extend(
+                    MarkdownLoader(str(file)).load()
+                )
+            elif suffix == ".pdf":
+                from .pdf_loader import PDFLoader
+
+                documents.extend(
+                    PDFLoader(str(file)).load()
+                )
+            elif suffix in {".html", ".htm"}:
+                from .html_loader import HTMLLoader
+
+                documents.extend(
+                    HTMLLoader(str(file)).load()
+                )
 
         return documents

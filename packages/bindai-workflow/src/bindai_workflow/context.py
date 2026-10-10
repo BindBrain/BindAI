@@ -28,6 +28,21 @@ class WorkflowContext:
         self.variables = Variables()
 
         #
+        # Execution metadata
+        #
+        # Metadata carries execution policies that should travel through
+        # the workflow without becoming workflow business variables.
+        #
+        # Studio simulation uses:
+        #
+        #     metadata["bindai_simulation"] = True
+        #
+        # Future execution policies can use this same mechanism.
+        #
+
+        self.metadata: dict[str, object] = {}
+
+        #
         # Execution queue
         #
 

@@ -8,6 +8,7 @@ from bindai_core.context import ExecutionContext
 from bindai_tool.function_tool import FunctionTool
 
 from .exceptions import ToolAlreadyRegistered, ToolNotFound
+from .result import ToolResult
 from .tool import Tool
 
 PublicTool: Any
@@ -20,14 +21,12 @@ except ImportError:
 
 class ToolRegistry:
     def __init__(self):
-
         self._tools: dict[str, Tool] = {}
 
     def register(
         self,
         tool: Tool,
     ):
-
         #
         # Runtime Tool -> keep
         #
@@ -53,7 +52,9 @@ class ToolRegistry:
             tool = FunctionTool(tool)
 
         else:
-            raise TypeError(f"Unsupported tool type: {type(tool).__name__}")
+            raise TypeError(
+                f"Unsupported tool type: {type(tool).__name__}"
+            )
 
         if tool.name in self._tools:
             raise ToolAlreadyRegistered(
@@ -109,26 +110,48 @@ class ToolRegistry:
         self,
     ):
 
-        return [tool.definition for tool in self._tools.values()]
+        return [
+            tool.definition
+            for tool in self._tools.values()
+        ]
 
     def execute(
         self,
         name: str,
+        *,
+        context: ExecutionContext | None = None,
         **kwargs,
-    ):
+    ) -> ToolResult:
 
-        context = ExecutionContext()
+        execution_context = context or ExecutionContext()
 
         for key, value in kwargs.items():
-            context.variables.set(
+            execution_context.variables.set(
                 key,
                 value,
+            )
+
+        #
+        # Simulation mode
+        #
+        # Simulation never invokes the real tool. This prevents
+        # external side effects such as HTTP requests, emails,
+        # database writes, file mutations, etc.
+        #
+
+        if execution_context.metadata.get("bindai_simulation") is True:
+            return ToolResult.ok(
+                {
+                    "simulated": True,
+                    "tool": name,
+                    "arguments": dict(kwargs),
+                }
             )
 
         return self.get(
             name,
         ).execute(
-            context,
+            execution_context,
         )
 
     def __len__(

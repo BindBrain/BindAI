@@ -1,19 +1,10 @@
-from __future__ import annotations
-
 from typing import cast
 
 from .state import ExecutionState
 from .step import ExecutionStep
 
 
-class ToolExecutionStep(
-    ExecutionStep,
-):
-    """
-    Executes every requested tool and appends
-    tool results back into the conversation.
-    """
-
+class ToolExecutionStep(ExecutionStep):
     def execute(
         self,
         agent,
@@ -29,26 +20,27 @@ class ToolExecutionStep(
         if response is None:
             return
 
-        # No tools requested.
         if not response.tool_calls:
             return
 
-        # Store assistant tool-call message.
         agent.conversation.add_assistant_tool_call(
             response.tool_calls,
         )
 
-        # Execute each tool.
         for tool_call in response.tool_calls:
             result = agent.execute_tool(
                 tool_call.name,
+                context=context,
                 **tool_call.arguments,
             )
 
             content = (
                 str(result.value)
                 if result.success
-                else f"Tool execution failed: {result.error or 'Unknown error.'}"
+                else (
+                    f"Tool execution failed: "
+                    f"{result.error or 'Unknown error.'}"
+                )
             )
 
             agent.conversation.add_tool(
@@ -56,12 +48,8 @@ class ToolExecutionStep(
                 content=content,
             )
 
-        # Build the next request that includes
-        # the tool outputs.
         state.request = agent.conversation.to_request()
 
-        # Count another model iteration.
         state.iterations += 1
 
-        # Continue the execution pipeline.
         return None

@@ -48,3 +48,10 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bindai"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["bindai_api", "bindai_api.*"]
+
+[tool.setuptools.package-data]
+bindai_api = ["studio/dist/*", "studio/dist/assets/*"]

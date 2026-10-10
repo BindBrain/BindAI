@@ -10,6 +10,7 @@ from bindai_cli.commands.run import app as run_app
 from bindai_cli.commands.template import app as template_app
 from bindai_cli.commands.version import app as version_app
 from bindai_cli.commands.workflow import app as workflow_app
+from bindai_cli.commands.ui import app as ui_app
 
 app = typer.Typer(
     help="BindAI Command Line Interface",
@@ -38,6 +39,11 @@ app.add_typer(
 app.add_typer(
     run_app,
     name="run",
+)
+
+app.add_typer(
+    ui_app,
+    name="ui",
 )
 
 app.add_typer(

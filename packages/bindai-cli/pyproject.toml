@@ -1,6 +1,6 @@
 [project]
 name = "bindai-cli"
-version = "0.2.6"
+version = "0.2.7"
 description = "BindAI Command Line Interface"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -10,7 +10,14 @@ dependencies = [
     "rich>=14.0",
     "python-dotenv>=1.0",
     "bindai-config>=0.2.0",
+    "bindai-project>=0.1.1",
     "bindai-connections[credentials]>=0.2.0",
+]
+
+[project.optional-dependencies]
+studio = [
+    "bindai-api>=0.1.1",
+    "uvicorn[standard]>=0.30.0",
 ]
 
 [project.scripts]
@@ -26,6 +33,4 @@ where = ["src"]
 [tool.setuptools.package-data]
 bindai_cli = [
     "templates/*/template.json",
-    "scaffolds/**/*",
-    "scaffolds/**/.*",
 ]

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from pathlib import Path
 
@@ -51,5 +51,6 @@ class ProjectRuntime:
             "templates": self.config.templates,
             "workflows": self.config.workflows,
             "agents": self.config.agents,
+            "forms": self.config.forms,
             "tools": self.config.tools,
         }

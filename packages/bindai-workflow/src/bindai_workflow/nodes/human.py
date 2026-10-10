@@ -7,9 +7,7 @@ from ..node import WorkflowNode
 from ..task import HumanTask
 
 
-class HumanTaskNode(
-    WorkflowNode,
-):
+class HumanTaskNode(WorkflowNode):
     def __init__(
         self,
         node_id: str,
@@ -17,25 +15,30 @@ class HumanTaskNode(
         form: str | None = None,
         name: str | None = None,
     ):
-
         super().__init__(
             node_id=node_id,
             name=name,
         )
 
         self.assignee = assignee
-
         self.form = form
 
-    def execute(
-        self,
-        context,
-    ):
+        # Optional approval/rejection branches.
+        #
+        # These are populated by WorkflowDefinitionRuntime from
+        # workflow edges with ports:
+        #
+        #   approved
+        #   rejected
+        #
+        # If these are not configured, the normal next_nodes
+        # behavior remains available for backwards compatibility.
+        self.approved_node: str | None = None
+        self.rejected_node: str | None = None
 
+    def execute(self, context):
         task = HumanTask(
-            id=str(
-                uuid.uuid4(),
-            ),
+            id=str(uuid.uuid4()),
             workflow_instance=context.instance.id,
             node_id=self.id,
             assignee=self.assignee,
@@ -43,39 +46,29 @@ class HumanTaskNode(
         )
 
         context.task = task
-
         context.waiting = True
 
         return context
 
-    def to_dict(
-        self,
-    ):
-
+    def to_dict(self):
         data = super().to_dict()
 
         data.update(
             {
                 "assignee": self.assignee,
                 "form": self.form,
+                "approved_node": self.approved_node,
+                "rejected_node": self.rejected_node,
             }
         )
 
         return data
 
-    def load_dict(
-        self,
-        data: dict,
-    ):
+    def load_dict(self, data: dict):
+        super().load_dict(data)
 
-        super().load_dict(
-            data,
-        )
+        self.assignee = data.get("assignee")
+        self.form = data.get("form")
 
-        self.assignee = data.get(
-            "assignee",
-        )
-
-        self.form = data.get(
-            "form",
-        )
+        self.approved_node = data.get("approved_node")
+        self.rejected_node = data.get("rejected_node")

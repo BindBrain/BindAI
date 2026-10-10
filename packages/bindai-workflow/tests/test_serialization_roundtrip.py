@@ -265,3 +265,70 @@ def test_json_round_trip():
     assert set(restored.nodes) == set(
         workflow.nodes,
     )
+def test_loop_expression_survives_round_trip():
+    from bindai_workflow import LoopNode
+
+    workflow = Workflow(
+        "loop_serialization",
+    )
+
+    start = StartNode("start")
+    loop = LoopNode(
+        "loop",
+        expression="count < 3",
+        name="Repeat",
+    )
+    body = EndNode("body")
+    exit_node = EndNode("exit")
+
+    workflow.add_node(start)
+    workflow.add_node(loop)
+    workflow.add_node(body)
+    workflow.add_node(exit_node)
+
+    workflow.start_node = start.id
+
+    start.next_nodes = [
+        loop.id,
+    ]
+
+    loop.next_nodes = [
+        body.id,
+        exit_node.id,
+    ]
+
+    data = WorkflowSerializer().to_dict(
+        workflow,
+    )
+
+    restored = WorkflowFactory(
+        WorkflowNodeFactory(),
+    ).create(
+        data,
+    )
+
+    restored_loop = restored.get(
+        "loop",
+    )
+
+    assert restored_loop.expression == "count < 3"
+    assert restored_loop.predicate is None
+    assert restored_loop.name == "Repeat"
+    assert restored_loop.next_nodes == [
+        "body",
+        "exit",
+    ]
+
+def test_loop_expression_serializes():
+    from bindai_workflow import LoopNode
+
+    loop = LoopNode(
+        "loop",
+        expression="count < 3",
+        name="Repeat",
+    )
+
+    data = loop.to_dict()
+
+    assert data["type"] == "LoopNode"
+    assert data["expression"] == "count < 3"

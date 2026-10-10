@@ -78,7 +78,14 @@ class WorkflowExpression:
                     f"Unknown variable '{node.id}' in workflow expression."
                 )
 
-            return scope[node.id]
+            value = scope[node.id]
+
+            # Workflow variables may contain execution result objects.
+            # Expressions should operate on their underlying value.
+            if hasattr(value, "value") and hasattr(value, "success"):
+                return value.value
+
+            return value
 
         if isinstance(node, ast.List):
             return [self._evaluate_node(element, scope) for element in node.elts]

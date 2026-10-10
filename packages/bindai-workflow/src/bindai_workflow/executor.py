@@ -37,9 +37,9 @@ class WorkflowExecutor:
         self.history_store = history_store or MemoryHistoryStore()
         self.event_handler = event_handler
 
-    #
+    # ------------------------------------------------------------------
     # Event handling
-    #
+    # ------------------------------------------------------------------
 
     def _emit_event(
         self,
@@ -49,18 +49,16 @@ class WorkflowExecutor:
         Notify an optional external event handler.
 
         WorkflowContext.events remains the workflow-local event history.
+
         The external handler allows the runtime layer to bridge these
         events into the BindAI runtime EventBus.
         """
-
         if self.event_handler is not None:
-            self.event_handler(
-                event,
-            )
+            self.event_handler(event)
 
-    #
+    # ------------------------------------------------------------------
     # Public API
-    #
+    # ------------------------------------------------------------------
 
     def execute(
         self,
@@ -69,17 +67,15 @@ class WorkflowExecutor:
         workflow = instance.workflow
         context = instance.context
 
-        #
+        # --------------------------------------------------------------
         # Persist immediately
-        #
+        # --------------------------------------------------------------
 
-        self.store.save(
-            instance,
-        )
+        self.store.save(instance)
 
-        #
+        # --------------------------------------------------------------
         # Workflow started
-        #
+        # --------------------------------------------------------------
 
         event = WorkflowEvent(
             type="workflow.started",
@@ -89,17 +85,12 @@ class WorkflowExecutor:
             instance_id=instance.id,
         )
 
-        context.events.append(
-            event,
-        )
+        context.events.append(event)
+        self._emit_event(event)
 
-        self._emit_event(
-            event,
-        )
-
-        #
+        # --------------------------------------------------------------
         # Validate workflow
-        #
+        # --------------------------------------------------------------
 
         if workflow.start_node is None:
             return self._failure(
@@ -107,17 +98,13 @@ class WorkflowExecutor:
                 "Workflow has no start node.",
             )
 
-        #
+        # --------------------------------------------------------------
         # Start execution
-        #
+        # --------------------------------------------------------------
 
-        context.execution_queue.append(
-            workflow.start_node,
-        )
+        context.execution_queue.append(workflow.start_node)
 
-        return self._run(
-            instance,
-        )
+        return self._run(instance)
 
     def resume(
         self,
@@ -125,8 +112,16 @@ class WorkflowExecutor:
     ) -> WorkflowResult:
         """
         Resume a paused workflow.
-        """
 
+        HumanTaskNode instances may define explicit approval/rejection
+        branches:
+
+            approved -> node.approved_node
+            rejected -> node.rejected_node
+
+        Older linear human-task workflows without explicit branches
+        continue through node.next_nodes.
+        """
         context = instance.context
 
         if not context.waiting:
@@ -145,19 +140,70 @@ class WorkflowExecutor:
                 task.node_id,
             )
 
-            context.execution_queue.extend(
-                node.next_nodes,
-            )
+            # ----------------------------------------------------------
+            # Human Approval routing
+            # ----------------------------------------------------------
+
+            if node.__class__.__name__ == "HumanTaskNode":
+                result = getattr(
+                    task,
+                    "result",
+                    None,
+                )
+
+                approved_node = getattr(
+                    node,
+                    "approved_node",
+                    None,
+                )
+
+                rejected_node = getattr(
+                    node,
+                    "rejected_node",
+                    None,
+                )
+
+                if result == "approved":
+                    if approved_node is not None:
+                        context.execution_queue.append(
+                            approved_node,
+                        )
+                    else:
+                        # Backwards-compatible linear behavior.
+                        context.execution_queue.extend(
+                            node.next_nodes,
+                        )
+
+                elif result == "rejected":
+                    if rejected_node is not None:
+                        context.execution_queue.append(
+                            rejected_node,
+                        )
+                    else:
+                        # Backwards-compatible linear behavior.
+                        context.execution_queue.extend(
+                            node.next_nodes,
+                        )
+
+                else:
+                    # Preserve existing behavior for unknown/no result.
+                    context.execution_queue.extend(
+                        node.next_nodes,
+                    )
+
+            else:
+                # Non-human waiting nodes retain the existing behavior.
+                context.execution_queue.extend(
+                    node.next_nodes,
+                )
 
         context.waiting = False
 
-        return self._run(
-            instance,
-        )
+        return self._run(instance)
 
-    #
+    # ------------------------------------------------------------------
     # Main execution loop
-    #
+    # ------------------------------------------------------------------
 
     def _run(
         self,
@@ -167,10 +213,9 @@ class WorkflowExecutor:
         context = instance.context
 
         while not context.completed:
-
-            #
+            # ----------------------------------------------------------
             # Timeout
-            #
+            # ----------------------------------------------------------
 
             policy = context.timeout_policy
 
@@ -185,9 +230,9 @@ class WorkflowExecutor:
                         "Workflow timeout.",
                     )
 
-            #
+            # ----------------------------------------------------------
             # Current node
-            #
+            # ----------------------------------------------------------
 
             if not context.execution_queue:
                 context.completed = True
@@ -197,15 +242,15 @@ class WorkflowExecutor:
                 context.execution_queue.pop(0),
             )
 
-            #
+            # ----------------------------------------------------------
             # Reset retry counter
-            #
+            # ----------------------------------------------------------
 
             context.retry_attempt = 0
 
-            #
+            # ----------------------------------------------------------
             # Node started
-            #
+            # ----------------------------------------------------------
 
             event = WorkflowEvent(
                 type="node.started",
@@ -216,17 +261,12 @@ class WorkflowExecutor:
                 node_id=node.id,
             )
 
-            context.events.append(
-                event,
-            )
+            context.events.append(event)
+            self._emit_event(event)
 
-            self._emit_event(
-                event,
-            )
-
-            #
+            # ----------------------------------------------------------
             # Execute node
-            #
+            # ----------------------------------------------------------
 
             result = self._execute_node(
                 instance,
@@ -236,12 +276,11 @@ class WorkflowExecutor:
             if result is not None:
                 return result
 
-            #
+            # ----------------------------------------------------------
             # Execute sub workflow
-            #
+            # ----------------------------------------------------------
 
             if context.subworkflow is not None:
-
                 if instance.project is None:
                     return self._failure(
                         instance,
@@ -259,16 +298,13 @@ class WorkflowExecutor:
                     )
 
                 child = child_workflow.create_instance()
-
                 child.project = instance.project
 
                 child.context.variables.update(
                     context.variables,
                 )
 
-                child_result = self.execute(
-                    child,
-                )
+                child_result = self.execute(child)
 
                 if not child_result.success:
                     return child_result
@@ -279,27 +315,20 @@ class WorkflowExecutor:
 
                 context.subworkflow = None
 
-            #
+            # ----------------------------------------------------------
             # Persist checkpoint
-            #
+            # ----------------------------------------------------------
 
-            self.store.save(
-                instance,
-            )
+            self.store.save(instance)
 
-            #
+            # ----------------------------------------------------------
             # Waiting?
-            #
+            # ----------------------------------------------------------
+
             # JoinNode uses waiting internally, but it should not pause
-            # the whole workflow like WaitNode does.
-            #
-
+            # the whole workflow like a human task does.
             if context.waiting:
-
                 if node.__class__.__name__ == "JoinNode":
-                    #
-                    # Branch finished.
-                    #
                     continue
 
                 return WorkflowResult(
@@ -307,9 +336,9 @@ class WorkflowExecutor:
                     output=context.variables,
                 )
 
-            #
+            # ----------------------------------------------------------
             # Node completed
-            #
+            # ----------------------------------------------------------
 
             event = WorkflowEvent(
                 type="node.completed",
@@ -320,33 +349,26 @@ class WorkflowExecutor:
                 node_id=node.id,
             )
 
-            context.events.append(
-                event,
-            )
+            context.events.append(event)
+            self._emit_event(event)
 
-            self._emit_event(
-                event,
-            )
-
-            #
+            # ----------------------------------------------------------
             # Next node
-            #
+            # ----------------------------------------------------------
 
             if context.current_node is not None:
                 context.execution_queue.append(
                     context.current_node,
                 )
-
                 context.current_node = None
-
             else:
                 context.execution_queue.extend(
                     node.next_nodes,
                 )
 
-        #
+        # ----------------------------------------------------------------
         # Workflow completed
-        #
+        # ----------------------------------------------------------------
 
         context.finished_at = datetime.now(UTC)
 
@@ -358,25 +380,18 @@ class WorkflowExecutor:
             instance_id=instance.id,
         )
 
-        context.events.append(
-            event,
-        )
+        context.events.append(event)
+        self._emit_event(event)
 
-        self._emit_event(
-            event,
-        )
-
-        #
+        # ----------------------------------------------------------------
         # Persist final state
-        #
+        # ----------------------------------------------------------------
 
-        self.store.save(
-            instance,
-        )
+        self.store.save(instance)
 
-        #
+        # ----------------------------------------------------------------
         # Save execution history
-        #
+        # ----------------------------------------------------------------
 
         self.history_store.add(
             WorkflowHistory(
@@ -394,43 +409,37 @@ class WorkflowExecutor:
             output=context.variables,
         )
 
-    #
+    # ------------------------------------------------------------------
     # Execute one node
-    #
+    # ------------------------------------------------------------------
 
     def _execute_node(
         self,
         instance: WorkflowInstance,
         node: WorkflowNode,
     ) -> WorkflowResult | None:
-
         context = instance.context
 
         while True:
-
             try:
-
-                #
+                # ------------------------------------------------------
                 # Execute the node
-                #
+                # ------------------------------------------------------
 
-                node.execute(
-                    context,
-                )
+                node.execute(context)
 
-                #
+                # ------------------------------------------------------
                 # Reset retry counter after success
-                #
+                # ------------------------------------------------------
 
                 context.retry_attempt = 0
 
                 return None
 
             except Exception as ex:
-
-                #
+                # ------------------------------------------------------
                 # Retry policy
-                #
+                # ------------------------------------------------------
 
                 policy = context.retry_policy
 
@@ -440,15 +449,15 @@ class WorkflowExecutor:
                         str(ex),
                     )
 
-                #
+                # ------------------------------------------------------
                 # Increment retry count
-                #
+                # ------------------------------------------------------
 
                 context.retry_attempt += 1
 
-                #
+                # ------------------------------------------------------
                 # Retry exhausted
-                #
+                # ------------------------------------------------------
 
                 if context.retry_attempt >= policy.max_attempts:
                     return self._failure(
@@ -456,67 +465,53 @@ class WorkflowExecutor:
                         str(ex),
                     )
 
-                #
+                # ------------------------------------------------------
                 # Future:
                 #
                 # sleep(policy.delay_seconds)
                 # exponential backoff
                 # retry event
-                #
+                # ------------------------------------------------------
 
-                #
-                # Loop continues automatically
-                #
+                # Loop continues automatically.
 
-    #
+    # ------------------------------------------------------------------
     # Failure
-    #
+    # ------------------------------------------------------------------
 
     def _failure(
         self,
         instance: WorkflowInstance,
         error: str,
     ) -> WorkflowResult:
-
         context = instance.context
         workflow = instance.workflow
 
-        #
+        # --------------------------------------------------------------
         # Execute compensations
-        #
+        # --------------------------------------------------------------
 
         while context.compensations:
-
             compensation = context.compensations.pop()
 
             try:
-                compensation(
-                    context,
-                )
-
+                compensation(context)
             except Exception:
-                #
                 # Ignore compensation failures.
-                #
                 # Never mask the original error.
-                #
-
                 pass
 
-        #
+        # --------------------------------------------------------------
         # Record error
-        #
+        # --------------------------------------------------------------
 
-        context.errors.append(
-            error,
-        )
-
+        context.errors.append(error)
         context.completed = True
         context.finished_at = datetime.now(UTC)
 
-        #
+        # --------------------------------------------------------------
         # Workflow failed event
-        #
+        # --------------------------------------------------------------
 
         event = WorkflowEvent(
             type="workflow.failed",
@@ -526,25 +521,18 @@ class WorkflowExecutor:
             instance_id=instance.id,
         )
 
-        context.events.append(
-            event,
-        )
+        context.events.append(event)
+        self._emit_event(event)
 
-        self._emit_event(
-            event,
-        )
-
-        #
+        # --------------------------------------------------------------
         # Persist state
-        #
+        # --------------------------------------------------------------
 
-        self.store.save(
-            instance,
-        )
+        self.store.save(instance)
 
-        #
+        # --------------------------------------------------------------
         # Store execution history
-        #
+        # --------------------------------------------------------------
 
         self.history_store.add(
             WorkflowHistory(

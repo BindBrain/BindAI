@@ -16,23 +16,17 @@ class ExecutableNode(
     WorkflowNode,
     ABC,
 ):
-    """
-    Base class for workflow nodes that execute another object.
-    """
-
     @abstractmethod
     def get_executable(
         self,
         context: WorkflowContext,
-    ) -> Executable: ...
+    ) -> Executable:
+        ...
 
     def before_execute(
         self,
         context: WorkflowContext,
     ) -> WorkflowContext:
-        """
-        Optional preprocessing.
-        """
         return context
 
     def after_execute(
@@ -40,16 +34,12 @@ class ExecutableNode(
         context: WorkflowContext,
         result,
     ) -> WorkflowContext:
-        """
-        Optional postprocessing.
-        """
         return context
 
     def execute(
         self,
         context: WorkflowContext,
-    ) -> WorkflowContext:
-
+    ):
         context = self.before_execute(
             context,
         )
@@ -59,15 +49,28 @@ class ExecutableNode(
         )
 
         if executable is None:
-            raise RuntimeError(f"{self.__class__.__name__} returned no executable.")
-
-        #
-        # WorkflowContext -> ExecutionContext adapter
-        #
+            raise RuntimeError(
+                f"{self.__class__.__name__} returned no executable."
+            )
 
         execution_context = ExecutionContext()
 
         execution_context.variables = context.variables
+
+        #
+        # Propagate execution metadata from the workflow context.
+        #
+        # This is what allows simulation mode and future execution
+        # policies to reach nested executables such as ToolNode.
+        #
+
+        execution_context.metadata.update(
+            getattr(
+                context,
+                "metadata",
+                {},
+            )
+        )
 
         result = executable.execute(
             execution_context,

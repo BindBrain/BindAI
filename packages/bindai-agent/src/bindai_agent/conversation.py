@@ -13,23 +13,19 @@ class Conversation:
     """
 
     def __init__(self):
-
         self._messages: list[Message] = []
 
     def __len__(self) -> int:
-
         return len(self._messages)
 
     @property
     def messages(self) -> list[Message]:
-
         return self._messages
 
-    def add_system(
-        self,
-        content: str,
-    ) -> None:
+    def clear(self) -> None:
+        self._messages.clear()
 
+    def add_system(self, content: str) -> None:
         self._messages.append(
             Message(
                 role=MessageRole.SYSTEM,
@@ -37,11 +33,7 @@ class Conversation:
             )
         )
 
-    def add_user(
-        self,
-        content: str,
-    ) -> None:
-
+    def add_user(self, content: str) -> None:
         self._messages.append(
             Message(
                 role=MessageRole.USER,
@@ -49,11 +41,7 @@ class Conversation:
             )
         )
 
-    def add_assistant(
-        self,
-        content: str,
-    ) -> None:
-
+    def add_assistant(self, content: str) -> None:
         self._messages.append(
             Message(
                 role=MessageRole.ASSISTANT,
@@ -61,11 +49,7 @@ class Conversation:
             )
         )
 
-    def add_assistant_tool_call(
-        self,
-        tool_calls: list,
-    ) -> None:
-
+    def add_assistant_tool_call(self, tool_calls: list) -> None:
         self._messages.append(
             Message(
                 role=MessageRole.ASSISTANT,
@@ -80,7 +64,6 @@ class Conversation:
         tool_call_id: str,
         content: str,
     ) -> None:
-
         self._messages.append(
             Message(
                 role=MessageRole.TOOL,
@@ -89,12 +72,7 @@ class Conversation:
             )
         )
 
-    def to_request(
-        self,
-    ) -> ModelRequest:
-
+    def to_request(self) -> ModelRequest:
         request = ModelRequest()
-
         request.messages.extend(self._messages)
-
         return request

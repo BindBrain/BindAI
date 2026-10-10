@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import subprocess
 import sys
@@ -6,7 +8,7 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
-from bindai_cli.utils.scaffold import copy_scaffold
+from bindai_project import ProjectCreator
 
 console = Console()
 
@@ -33,19 +35,13 @@ def new(
     """
     Create a new BindAI project.
     """
-
     root = Path(name)
 
     if root.exists():
         console.print(f"[red]Project '{name}' already exists.[/red]")
         raise typer.Exit(1)
 
-    scaffold = Path(__file__).parent.parent / "scaffolds" / "basic"
-
-    copy_scaffold(
-        scaffold,
-        root,
-    )
+    ProjectCreator().create(root)
 
     console.print("[cyan]Creating virtual environment...[/cyan]")
 
@@ -105,7 +101,6 @@ def new(
     print()
 
     console.print("[bold]Next steps:[/bold]")
-
     console.print(f"  cd {name}")
     console.print(f"  {_activation_command()}")
 

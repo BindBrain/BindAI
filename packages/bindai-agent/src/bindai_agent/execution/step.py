@@ -21,13 +21,13 @@ class ExecutionStep(ABC):
         self,
         agent: Agent,
         context: ExecutionContext,
-    ) -> ExecutionResult:
+    ) -> ExecutionResult | None:
         """
         Execute the step.
 
         Return None to continue the pipeline.
 
-        Return any value to terminate the pipeline
-        and return that value.
+        Return ExecutionResult to terminate
+        the pipeline and return that result.
         """
         ...

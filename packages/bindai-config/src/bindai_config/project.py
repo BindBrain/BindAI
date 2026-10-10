@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -28,5 +28,7 @@ class ProjectConfig:
     workflows: str = "workflows"
 
     agents: str = "agents"
+
+    forms: str = "forms"
 
     tools: str = "tools"

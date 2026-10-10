@@ -10,6 +10,7 @@ from .history_store import MemoryHistoryStore
 from .instance import WorkflowInstance
 from .manager import WorkflowManager
 from .memory_store import MemoryWorkflowStore
+from .file_store import FileWorkflowStore
 from .node_factory import WorkflowNodeFactory
 
 from .nodes.agent import AgentNode
@@ -63,6 +64,7 @@ __all__ = [
     # Stores / persistence
     "WorkflowStore",
     "MemoryWorkflowStore",
+    "FileWorkflowStore",
     "WorkflowRepository",
     "WorkflowHistory",
     "MemoryHistoryStore",
@@ -110,6 +112,15 @@ __all__ = [
     "WorkflowDiagnostic",
     "WorkflowValidator",
 
+    # Declarative workflow definitions
+    "WorkflowDefinition",
+    "WorkflowNodeDefinition",
+    "WorkflowEdgeDefinition",
+    "WorkflowDefinitionLoader",
+    "WorkflowDefinitionRuntime",
+    "WorkflowDefinitionValidator",
+    "DefinitionDiagnostic",
+
     # Node capabilities
     "NodeCapability",
     "NodeField",
@@ -117,3 +128,12 @@ __all__ = [
     "create_default_capability_registry",
     "default_capability_registry",
 ]
+from .definition import (
+    WorkflowDefinition,
+    WorkflowDefinitionLoader,
+    WorkflowDefinitionRuntime,
+    WorkflowDefinitionValidator,
+    DefinitionDiagnostic,
+    WorkflowEdgeDefinition,
+    WorkflowNodeDefinition,
+)

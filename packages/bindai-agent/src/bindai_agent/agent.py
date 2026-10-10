@@ -16,6 +16,8 @@ from .delegation import AgentDelegationTool
 from .execution.data import ExecutionData
 from .execution.engine import AgentExecutionEngine
 from .provider_resolver import resolve_provider
+from .nodes import AgentNode
+from .nodes import AgentNode
 from .result import AgentResult
 from .state import AgentState
 
@@ -177,6 +179,58 @@ class Agent(Executable):
 
         return self
 
+    def load_graph(
+        self,
+        graph,
+    ) -> Agent:
+        """
+        Load a Studio execution graph.
+        """
+
+        from .studio import compile_graph
+
+        self.executor.nodes = compile_graph(
+            graph,
+        )
+
+        return self
+
+    def run_graph(
+        self,
+        graph,
+        message: str = "",
+    ):
+        """
+        Execute a Studio graph.
+        """
+
+        from .studio import compile_graph
+
+        context = self._create_context(
+            message,
+        )
+
+        self.executor.nodes = compile_graph(
+            graph,
+        )
+
+        return self.execute(
+            context,
+        )
+
+    def add_node(
+        self,
+        node: AgentNode,
+    ) -> Agent:
+        """
+        Add a Studio execution node.
+        """
+
+        self.executor.add_node(
+            node,
+        )
+
+        return self
     def add_tool(
         self,
         tool: Any,
@@ -218,11 +272,14 @@ class Agent(Executable):
     def execute_tool(
         self,
         name: str,
+        *,
+        context: ExecutionContext | None = None,
         **kwargs: Any,
     ):
 
         result = self.tools.execute(
             name,
+            context=context,
             **kwargs,
         )
 

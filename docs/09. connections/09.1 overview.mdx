@@ -1,1048 +1,154 @@
 ---
+
 title: "Connections"
-description: "Connect BindAI applications to external services and systems."
----
+description: "Connection interfaces, registries, lifecycle management, credentials, and external-service integrations in BindAI."
+---------------------------------------------------------------------------------------------------------------------------------
 
 # Connections
 
-BindAI Connections provide a consistent interface for communicating with external services and systems.
-
-A connection represents an external destination that BindAI can connect to and send data through.
-
-Connections are useful for integrating AI applications and workflows with services such as GitHub, Slack, Notion, Jira, Discord, email providers, Google Workspace, deployment platforms, and generic webhooks.
-
-The current BindAI v0.1 Connections package provides integrations for:
-
-- Webhooks
-- GitHub
-- Slack
-- Notion
-- Jira
-- Discord
-- Resend
-- Vercel
-- Netlify
-- Google Sheets
-- Google Docs
-- Gmail
-- Google Drive
-
----
-
-# Connection Architecture
-
-The Connections package provides three core concepts:
-
-- `Connection` — the base interface for an external connection.
-- `ConnectionRegistry` — a registry of connection types available for dynamic lookup.
-- `ConnectionManager` — manages active connection instances.
-
-The architecture can be represented as:
-
-```text
-Application / Workflow
-        |
-        v
-ConnectionManager
-        |
-        v
-Connection
-        |
-        v
-External Service
-```
-
-The registry provides connection types, while the manager stores concrete connection instances.
-
-This keeps external-service communication separate from agent and workflow logic.
-
----
-
-# Connection Interface
-
-The base `Connection` abstraction defines a small common interface:
-
-```python
-from bindai_connections import Connection
-```
-
-A connection provides:
-
-- `name`
-- `connect()`
-- `disconnect()`
-- `is_connected()`
-- `send(payload)`
-
-Conceptually:
-
-```python
-connection.connect()
-
-if connection.is_connected():
-    result = connection.send(payload)
-
-connection.disconnect()
-```
-
-The exact behavior and payload format of `send()` depend on the specific connection implementation.
-
-Connections may raise exceptions when an operation cannot be performed.
-
----
-
-# Connection Lifecycle
-
-A typical connection lifecycle is:
-
-```text
-Create
-  |
-  v
-Connect
-  |
-  v
-Send
-  |
-  v
-Disconnect
-```
-
-Connections do not necessarily maintain a long-lived network session.
-
-For some integrations, `connect()` may prepare or validate the connection while `send()` performs the actual external request.
-
-For other integrations, `connect()` may simply establish an internal active state.
-
-The concrete behavior depends on the integration.
-
-Applications should therefore treat `connect()` and `disconnect()` as lifecycle operations defined by each connection implementation rather than assuming a particular network behavior.
-
----
-
-# Connection Registry
-
-`ConnectionRegistry` stores named connection types.
-
-```python
-from bindai_connections import ConnectionRegistry
-
-ConnectionRegistry.names()
-```
-
-The registry can be used to inspect connection types registered by the Connections package.
-
-A connection type can be retrieved by name:
-
-```python
-connection_type = ConnectionRegistry.provider("slack")
-```
-
-The registry returns the connection **class**, not an active connection instance.
-
-The registry is useful when applications need to work with connections dynamically.
-
-For example:
-
-```python
-connection_type = ConnectionRegistry.provider("slack")
-connection = connection_type(...)
-```
-
-The exact constructor arguments depend on the selected connection implementation.
-
----
-
-# Registered Connections
-
-The current package initialization registers these connection types:
-
-- `webhook`
-- `slack`
-- `notion`
-- `jira`
-- `discord`
-- `resend`
-- `vercel`
-- `netlify`
-- `google_sheets`
-- `google_docs`
-- `gmail`
-- `google_drive`
-
-For example:
-
-```python
-from bindai_connections import ConnectionRegistry
-
-ConnectionRegistry.names()
-```
-
-returns the currently registered connection names.
-
-`GitHubConnection` is also publicly exposed by the package, but it is **not currently registered with `ConnectionRegistry` by the package initialization**.
-
-It can still be imported directly:
-
-```python
-from bindai_connections import GitHubConnection
-```
-
-This distinction is intentional: a publicly available connection class does not necessarily mean that the class is registered for dynamic lookup.
-
----
-
-# Connection Manager
-
-`ConnectionManager` manages active connection instances.
-
-```python
-from bindai_connections import ConnectionManager
-
-manager = ConnectionManager()
-```
-
-A connection can be added to the manager:
-
-```python
-manager.add(connection)
-```
-
-The connection is stored using its `name` property.
-
-Connections can then be accessed by name:
-
-```python
-connection = manager.get("slack")
-```
-
-The manager provides operations for:
-
-- Checking whether a connection exists
-- Connecting a connection
-- Disconnecting a connection
-- Disconnecting all active connections
-- Removing a connection
-- Listing managed connections
-- Listing managed connection names
-- Clearing all connections
-- Checking the number of managed connections
-
-For example:
-
-```python
-manager.connect("slack")
-manager.disconnect("slack")
-```
-
-The manager operates on concrete connection instances. It does not create connection types through the registry automatically.
-
----
-
-# Connection Manager Lifecycle
-
-A typical manager lifecycle is:
-
-```python
-manager = ConnectionManager()
-
-manager.add(connection)
-
-manager.connect(connection.name)
-
-# Use the connection...
-
-manager.disconnect(connection.name)
-```
-
-A managed connection can be removed:
-
-```python
-manager.remove(connection.name)
-```
-
-If the connection is active, `remove()` disconnects it before removing it from the manager.
-
-All active connections can be disconnected:
-
-```python
-manager.disconnect_all()
-```
-
-The manager can also be cleared completely:
-
-```python
-manager.clear()
-```
-
-`clear()` disconnects active connections and then removes all managed instances.
-
----
-
-# Connection Lookup
-
-The manager provides direct lookup for managed instances:
-
-```python
-connection = manager.get("slack")
-```
-
-If the requested connection is not managed, `get()` raises `KeyError`.
-
-Applications can check before lookup:
-
-```python
-if manager.contains("slack"):
-    connection = manager.get("slack")
-```
-
-Managed connections can also be inspected:
-
-```python
-manager.all()
-manager.names()
-manager.size()
-```
-
-`all()` returns the managed connection instances.
-
-`names()` returns the names of managed connections.
-
-`size()` returns the number of managed connections.
-
----
-
-# Webhook Connections
-
-`WebhookConnection` provides a generic integration for sending payloads to webhook endpoints.
-
-This is useful for services that expose HTTP webhook interfaces.
-
-Typical use cases include:
-
-- Automation triggers
-- Notifications
-- Workflow events
-- External system callbacks
-- Custom integrations
-
-Webhook connections provide a general-purpose integration point without requiring a dedicated provider-specific package.
-
----
-
-# GitHub
-
-`GitHubConnection` provides an HTTP connection for the GitHub REST API.
-
-The connection accepts a GitHub token and supports configurable API base URLs and request timeouts.
-
-Conceptually:
-
-```python
-from bindai_connections import GitHubConnection
-
-connection = GitHubConnection("github-token")
-connection.connect()
-
-result = connection.send({
-    "path": "/user",
-    "method": "GET",
-})
-```
-
-The GitHub connection supports request payload fields including:
-
-- `path`
-- `method`
-- `body`
-
-For requests with a body, the body is encoded as JSON.
-
-The default GitHub API base URL is:
-
-```text
-https://api.github.com
-```
-
-`GitHubConnection` is publicly exported but is not currently registered with `ConnectionRegistry`.
-
----
-
-# Slack
-
-`SlackConnection` provides an integration with Slack.
-
-Typical use cases include:
-
-- Sending notifications
-- Posting workflow results
-- Sending agent-generated messages
-- Alerting teams about workflow events
-
-A workflow can therefore use a Slack connection without embedding Slack-specific communication logic throughout the workflow itself.
-
----
-
-# Notion
-
-`NotionConnection` provides an integration with Notion.
-
-Potential application uses include:
-
-- Writing generated content
-- Updating pages
-- Publishing workflow results
-- Connecting AI workflows with workspace information
-
-Authentication and request behavior remain specific to the Notion integration.
-
----
-
-# Jira
-
-`JiraConnection` provides an integration with Jira.
-
-Typical uses include:
-
-- Creating or updating issues
-- Connecting AI workflows to project-management processes
-- Automating issue-related operations
-- Sending workflow results to Jira
-
-The connection abstraction keeps Jira-specific communication separate from general workflow logic.
-
----
-
-# Discord
-
-`DiscordConnection` provides an integration with Discord.
-
-Typical uses include:
-
-- Sending notifications
-- Publishing workflow results
-- Alerting Discord channels
-- Connecting automated workflows with communities
-
----
-
-# Resend
-
-`ResendConnection` provides an integration with Resend for email-related operations.
-
-Typical uses include:
-
-- Sending application notifications
-- Delivering workflow results
-- Sending generated messages
-- Integrating email delivery into automated workflows
-
-Email credentials and sender configuration should be supplied through secure deployment configuration.
-
----
-
-# Vercel
-
-`VercelConnection` provides an integration with Vercel.
-
-It can be used to connect BindAI automation with deployment-related operations supported by the connection implementation.
-
-This can be useful when AI workflows participate in application deployment or infrastructure automation.
-
----
-
-# Netlify
-
-`NetlifyConnection` provides an integration with Netlify.
-
-It can connect BindAI automation with deployment-related operations supported by the integration.
-
-This makes it possible to incorporate deployment platforms into larger AI-driven workflows.
-
----
-
-# Google Sheets
-
-`GoogleSheetsConnection` provides an HTTP integration with the Google Sheets API.
-
-The current implementation uses the Google Sheets API v4 endpoint:
-
-```text
-https://sheets.googleapis.com/v4/spreadsheets
-```
-
-The connection accepts an access token and supports configurable API base URLs and request timeouts.
-
-Conceptually:
-
-```python
-from bindai_connections import GoogleSheetsConnection
-
-connection = GoogleSheetsConnection("access-token")
-connection.connect()
-
-result = connection.send({
-    "path": "/spreadsheet-id/values/Sheet1!A1:B2",
-    "method": "GET",
-})
-```
-
-The exact request path and payload depend on the Google Sheets API operation being performed.
-
-Typical use cases include:
-
-- Reading spreadsheet data
-- Writing spreadsheet data
-- Updating spreadsheet-backed workflows
-- Using spreadsheet data in automation
-- Sending workflow results to spreadsheets
-
-The Google Sheets integration uses the supplied access token when communicating with the Google API.
-
----
-
-# Google Docs
-
-`GoogleDocsConnection` provides an HTTP integration with the Google Docs API.
-
-The current implementation uses the Google Docs API endpoint:
-
-```text
-https://docs.googleapis.com/v1/documents
-```
-
-The connection accepts an access token and supports configurable API base URLs and request timeouts.
-
-Conceptually:
-
-```python
-from bindai_connections import GoogleDocsConnection
-
-connection = GoogleDocsConnection("access-token")
-connection.connect()
-
-result = connection.send({
-    "path": "/document-id",
-    "method": "GET",
-})
-```
-
-Typical use cases include:
-
-- Reading documents
-- Updating document content
-- Publishing generated content
-- Connecting AI workflows to Google Docs
-- Processing document-based workflows
-
-The exact request path and payload depend on the Google Docs API operation.
-
----
-
-# Gmail
-
-`GmailConnection` provides an HTTP integration with the Gmail API.
-
-The current implementation uses the Gmail API endpoint:
-
-```text
-https://gmail.googleapis.com/gmail/v1/users
-```
-
-The connection uses a Google OAuth access token as a Bearer token.
-
-Conceptually:
-
-```python
-from bindai_connections import GmailConnection
-
-connection = GmailConnection("access-token")
-connection.connect()
-
-result = connection.send({
-    "path": "/me/profile",
-    "method": "GET",
-})
-```
-
-Typical use cases include:
-
-- Reading Gmail account information
-- Integrating email workflows
-- Processing messages
-- Connecting agent workflows to Gmail
-- Supporting email-related automation
-
-The exact request path and payload depend on the Gmail API operation.
-
-Applications should request only the Google OAuth scopes required for the operations they perform.
-
----
-
-# Google Drive
-
-`GoogleDriveConnection` provides an HTTP integration with the Google Drive API.
-
-The current implementation uses the Google Drive API endpoint:
-
-```text
-https://www.googleapis.com/drive/v3
-```
-
-The connection uses a Google OAuth access token as a Bearer token.
-
-Conceptually:
-
-```python
-from bindai_connections import GoogleDriveConnection
-
-connection = GoogleDriveConnection("access-token")
-connection.connect()
-
-result = connection.send({
-    "path": "/files",
-    "method": "GET",
-})
-```
-
-Typical use cases include:
-
-- Listing files
-- Accessing Drive resources
-- Connecting document workflows
-- Processing files through AI applications
-- Integrating Google Drive with automation
-
-The exact request path and payload depend on the Google Drive API operation.
-
-Applications should request only the Google OAuth scopes required for their use case.
-
----
-
-# Google Workspace Authentication
-
-The Google integrations use OAuth access tokens.
-
-The current integrations include:
-
-- Google Sheets
-- Google Docs
-- Gmail
-- Google Drive
-
-The access token should be supplied through secure application configuration.
-
-Do not place Google access tokens directly in source code.
-
-For production applications, use the deployment environment's secret-management capabilities where available.
-
----
-
-# Connections and Agents
-
-Connections can be used alongside agents when an agent needs to interact with an external system.
-
-A typical architecture is:
-
-```text
-Agent
-  |
-  v
-Tool
-  |
-  v
-Connection
-  |
-  v
-External Service
-```
-
-The tool can provide the agent with a controlled interface while the connection handles communication with the external service.
-
-This separation is useful because agents should not need to contain provider-specific networking logic.
-
----
-
-# Connections and Workflows
-
-Connections can also be used by workflows.
-
-For example:
-
-```text
-Workflow
-   |
-   +---- Agent
-   |
-   +---- Tool
-   |
-   v
-Connection
-   |
-   v
-External Service
-```
-
-A workflow might:
-
-1. Execute an agent.
-2. Process the result.
-3. Send the result through a connection.
-4. Continue or complete execution.
-
-The exact workflow integration depends on how the connection is used by the application or tool.
-
----
-
-# Connections and Tools
-
-A common pattern is to expose a connection through a tool.
-
-```python
-def notify_team(message: str) -> str:
-    connection.send({"message": message})
-    return "Notification sent"
-```
-
-The tool becomes the controlled interface available to the agent, while the connection manages external communication.
-
-This separation provides several benefits:
-
-- Provider-specific logic remains isolated.
-- Agents receive simple tool interfaces.
-- External credentials remain outside prompts.
-- Connections can be reused.
-- Tools can validate inputs before performing external actions.
-
----
-
-# Configuration
-
-Connection configuration should remain outside application logic whenever possible.
-
-Depending on the integration, configuration may include:
-
-- API keys
-- Access tokens
-- Webhook URLs
-- Account identifiers
-- Workspace identifiers
-- Project identifiers
-- Endpoint URLs
-- Sender information
-
-Sensitive credentials should normally be supplied through environment variables or a dedicated secret-management system.
-
-Never commit credentials to source control.
-
----
-
-# Project-Scoped Provider Connections
-
-BindAI also supports named provider connections for project-level AI provider credentials.
-
-These provider connections are separate from the external-service `Connection` classes described above. They provide a secure way for a project to select a stored provider credential without placing the credential directly in `bindai.toml` or source code.
-
-A project provider connection consists of:
-
-- A connection name.
-- A provider name.
-- Connection metadata stored in `.bindai/connections.toml`.
-- The provider credential stored in the operating system credential store.
-
-The CLI can create and manage these connections:
-
-```text
-bindai connections add
-bindai connections list
-bindai connections remove
-
----
-
-# Connection State
-
-The base interface exposes:
-
-```python
-connection.is_connected()
-```
-
-This allows applications to determine whether a connection considers itself active.
-
-Applications should not assume that an internally connected state guarantees that an external service is currently reachable.
-
-Network availability, credentials, service availability, and authorization can change independently.
-
-A connection may therefore report an active local state while a subsequent external request still fails.
-
----
-
-# Error Handling
-
-External services can fail for many reasons.
-
-Examples include:
-
-- Authentication failures
-- Invalid requests
-- Network failures
-- Rate limits
-- Service outages
-- Invalid payloads
-- Permission errors
-
-Applications should handle connection failures explicitly.
-
-For operations that have external side effects, retry behavior should be designed carefully.
-
-Blindly retrying a request can create duplicate operations when the first request actually succeeded but its response was lost.
-
-The Connections package does not provide a universal retry policy for all integrations.
-
-Retry behavior should therefore be implemented at the appropriate application or workflow layer.
-
----
-
-# Idempotency
-
-Connections that perform state-changing operations should consider idempotency.
-
-For example:
-
-```text
-Workflow
-   |
-   v
-Send Request
-   |
-   +---- Success
-   |
-   +---- Unknown Outcome
-             |
-             v
-          Retry?
-```
-
-Before retrying a failed external operation, determine whether repeating it is safe.
-
-Where supported, use idempotency keys or other mechanisms provided by the external service.
-
-Applications should avoid assuming that every failed request can safely be repeated.
-
----
-
-# Security
-
-Connections often provide access to external systems and therefore require careful security controls.
-
-Recommended practices include:
-
-- Keep credentials outside source code.
-- Use the minimum required permissions.
-- Validate data before sending it externally.
-- Restrict write operations where possible.
-- Protect state-changing tools.
-- Avoid exposing secrets to agents.
-- Avoid placing credentials in prompts.
-- Audit important external operations.
-- Rotate credentials when appropriate.
-
-Connections should be treated as privileged boundaries between BindAI and external systems.
-
-When a connection is exposed through an agent tool, the tool should provide an intentionally limited interface rather than unrestricted external access.
-
----
-
-# External Data
-
-Connections may send or receive information from external services.
-
-Applications should consider:
-
-- Data sensitivity
-- User authorization
-- Access permissions
-- Data retention
-- Logging
-- Compliance requirements
-- Cross-system data flow
-
-Only the data required for the operation should be transmitted.
-
-Applications should also avoid unnecessarily exposing external-service responses to agents or other components.
-
----
-
-# Reusing Connections
-
-A connection instance can be managed and reused by an application.
-
-For example:
-
-```python
-manager = ConnectionManager()
-
-manager.add(connection)
-
-manager.connect(connection.name)
-
-# Use the connection...
-
-manager.disconnect(connection.name)
-```
-
-Reusing connections can simplify resource management and avoid repeatedly constructing the same integration object.
-
-The appropriate lifecycle depends on the external service and the connection implementation.
-
----
-
-# Connection Isolation
-
-Different external services should remain logically isolated.
-
-For example:
+The `bindai-connections` package provides a common interface for communicating with external services. A connection exposes a name, lifecycle methods, and a `send()` operation. The actual behavior and payload format depend on the specific implementation.
+
+The package exports connection classes for:
+
+* Webhooks
+* GitHub
+* Slack
+* Notion
+* Jira
+* Discord
+* Resend
+* Vercel
+* Netlify
+* Google Sheets
+* Google Docs
+* Gmail
+* Google Drive
+
+**Important:** An exported connection class is not necessarily registered for dynamic lookup, configured for use, or verified to work with every operation of its external service. The package currently registers 12 connection types; `GitHubConnection` is exported but is not included in that registration list.
+
+## Architecture
+
+The package provides three principal components:
+
+* `Connection`: the abstract interface implemented by connection classes.
+* `ConnectionRegistry`: stores named connection classes for dynamic lookup.
+* `ConnectionManager`: manages connection instances in memory.
 
 ```text
 Application
-   |
-   +---- Slack Connection
-   |
-   +---- GitHub Connection
-   |
-   +---- Google Sheets Connection
-   |
-   +---- Gmail Connection
-   |
-   +---- Google Drive Connection
+    |
+    v
+ConnectionManager
+    |
+    v
+Connection instance
+    |
+    v
+External service
 ```
 
-A failure in one integration should not unnecessarily compromise unrelated integrations.
+The registry provides class lookup; the manager stores instantiated connections. Neither component, by itself, establishes that an external service is reachable or that credentials are valid.
 
-Applications should also avoid sharing credentials between unrelated services.
+## Connection interface
 
----
+Import the base interface from `bindai_connections`:
 
-# Connections in Multi-Agent Systems
+```python
+from bindai_connections import Connection
+```
 
-Connections can support multi-agent architectures.
+The abstract interface requires these members:
+
+| Member           | Purpose                                               |
+| ---------------- | ----------------------------------------------------- |
+| `name`           | Identifies the connection                             |
+| `connect()`      | Performs the implementation's connection setup        |
+| `disconnect()`   | Performs the implementation's disconnection operation |
+| `is_connected()` | Reports the implementation's local connection state   |
+| `send(payload)`  | Sends a payload using the implementation's behavior   |
+
+A typical usage pattern is:
+
+```python
+connection.connect()
+
+try:
+    if connection.is_connected():
+        result = connection.send(payload)
+finally:
+    connection.disconnect()
+```
+
+This is an illustrative lifecycle pattern, not a guarantee that every integration performs a network handshake in `connect()`. Check the selected implementation's constructor, accepted payload, authentication behavior, and error handling before using it.
+
+Exceptions from connection operations may propagate to the caller. Applications should handle errors at an appropriate boundary.
+
+## Connection lifecycle
+
+A connection commonly follows this sequence:
+
+1. Instantiate the connection with the required configuration.
+2. Call `connect()`.
+3. Check `is_connected()` if appropriate.
+4. Call `send(payload)`.
+5. Call `disconnect()` when finished.
+
+The lifecycle methods do not have identical semantics across all implementations. For example, the current Google Sheets, Google Docs, Gmail, Google Drive, and webhook implementations use a local Boolean flag for connection state. Their `connect()` methods toggle that state; they do not, by themselves, verify that the remote service is reachable.
+
+For these implementations, the network request occurs during `send()`. A successful `is_connected()` result therefore does not guarantee a successful request.
+
+## Connection registry
+
+`ConnectionRegistry` stores named connection classes. Use `names()` to inspect the registered names and `provider(name)` to retrieve a class.
+
+```python
+from bindai_connections import ConnectionRegistry
+
+print(ConnectionRegistry.names())
+
+connection_type = ConnectionRegistry.provider("slack")
+```
+
+`provider()` returns the class, not an instantiated or connected object. Constructor arguments depend on the chosen implementation.
+
+Unknown names raise `KeyError`.
+
+### Currently registered types
+
+The package initialization registers these names:
+
+* `webhook`
+* `slack`
+* `notion`
+* `jira`
+* `discord`
+* `resend`
+* `vercel`
+* `netlify`
+* `google_sheets`
+* `google_docs`
+* `gmail`
+* `google_drive`
 
 For example:
 
-```text
-Team
- |
- +---- Research Agent
- |
- +---- Development Agent
- |
- +---- Communication Agent
-                 |
-                 v
-              Slack
+```python
+from bindai_connections import ConnectionRegistry
+
+for name in ConnectionRegistry.names():
+    print(name)
 ```
 
-Different agents can use different tools and connections according to their responsibilities.
+`GitHubConnection` is also exported by the package, but it is not included in the default registry registrations. Importing a class and registering it for dynamic lookup are separate operations.
 
-This helps maintain clear boundaries between agent roles and external permissions.
+### Registering a connection class
 
----
-
-# Testing Connections
-
-Connections should be tested independently from the agents and workflows that use them.
-
-Useful tests include:
-
-- Construction
-- Configuration validation
-- Connection lifecycle
-- Connected-state behavior
-- Payload handling
-- Authentication failures
-- External-service failures
-- Invalid responses
-- Cleanup
-- Error handling
-
-Registry behavior should also be tested where dynamic connection lookup is used.
-
-Useful registry tests include:
-
-- Registering a connection type
-- Looking up a registered type
-- Listing registered names
-- Rejecting invalid connection names
-- Handling unknown connection names
-
-Manager behavior should also be tested independently.
-
-Useful manager tests include:
-
-- Adding connections
-- Looking up managed connections
-- Checking membership
-- Connecting and disconnecting
-- Removing connections
-- Disconnecting all connections
-- Clearing the manager
-- Listing managed names
-- Reporting manager size
-
-External API calls should generally be mocked in unit tests.
-
-Integration tests can be used separately when real external services are required.
-
----
-
-# Local Development
-
-During development, connections should preferably use:
-
-- Test accounts
-- Mock services
-- Development workspaces
-- Non-production credentials
-- Safe test data
-
-Avoid pointing development automation at production systems unless there is a deliberate reason to do so.
-
-For Google integrations, use OAuth credentials and scopes appropriate for development rather than production-wide credentials.
-
----
-
-# Production Usage
-
-Production connections require additional operational considerations.
-
-These can include:
-
-- Credential management
-- Rate limits
-- Service availability
-- Network configuration
-- Monitoring
-- Failure handling
-- Retry behavior
-- Audit logging
-- Access control
-
-Production infrastructure should be configured independently from local development environments.
-
----
-
-# Adding a New Connection
-
-A new integration should implement the `Connection` abstraction.
-
-Conceptually:
+A custom connection class can be registered explicitly:
 
 ```python
-from typing import Any
-from bindai_connections import Connection
+from bindai_connections import Connection, ConnectionRegistry
 
 class ExampleConnection(Connection):
-
     @property
     def name(self) -> str:
         return "example"
@@ -1054,219 +160,287 @@ class ExampleConnection(Connection):
         ...
 
     def is_connected(self) -> bool:
-        ...
+        return False
 
-    def send(self, payload: Any) -> Any:
-        ...
-```
+    def send(self, payload):
+        raise NotImplementedError
 
-The implementation can then be registered with `ConnectionRegistry`:
-
-```python
 ConnectionRegistry.register("example", ExampleConnection)
 ```
 
-The exact registration and integration details should follow the current package implementation.
+This illustrates the interface and registration shape only. Replace the placeholder methods with real behavior before using the connection. In particular, `is_connected()` and `send()` must reflect the implementation's actual state and operations.
 
-If registration is performed during package initialization, applications can then retrieve the connection type dynamically:
+Registry names are used as supplied when stored, so use consistent lowercase names. The registry does not instantiate or connect a class for you.
+
+## Connection manager
+
+`ConnectionManager` stores connection instances in an in-memory mapping keyed by each instance's `name`.
 
 ```python
-connection_type = ConnectionRegistry.provider("example")
+from bindai_connections import ConnectionManager
+
+manager = ConnectionManager()
+manager.add(connection)
+
+print(manager.names())
+print(manager.contains(connection.name))
+
+managed_connection = manager.get(connection.name)
 ```
 
----
+The manager provides these operations:
 
-# Connection Design Principles
+| Method             | Behavior                                                                  |
+| ------------------ | ------------------------------------------------------------------------- |
+| `add(connection)`  | Stores the instance under its name and returns the manager                |
+| `get(name)`        | Returns the stored instance; raises `KeyError` if absent                  |
+| `contains(name)`   | Checks whether a name is present                                          |
+| `connect(name)`    | Calls the instance's `connect()` method and returns it                    |
+| `disconnect(name)` | Calls the instance's `disconnect()` method and returns it                 |
+| `remove(name)`     | Removes an instance and disconnects it if it reports that it is connected |
+| `disconnect_all()` | Disconnects managed instances that report being connected                 |
+| `all()`            | Returns a list of managed instances                                       |
+| `names()`          | Returns the names of managed instances                                    |
+| `clear()`          | Disconnects connected instances and clears the mapping                    |
+| `size()`           | Returns the number of managed instances                                   |
 
-Good connections should:
+The manager does not persist instances across process restarts.
 
-- Have a clear responsibility.
-- Hide provider-specific communication details.
-- Avoid exposing credentials.
-- Validate external input.
-- Handle failures explicitly.
-- Keep side effects predictable.
-- Support testing.
-- Avoid unnecessary global state.
-- Provide clear error information.
-- Follow the common connection interface.
+Adding another instance under an existing name replaces the previous mapping entry. Do not rely on `add()` to disconnect the replaced instance automatically.
 
----
+The manager also does not validate remote service availability, automatically refresh credentials, or retry failed requests.
 
-# Current Scope
+## Built-in integrations
 
-The current Connections package provides:
+The package exports multiple integration classes. Their constructors and request behavior differ, so do not assume a uniform authentication scheme or a universal payload format.
 
-## Core
+### Webhook
 
-- `Connection`
-- `ConnectionRegistry`
-- `ConnectionManager`
-
-## Public Connection Classes
-
-- `WebhookConnection`
-- `GitHubConnection`
-- `SlackConnection`
-- `NotionConnection`
-- `JiraConnection`
-- `DiscordConnection`
-- `ResendConnection`
-- `VercelConnection`
-- `NetlifyConnection`
-- `GoogleSheetsConnection`
-- `GoogleDocsConnection`
-- `GmailConnection`
-- `GoogleDriveConnection`
-
-## Currently Registered Connection Types
-
-- `webhook`
-- `slack`
-- `notion`
-- `jira`
-- `discord`
-- `resend`
-- `vercel`
-- `netlify`
-- `google_sheets`
-- `google_docs`
-- `gmail`
-- `google_drive`
-
-`GitHubConnection` is publicly available but is not currently registered with `ConnectionRegistry`.
-
-These integrations provide a foundation for connecting BindAI applications and workflows to external systems.
-
-Additional integrations can be added without changing the core connection abstraction.
-
----
-
-# Future Integrations
-
-Potential future integrations include services such as:
-
-- Telegram
-- Twilio
-- Outlook
-- Microsoft Teams
-- GitLab
-- Linear
-- Trello
-- Asana
-- Airtable
-- HubSpot
-- Salesforce
-- Stripe
-- Additional communication platforms
-- Additional project-management systems
-- Additional SaaS APIs
-
-These integrations are not required for the BindAI v0.1 release.
-
-Future integrations should follow the same common connection architecture where appropriate.
-
----
-
-# API Accuracy
-
-The Connections package currently provides the abstractions and APIs described in this document.
-
-The public package exposes:
+`WebhookConnection` sends JSON payloads to a configured URL using HTTP POST.
 
 ```python
-from bindai_connections import (
-    Connection,
-    ConnectionManager,
-    ConnectionRegistry,
-    WebhookConnection,
-    GitHubConnection,
-    SlackConnection,
-    NotionConnection,
-    JiraConnection,
-    DiscordConnection,
-    ResendConnection,
-    VercelConnection,
-    NetlifyConnection,
-    GoogleSheetsConnection,
-    GoogleDocsConnection,
-    GmailConnection,
-    GoogleDriveConnection,
+from bindai_connections import WebhookConnection
+
+connection = WebhookConnection(
+    url="https://example.com/webhook",
+    timeout=10,
 )
+
+connection.connect()
+
+try:
+    result = connection.send({"event": "example"})
+finally:
+    connection.disconnect()
 ```
 
-The registry and manager serve different purposes:
+The URL must be non-empty and the timeout must be positive. `send()` requires the connection to be in its connected state. The result contains `status_code` and the response text in `body`.
 
-```text
-ConnectionRegistry
-        |
-        v
-Connection Types
-        |
-        v
-ConnectionManager
-        |
-        v
-Connection Instances
-```
+Network and HTTP errors can propagate to the caller. Only send payloads to trusted destinations, and avoid including secrets or unnecessary personal data in webhook payloads.
 
-This documentation intentionally avoids assuming higher-level APIs such as:
+### Google Sheets and Google Docs
+
+The package exports `GoogleSheetsConnection` and `GoogleDocsConnection`. Both use an HTTP request pattern with configurable base URLs and timeouts.
+
+The default base URLs are:
+
+* Google Sheets: `https://sheets.googleapis.com/v4/spreadsheets`
+* Google Docs: `https://docs.googleapis.com/v1/documents`
+
+A request payload can specify:
+
+* `path`: the path appended to the configured base URL
+* `method`: the HTTP method, defaulting to `GET`
+* `body`: an optional JSON request body
+
+For example:
 
 ```python
-project.add_connection(...)
-application.connection(...)
-workflow.connection(...)
-connection.authenticate(...)
-connection.receive(...)
+from bindai_connections import GoogleDocsConnection
+
+connection = GoogleDocsConnection(token="ACCESS_TOKEN")
+connection.connect()
+
+try:
+    result = connection.send({
+        "path": "/DOCUMENT_ID",
+        "method": "GET",
+    })
+finally:
+    connection.disconnect()
 ```
 
-unless those APIs are explicitly implemented.
+**Authentication security caveat:** In the current implementations, the Sheets and Docs connections append the supplied token as an `access_token` URL query parameter. Query-string credentials can be exposed through logs, monitoring systems, proxies, or other URL-recording mechanisms. This behavior should not be treated as a recommended production security pattern. Review and improve the implementation before using sensitive credentials in production.
 
-Applications should use the public interfaces provided by the installed BindAI version.
+The example documents the current interface; it does not guarantee that the request path, permissions, or Google API operation is valid for a particular document or spreadsheet.
 
----
+### Gmail and Google Drive
 
-# Summary
+The package also exports `GmailConnection` and `GoogleDriveConnection`.
 
-BindAI Connections provide a small abstraction for communicating with external services.
+Their default base URLs are:
 
-The core architecture is:
+* Gmail: `https://gmail.googleapis.com/gmail/v1/users`
+* Google Drive: `https://www.googleapis.com/drive/v3`
 
-```text
-Application
-    |
-    v
-ConnectionManager
-    |
-    v
-Connection
-    |
-    v
-External Service
+These implementations send the supplied token in an HTTP `Authorization: Bearer ...` header. Their default request paths are `/me/profile` for Gmail and `/files` for Drive.
+
+They accept a request payload with `path`, `method`, and optional `body`, and return a dictionary containing `status_code` and response text in `body`.
+
+These examples describe the current HTTP wrapper behavior, not a complete Google OAuth flow. Token acquisition, consent, scopes, expiration, and refresh are not performed by these connection classes. Use valid access tokens with the necessary permissions and review each API's requirements.
+
+### Other exported connections
+
+The package also exports connection classes for GitHub, Slack, Notion, Jira, Discord, Resend, Vercel, and Netlify.
+
+Their presence in the public package does not establish that every API operation is supported or that each class is registered for dynamic lookup. Consult the corresponding implementation for required constructor arguments, supported payloads, authentication behavior, and limitations before relying on a provider.
+
+## Provider credentials and CLI configuration
+
+BindAI also has a separate provider-configuration layer for AI model providers. This is distinct from the external-service connection classes described above.
+
+The `bindai connections` CLI currently recognizes these model-provider names:
+
+* `openai`
+* `anthropic`
+* `google`
+* `groq`
+* `ollama`
+* `openrouter`
+
+The CLI commands manage provider credentials and metadata; they do **not** automatically configure all external-service classes such as Slack, Google Drive, or GitHub.
+
+Run these commands from the project directory whose connection configuration you want to manage.
+
+### Add a provider credential
+
+```bash
+bindai connections add openai
 ```
 
-`ConnectionRegistry` provides named connection types for dynamic lookup, while `ConnectionManager` manages active connection instances.
+You can optionally assign a name:
 
-The current BindAI v0.1 package publicly exposes integrations for:
+```bash
+bindai connections add openai --name my-openai
+```
 
-- Webhooks
-- GitHub
-- Slack
-- Notion
-- Jira
-- Discord
-- Resend
-- Vercel
-- Netlify
-- Google Sheets
-- Google Docs
-- Gmail
-- Google Drive
+The CLI prompts for the credential with input hidden. It stores the credential through `KeyringProviderCredentialStore` and records non-secret metadata in `.bindai/connections.toml` under the current working directory.
 
-The package currently registers all of these except `GitHubConnection`, which remains publicly importable but is not registered for dynamic registry lookup.
+Provider names are validated against the model-provider configuration registry. An unknown provider is rejected.
 
-The Google integrations use OAuth access tokens and provide HTTP-based access to the corresponding Google APIs.
+### List configured connections
 
-Connections can be combined with tools, agents, workflows, and automation to build AI applications that interact with external systems.
+```bash
+bindai connections list
+```
 
-By keeping external-service communication behind a common interface, BindAI can add integrations incrementally while keeping application and workflow logic independent from individual service implementations.
+The list command reads the metadata manifest and checks whether each named credential exists in the keyring. It reports the name, provider, and credential status (`Configured` or `Missing`).
+
+A `Configured` result only indicates that a credential is present in the credential store. It does not verify that the credential is valid or that the provider is reachable.
+
+### Remove a provider credential
+
+```bash
+bindai connections remove my-openai
+```
+
+The remove command deletes the credential and removes the corresponding metadata entry. The name must exist in the manifest.
+
+### Credential storage details
+
+The current credential-store implementations include:
+
+* `InMemoryProviderCredentialStore`: stores credentials in process memory.
+* `KeyringProviderCredentialStore`: uses the Python `keyring` package to access the operating system's credential store.
+
+The keyring implementation uses the service name `bindai` by default. Its optional dependency is installed with:
+
+```bash
+pip install "bindai-connections[credentials]"
+```
+
+The keyring store does not provide portable credential-name enumeration; its `list()` method returns an empty list. The CLI obtains names from the metadata manifest and checks each credential individually.
+
+The manifest stores provider metadata, not credential values. By default, `ConnectionManifest` uses `.bindai/connections.toml` relative to the current working directory. The CLI explicitly constructs the manifest at that location.
+
+Treat credentials as secrets. Do not commit credentials, tokens, or other sensitive values to source control. Restrict access to the project configuration and use a suitable operating-system credential store where available.
+
+## Errors and operational considerations
+
+Connection operations may fail because of invalid credentials, insufficient permissions, malformed payloads, unsupported endpoints, network problems, timeouts, or remote API errors.
+
+The behavior varies by implementation. For example, the HTTP-based integrations use a timeout for requests and can propagate network or HTTP exceptions. The common `Connection` interface does not guarantee automatic retries, uniform error objects, rate-limit handling, or credential refresh.
+
+Applications should:
+
+* Handle exceptions at the appropriate application boundary.
+* Avoid logging tokens, authorization headers, or sensitive payloads.
+* Validate external inputs before using them to construct request paths or payloads.
+* Apply application-level retry and rate-limit handling only where appropriate for the operation.
+* Distinguish local connection state from verified remote availability.
+* Check provider permissions and API requirements before deployment.
+
+Do not assume a request is idempotent. Before retrying a failed request, determine whether the remote operation could already have succeeded.
+
+## Security considerations
+
+External-service connections can carry sensitive information. Apply least-privilege permissions and send only the data needed for the operation.
+
+For production use:
+
+* Store secrets in an appropriate credential store rather than source code.
+* Keep tokens out of URLs, logs, error reports, and documentation examples.
+* Use HTTPS for external requests.
+* Validate destinations and payloads, especially when URLs or paths come from untrusted input.
+* Restrict webhook destinations to trusted endpoints and consider server-side protections against requests to unintended internal or private network addresses.
+* Review each integration's authentication and error-handling implementation before using it with sensitive data.
+
+The Google Sheets and Docs query-string token behavior described above deserves particular attention before production use.
+
+## Testing and local development
+
+When testing a connection, verify each stage separately:
+
+1. Construction succeeds with the intended configuration.
+2. `connect()` and `is_connected()` behave as expected for that implementation.
+3. `send()` sends the intended method, URL, headers, and payload.
+4. Successful responses are handled correctly.
+5. Invalid credentials, HTTP failures, and network timeouts are handled appropriately.
+6. `disconnect()` and manager cleanup behave as expected.
+
+Prefer mocked HTTP requests or controlled test endpoints for unit tests. Use real provider credentials only in appropriately secured integration tests. Avoid using production data or credentials in examples and test fixtures.
+
+## Adding a custom connection
+
+To implement a custom connection:
+
+1. Subclass `Connection`.
+2. Implement `name`, `connect()`, `disconnect()`, `is_connected()`, and `send(payload)`.
+3. Define and document the constructor arguments and accepted payload format.
+4. Register the class with `ConnectionRegistry` if dynamic lookup is required.
+5. Instantiate and manage it directly or through `ConnectionManager`.
+6. Test its success and failure behavior.
+
+A minimal implementation should not claim to be connected when no connection has been established, and its `send()` method should fail clearly when required setup has not occurred.
+
+The registry and manager provide class lookup and instance management; they do not supply missing authentication, API behavior, or network functionality.
+
+## Current scope and limitations
+
+The following distinctions matter when integrating connections into an application:
+
+* Exported classes and registered connection names are different sets.
+* Registry lookup returns a class, not a live connection.
+* The connection manager keeps instances in memory and does not persist them.
+* Connection state is implementation-specific and may only represent local state.
+* The provider-credential CLI manages AI model-provider credentials, not every external-service connection.
+* The current connection interface does not guarantee a shared payload schema, common authentication flow, automatic retries, or token refresh.
+* A class being present in the package does not guarantee support for every operation offered by its external service.
+
+Verify the concrete implementation before documenting or depending on a capability.
+
+## Summary
+
+BindAI Connections provides a shared interface, a registry for connection classes, and a manager for connection instances. The package includes webhook and service-specific integrations, while a separate CLI supports storing credentials for a defined set of AI model providers.
+
+Use the concrete implementation as the source of truth for request formats, authentication, lifecycle semantics, and error handling. In particular, distinguish local connection state from remote connectivity, keep credentials out of source control and logs, and address the Google Sheets and Docs query-string token behavior before production use.

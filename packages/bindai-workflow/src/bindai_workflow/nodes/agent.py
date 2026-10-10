@@ -19,14 +19,12 @@ class AgentNode(
         agent: str,
         input_variable: str = "input",
         output_variable: str = "agent_output",
+        input_mapping: dict[str, str] | None = None,
         name: str | None = None,
     ):
-
         super().__init__(
             node_id=node_id,
-            runnable=AgentRegistry.get(
-                agent,
-            ),
+            runnable=AgentRegistry.get(agent),
             name=name,
         )
 
@@ -34,19 +32,56 @@ class AgentNode(
         self.input_variable = input_variable
         self.output_variable = output_variable
 
+        if isinstance(input_mapping, str):
+            mapping = {}
+
+            for line in input_mapping.splitlines():
+                line = line.strip()
+
+                if not line or "=" not in line:
+                    continue
+
+                name, variable = line.split("=", 1)
+
+                name = name.strip()
+                variable = variable.strip()
+
+                if name and variable:
+                    mapping[name] = variable
+
+            self.input_mapping = mapping
+        else:
+            self.input_mapping = input_mapping or {}
+
     def before_execute(
         self,
         context: WorkflowContext,
     ) -> WorkflowContext:
 
-        prompt = context.get(
-            self.input_variable,
-        )
+        if hasattr(self.runnable, "conversation"):
+            self.runnable.conversation.clear()
 
-        #
-        # BindAI AgentExecutionEngine expects
-        # ExecutionContext.variables["input"].
-        #
+        if self.input_mapping:
+            sections = []
+
+            for name, variable in self.input_mapping.items():
+                value = context.get(variable)
+
+                if (
+                    hasattr(value, "value")
+                    and hasattr(value, "success")
+                ):
+                    value = value.value
+
+                sections.append(
+                    f"{name}:\n{value}"
+                )
+
+            prompt = "\n\n".join(sections)
+        else:
+            prompt = context.get(
+                self.input_variable,
+            )
 
         context.variables.set(
             "input",
@@ -63,7 +98,7 @@ class AgentNode(
 
         context.set(
             self.output_variable,
-            result,
+            result.output,
         )
 
         return context
@@ -81,6 +116,11 @@ class AgentNode(
                 "output_variable": self.output_variable,
             }
         )
+
+        if self.input_mapping:
+            data["input_mapping"] = dict(
+                self.input_mapping,
+            )
 
         return data
 
@@ -103,4 +143,11 @@ class AgentNode(
         self.output_variable = data.get(
             "output_variable",
             "agent_output",
+        )
+
+        self.input_mapping = dict(
+            data.get(
+                "input_mapping",
+                {},
+            ) or {},
         )

@@ -90,3 +90,6 @@ test-instructions-2/
 wheelhouse/
 
 cli-test-018/
+
+# JavaScript dependencies
+node_modules/

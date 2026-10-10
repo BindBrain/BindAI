@@ -1,13 +1,17 @@
 [project]
 name = "bindai-api"
-version = "0.1.0"
+version = "0.1.1"
 description = "REST API for the BindAI Framework"
 readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
     "bindai>=0.1.5",
+    "bindai-project>=0.1.1",
+    "bindai-automation>=0.1.0",
+    "bindai-providers>=0.1.0",
     "fastapi>=0.115.0",
+    "python-multipart>=0.0.9",
     "pydantic>=2.0.0",
     "uvicorn[standard]>=0.30.0",
 ]
@@ -18,3 +22,8 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+include = ["bindai_api", "bindai_api.*"]
+
+[tool.setuptools.package-data]
+bindai_api = ["studio/dist/*", "studio/dist/assets/*"]

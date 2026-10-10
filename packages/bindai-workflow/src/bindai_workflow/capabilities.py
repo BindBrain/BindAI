@@ -17,7 +17,9 @@ class NodeCapability:
     type: str
     label: str
     category: str
-    configuration: tuple[NodeField, ...] = field(default_factory=tuple)
+    configuration: tuple[NodeField, ...] = field(
+        default_factory=tuple
+    )
     connection_mode: str = "single"
 
     def to_dict(self) -> dict:
@@ -103,6 +105,11 @@ def create_default_capability_registry() -> WorkflowCapabilityRegistry:
                     type="string",
                     default="agent_output",
                 ),
+                NodeField(
+                    name="input_mapping",
+                    type="string",
+                    default="",
+                ),
             ),
             connection_mode="single",
         )
@@ -136,8 +143,8 @@ def create_default_capability_registry() -> WorkflowCapabilityRegistry:
             category="Control",
             configuration=(
                 NodeField(
-                    name="predicate",
-                    type="callable",
+                    name="expression",
+                    type="expression",
                     required=True,
                 ),
             ),
@@ -193,12 +200,49 @@ def create_default_capability_registry() -> WorkflowCapabilityRegistry:
             category="Control",
             configuration=(
                 NodeField(
-                    name="predicate",
-                    type="callable",
+                    name="expression",
+                    type="expression",
                     required=True,
                 ),
             ),
             connection_mode="body_exit",
+        )
+    )
+
+    registry.register(
+        NodeCapability(
+            type="SubWorkflowNode",
+            label="Subworkflow",
+            category="Control",
+            configuration=(
+                NodeField(
+                    name="workflow_id",
+                    type="workflow",
+                    required=True,
+                ),
+            ),
+            connection_mode="single",
+        )
+    )
+
+    registry.register(
+        NodeCapability(
+            type="HumanTaskNode",
+            label="Human Approval",
+            category="Human",
+            configuration=(
+                NodeField(
+                    name="assignee",
+                    type="string",
+                    required=False,
+                ),
+                NodeField(
+                    name="form",
+                    type="string",
+                    required=False,
+                ),
+            ),
+            connection_mode="approval",
         )
     )
 

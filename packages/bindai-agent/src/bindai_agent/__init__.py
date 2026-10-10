@@ -12,6 +12,7 @@ from .result import AgentResult
 from .state import AgentState
 from .team import AgentTeam
 from .team_delegation import AgentTeamDelegationTool
+from .definition import AgentDefinition, AgentDefinitionLoader
 
 __all__ = [
     "Agent",
@@ -26,4 +27,6 @@ __all__ = [
     "AgentDelegationTool",
     "AgentTeam",
     "AgentTeamDelegationTool",
+    "AgentDefinition",
+    "AgentDefinitionLoader",
 ]

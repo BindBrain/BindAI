@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from collections.abc import Callable
 from typing import Any
@@ -151,6 +151,10 @@ class WorkflowNodeFactory:
                 "output_variable",
                 "agent_output",
             ),
+            input_mapping=data.get(
+                "input_mapping",
+                {},
+            ),
             name=data.get("name"),
         )
 
@@ -177,6 +181,10 @@ class WorkflowNodeFactory:
             output_variable=data.get(
                 "output_variable",
                 "tool_output",
+            ),
+            parameter_mapping=data.get(
+                "parameter_mapping",
+                {},
             ),
             name=data.get("name"),
         )
@@ -206,10 +214,22 @@ class WorkflowNodeFactory:
         data: dict,
     ) -> LoopNode:
 
+        expression = data.get(
+            "expression",
+        )
+
+        if expression:
+            return LoopNode(
+                node_id=data["id"],
+                expression=str(expression),
+                name=data.get("name"),
+            )
+
         if self.callable_resolver is None:
             raise ValueError(
-                "LoopNode requires a callable_resolver "
-                "when deserializing a workflow."
+                "LoopNode requires either an expression "
+                "or a callable_resolver when deserializing "
+                "a workflow."
             )
 
         predicate = self.callable_resolver(

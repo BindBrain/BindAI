@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
@@ -64,7 +64,13 @@ class FunctionTool(Tool):
                     value,
                 )
 
-            kwargs = context.variables.as_dict()
+            variables = context.variables.as_dict()
+            parameters = self.parameters
+            kwargs = {
+                name: variables[name]
+                for name in parameters
+                if name in variables
+            }
 
             result = self.function(
                 **kwargs,
@@ -72,12 +78,14 @@ class FunctionTool(Tool):
 
             return ToolResult(
                 success=True,
+                output=result,
                 value=result,
             )
 
         except Exception as ex:
             return ToolResult(
                 success=False,
+                output=None,
                 value=None,
                 error=str(ex),
             )

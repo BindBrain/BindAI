@@ -11,18 +11,15 @@ from .instance import WorkflowInstance
 from .memory_store import MemoryWorkflowStore
 from .node import WorkflowNode
 from .result import WorkflowResult
+from .store import WorkflowStore
 
 
 class Workflow(Executable):
-    """
-    Represents an executable workflow.
-    """
-
     def __init__(
         self,
         name: str | None = None,
+        store: WorkflowStore | None = None,
     ):
-
         self.id = str(uuid.uuid4())
 
         self.version = 1
@@ -36,14 +33,13 @@ class Workflow(Executable):
         self.agents: dict[str, object] = {}
 
         self.executor = WorkflowExecutor(
-            MemoryWorkflowStore(),
+            store or MemoryWorkflowStore(),
         )
 
     def add_node(
         self,
         node: WorkflowNode,
-    ) -> None:
-
+    ):
         self.nodes[node.id] = node
 
         if self.start_node is None:
@@ -53,13 +49,11 @@ class Workflow(Executable):
         self,
         node_id: str,
     ) -> WorkflowNode:
-
         return self.nodes[node_id]
 
     def create_instance(
         self,
     ) -> WorkflowInstance:
-
         return WorkflowInstance(
             self,
         )
@@ -68,16 +62,30 @@ class Workflow(Executable):
         self,
         context: ExecutionContext,
     ) -> WorkflowResult:
-
         instance = self.create_instance()
 
-        #
-        # propagate variables
-        #
-
-        if hasattr(context, "variables"):
+        if hasattr(
+            context,
+            "variables",
+        ):
             instance.context.variables.update(
                 context.variables,
+            )
+
+        #
+        # Preserve execution metadata when the workflow creates its
+        # internal WorkflowContext.
+        #
+        # Studio simulation uses this metadata to propagate the
+        # simulation policy into AgentNode and ToolNode execution.
+        #
+
+        if hasattr(
+            context,
+            "metadata",
+        ):
+            instance.context.metadata.update(
+                context.metadata,
             )
 
         return self.executor.execute(
@@ -86,8 +94,7 @@ class Workflow(Executable):
 
     def clone(
         self,
-    ) -> Workflow:
-
+    ):
         workflow = copy.deepcopy(
             self,
         )
@@ -99,8 +106,7 @@ class Workflow(Executable):
     def run(
         self,
         context: ExecutionContext | None = None,
-    ) -> WorkflowResult:
-
+    ):
         if context is None:
             context = ExecutionContext()
 

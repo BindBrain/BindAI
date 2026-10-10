@@ -1,3 +1,4 @@
+from bindai_agent import AgentResult
 from bindai_tool import tool
 from bindai_workflow import WorkflowBuilder
 from bindai_workflow.node import WorkflowNode
@@ -255,3 +256,169 @@ def test_builder_human_task_pauses_and_resumes():
     assert instance.context.task.completed is True
     assert instance.context.task.result == "approved"
     assert executed == ["after"]
+
+
+class ExecutingAgent:
+    name = "test-agent-output"
+
+    def execute(self, context):
+        return AgentResult(success=True, output="true")
+
+
+def test_agent_stores_result_output_in_configured_variable():
+    workflow = (
+        WorkflowBuilder("agent-output-workflow")
+        .start_node()
+        .agent(
+            ExecutingAgent(),
+            output_variable="classification",
+        )
+        .end_node()
+        .build()
+    )
+
+    instance = workflow.create_instance()
+    instance.context.set("input", "test request")
+
+    result = workflow.executor.execute(instance)
+
+    assert result.success is True
+    assert result.output.get("classification") == "true"
+
+def test_parallel_branches_execute_and_join():
+    executed = []
+
+    branch_a = RecordingNode("branch_a", executed)
+    branch_b = RecordingNode("branch_b", executed)
+
+    workflow = (
+        WorkflowBuilder("parallel-execution-workflow")
+        .start_node()
+        .parallel(
+            branch_a,
+            branch_b,
+        )
+        .join()
+        .end_node()
+        .build()
+    )
+
+    instance = workflow.create_instance()
+
+    result = workflow.executor.execute(instance)
+
+    assert result.success is True
+    assert executed == ["branch_a", "branch_b"]
+    assert instance.context.completed is True
+def test_file_workflow_store_reconstructs_instance(tmp_path):
+    from bindai_workflow.file_store import FileWorkflowStore
+
+    workflow = (
+        WorkflowBuilder("persistent-workflow")
+        .start_node()
+        .end_node()
+        .build()
+    )
+
+    store = FileWorkflowStore(
+        tmp_path,
+        workflow_resolver=lambda workflow_id, version: (
+            workflow
+            if workflow_id == workflow.id and version == workflow.version
+            else None
+        ),
+    )
+
+    instance = workflow.create_instance()
+    instance.context.set("input", "hello")
+    instance.context.execution_queue = ["end"]
+    instance.context.waiting = True
+
+    store.save(instance)
+
+    reloaded_store = FileWorkflowStore(
+        tmp_path,
+        workflow_resolver=lambda workflow_id, version: (
+            workflow
+            if workflow_id == workflow.id and version == workflow.version
+            else None
+        ),
+    )
+
+    restored = reloaded_store.load(instance.id)
+
+    assert restored is not None
+    assert restored.id == instance.id
+    assert restored.workflow_id == workflow.id
+    assert restored.workflow_version == workflow.version
+    assert restored.context.get("input") == "hello"
+    assert restored.context.execution_queue == ["end"]
+    assert restored.context.waiting is True
+    assert restored.context.instance is restored
+    assert restored.workflow is workflow
+def test_file_workflow_store_restores_waiting_human_task_and_resumes(tmp_path):
+    from bindai_workflow.file_store import FileWorkflowStore
+
+    workflow = (
+        WorkflowBuilder("persistent-human-workflow")
+        .start_node()
+        .human_task(
+            assignee="reviewer",
+            form="approval",
+        )
+        .end_node()
+        .build()
+    )
+
+    def resolve(workflow_id, version):
+        if workflow_id == workflow.id and version == workflow.version:
+            return workflow
+        return None
+
+    store = FileWorkflowStore(
+        tmp_path,
+        workflow_resolver=resolve,
+    )
+
+    instance = workflow.create_instance()
+
+    executor = workflow.executor
+    executor.store = store
+
+    result = executor.execute(instance)
+
+    assert result.success is True
+    assert instance.context.waiting is True
+    assert instance.context.task is not None
+    assert instance.context.task.completed is False
+
+    instance_id = instance.id
+    task_id = instance.context.task.id
+
+    restarted_store = FileWorkflowStore(
+        tmp_path,
+        workflow_resolver=resolve,
+    )
+
+    restored = restarted_store.load(instance_id)
+
+    assert restored is not None
+    assert restored.context.waiting is True
+    assert restored.context.task is not None
+    assert restored.context.task.id == task_id
+    assert restored.context.task.workflow_instance == instance_id
+    assert restored.context.task.node_id == instance.context.task.node_id
+    assert restored.context.task.completed is False
+
+    restored.context.task.approve()
+
+    restarted_executor = workflow.executor
+    restarted_executor.store = restarted_store
+
+    resumed = restarted_executor.resume(restored)
+
+    assert resumed.success is True
+    assert restored.context.waiting is False
+    assert restored.context.completed is True
+    assert restored.context.task.completed is True
+    assert restored.context.task.result == "approved"

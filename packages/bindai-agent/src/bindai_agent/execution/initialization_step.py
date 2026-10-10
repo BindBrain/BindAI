@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from bindai_core.model import ModelRequest
-
 from .state import ExecutionState
 from .step import ExecutionStep
 
@@ -9,9 +7,6 @@ from .step import ExecutionStep
 class InitializationStep(
     ExecutionStep,
 ):
-    """
-    Initializes execution state.
-    """
 
     def execute(
         self,
@@ -27,6 +22,7 @@ class InitializationStep(
         )
 
         if len(agent.conversation) == 0:
+
             if agent.instructions:
                 agent.conversation.add_system(
                     agent.instructions,
@@ -36,19 +32,10 @@ class InitializationStep(
             user_input,
         )
 
-        state = context.data
-
         if not isinstance(
-            state,
+            context.data,
             ExecutionState,
         ):
-            state = ExecutionState()
-
-        state.request = ModelRequest(
-            messages=agent.conversation.messages,
-            tools=agent.tools.definitions(),
-        )
-
-        context.data = state
+            context.data = ExecutionState()
 
         return None

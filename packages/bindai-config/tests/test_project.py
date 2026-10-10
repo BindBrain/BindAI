@@ -75,6 +75,7 @@ def test_project_runtime_paths(tmp_path: Path) -> None:
         "workflows": "workflows",
         "agents": "agents",
         "tools": "tools",
+        "forms": "forms",
     }
 
 

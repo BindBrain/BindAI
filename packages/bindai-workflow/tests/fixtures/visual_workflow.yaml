@@ -1,0 +1,33 @@
+version: 1
+
+workflow:
+  id: visual-test
+  name: Visual Test
+
+  nodes:
+    - id: start
+      type: start
+
+    - id: decision
+      type: decision
+      expression: approved == true
+
+    - id: accepted
+      type: end
+      name: Accepted
+
+    - id: rejected
+      type: end
+      name: Rejected
+
+  edges:
+    - from: start
+      to: decision
+
+    - from: decision
+      to: accepted
+      port: "true"
+
+    - from: decision
+      to: rejected
+      port: "false"

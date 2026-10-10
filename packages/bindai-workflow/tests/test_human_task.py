@@ -152,3 +152,111 @@ def test_resume_requires_waiting_workflow() -> None:
         raise AssertionError(
             "Expected RuntimeError when workflow is not waiting."
         )
+
+
+def test_human_task_routes_to_approved_branch() -> None:
+    executed = []
+
+    human = HumanTaskNode(
+        node_id="review",
+    )
+
+    approved = RecordingNode(
+        node_id="approved",
+        executed=executed,
+    )
+
+    rejected = RecordingNode(
+        node_id="rejected",
+        executed=executed,
+    )
+
+    workflow = (
+        WorkflowBuilder("human-approval")
+        .start_node()
+        .then(human)
+        .add(approved)
+        .add(rejected)
+        .build()
+    )
+
+    human.approved_node = approved.id
+    human.rejected_node = rejected.id
+
+    instance = workflow.create_instance()
+
+    executor = WorkflowExecutor(
+        MemoryWorkflowStore(),
+    )
+
+    result = executor.execute(
+        instance,
+    )
+
+    assert result.success is True
+    assert instance.context.waiting is True
+
+    instance.context.task.approve()
+
+    result = executor.resume(
+        instance,
+    )
+
+    assert result.success is True
+    assert instance.context.waiting is False
+    assert instance.context.task.result == "approved"
+    assert executed == ["approved"]
+
+
+def test_human_task_routes_to_rejected_branch() -> None:
+    executed = []
+
+    human = HumanTaskNode(
+        node_id="review",
+    )
+
+    approved = RecordingNode(
+        node_id="approved",
+        executed=executed,
+    )
+
+    rejected = RecordingNode(
+        node_id="rejected",
+        executed=executed,
+    )
+
+    workflow = (
+        WorkflowBuilder("human-approval")
+        .start_node()
+        .then(human)
+        .add(approved)
+        .add(rejected)
+        .build()
+    )
+
+    human.approved_node = approved.id
+    human.rejected_node = rejected.id
+
+    instance = workflow.create_instance()
+
+    executor = WorkflowExecutor(
+        MemoryWorkflowStore(),
+    )
+
+    result = executor.execute(
+        instance,
+    )
+
+    assert result.success is True
+    assert instance.context.waiting is True
+
+    instance.context.task.reject()
+
+    result = executor.resume(
+        instance,
+    )
+
+    assert result.success is True
+    assert instance.context.waiting is False
+    assert instance.context.task.result == "rejected"
+    assert executed == ["rejected"]

@@ -75,9 +75,13 @@ class AgentExecutor:
             # Insert the initial user message exactly once.
             #
             user = context.variables.get("message")
+
+            if user is None:
+                user = context.variables.get("input")
+
             if user is not None:
                 agent.conversation.add_user(
-                    user,
+                    str(user),
                 )
 
             response = self._run_until_complete(
