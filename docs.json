@@ -3,8 +3,8 @@
     "name": "BindAI",
     "theme": "mint",
     "colors": {
-      "primary": "#7c7d7b",
-      "light": "#e8e8e8",
+      "primary": "#ffffff",
+      "light": "#ffffff",
       "dark": "#7c7d7b"
     },
     "appearance": {
