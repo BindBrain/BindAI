@@ -1,13 +1,19 @@
 from __future__ import annotations
 
+import os
 import time
 
+import pytest
 from bindai_memory import MemoryRecord
 from bindai_memory.providers import PineconeMemoryProvider
 from dotenv import load_dotenv
 
 load_dotenv()
 
+pytestmark = pytest.mark.skipif(
+    not os.getenv("PINECONE_API_KEY"),
+    reason="PINECONE_API_KEY is not configured; skipping Pinecone integration tests",
+)
 
 TEST_NAMESPACE = "bindai-automated-test"
 
@@ -154,3 +160,4 @@ def test_pinecone_clear():
     stats = p._index.describe_index_stats()
 
     assert TEST_NAMESPACE not in stats.namespaces
+
