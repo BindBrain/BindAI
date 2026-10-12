@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from bindai_workflow.context import WorkflowContext
 from bindai_workflow.definition import (
     WorkflowDefinition,
@@ -11,12 +10,7 @@ from bindai_workflow.definition import (
 from bindai_workflow.nodes.human import HumanTaskNode
 from bindai_workflow.nodes.loop import LoopNode
 
-
-FIXTURE = (
-    Path(__file__).parent
-    / "fixtures"
-    / "visual_workflow.yaml"
-)
+FIXTURE = Path(__file__).parent / "fixtures" / "visual_workflow.yaml"
 
 
 def test_load_visual_workflow_definition():
@@ -57,6 +51,7 @@ def test_visual_definition_builds_runtime_workflow():
 
     assert decision.true_node == "accepted"
     assert decision.false_node == "rejected"
+
 
 def test_workflow_definition_can_load_non_strictly() -> None:
     definition = WorkflowDefinition.from_dict(
@@ -110,6 +105,7 @@ def test_workflow_definition_strict_loading_rejects_unknown_node() -> None:
                 },
             },
         )
+
 
 def test_human_task_definition_builds_approval_branches() -> None:
     definition = WorkflowDefinition.from_dict(
@@ -169,6 +165,8 @@ def test_human_task_definition_builds_approval_branches() -> None:
     assert human.assignee == "reviewer@example.com"
     assert human.approved_node == "approved"
     assert human.rejected_node == "rejected"
+
+
 def test_loop_definition_builds_from_expression():
     definition = WorkflowDefinition.from_dict(
         {
@@ -222,6 +220,7 @@ def test_loop_definition_builds_from_expression():
 
     assert loop.expression == "count < 3"
     assert loop.predicate is None
+
 
 def test_decision_definition_executes_expression():
     definition = WorkflowDefinition.from_dict(
@@ -280,6 +279,7 @@ def test_decision_definition_executes_expression():
 
         assert result.success is True
         assert result.output["classification"] == value
+
 
 def test_loop_expression_routes_to_body_or_exit():
     loop = LoopNode(

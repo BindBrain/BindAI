@@ -69,6 +69,4 @@ def test_loop_node_requires_predicate_or_expression():
         assert "predicate" in str(exc)
         assert "expression" in str(exc)
     else:
-        raise AssertionError(
-            "LoopNode should require a predicate or expression."
-        )
+        raise AssertionError("LoopNode should require a predicate or expression.")

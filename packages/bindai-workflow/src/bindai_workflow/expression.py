@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import operator
+from collections.abc import Callable
 from typing import Any
 
 
@@ -15,7 +16,7 @@ class WorkflowExpression:
     other executable constructs are intentionally rejected.
     """
 
-    _binary_operators = {
+    _binary_operators: dict[type[ast.operator], Callable[..., Any]] = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
         ast.Mult: operator.mul,
@@ -25,7 +26,7 @@ class WorkflowExpression:
         ast.Pow: operator.pow,
     }
 
-    _comparison_operators = {
+    _comparison_operators: dict[type[ast.cmpop], Callable[..., Any]] = {
         ast.Eq: operator.eq,
         ast.NotEq: operator.ne,
         ast.Lt: operator.lt,
@@ -38,7 +39,7 @@ class WorkflowExpression:
         ast.IsNot: operator.is_not,
     }
 
-    _unary_operators = {
+    _unary_operators: dict[type[ast.unaryop], Callable[..., Any]] = {
         ast.Not: operator.not_,
         ast.UAdd: operator.pos,
         ast.USub: operator.neg,
@@ -53,6 +54,9 @@ class WorkflowExpression:
             tree = ast.parse(expression, mode="eval")
         except SyntaxError as exc:
             raise ValueError("Invalid workflow expression.") from exc
+
+        if tree.body is None:
+            raise ValueError("Invalid workflow expression.")
 
         scope = dict(variables)
         scope["true"] = True
@@ -74,9 +78,7 @@ class WorkflowExpression:
                 raise ValueError("Dunder names are not allowed in workflow expressions.")
 
             if node.id not in scope:
-                raise ValueError(
-                    f"Unknown variable '{node.id}' in workflow expression."
-                )
+                raise ValueError(f"Unknown variable '{node.id}' in workflow expression.")
 
             value = scope[node.id]
 
@@ -91,53 +93,62 @@ class WorkflowExpression:
             return [self._evaluate_node(element, scope) for element in node.elts]
 
         if isinstance(node, ast.Tuple):
-            return tuple(
-                self._evaluate_node(element, scope)
-                for element in node.elts
-            )
+            return tuple(self._evaluate_node(element, scope) for element in node.elts)
 
         if isinstance(node, ast.Set):
-            return {
-                self._evaluate_node(element, scope)
-                for element in node.elts
-            }
+            return {self._evaluate_node(element, scope) for element in node.elts}
 
         if isinstance(node, ast.Dict):
-            return {
-                self._evaluate_node(key, scope): self._evaluate_node(value, scope)
-                for key, value in zip(node.keys, node.values)
-            }
+            dictionary_result: dict[Any, Any] = {}
+
+            for key, value in zip(node.keys, node.values):
+                if key is None:
+                    raise ValueError(
+                        "Dictionary unpacking is not supported in workflow expressions."
+                    )
+
+                dictionary_result[self._evaluate_node(key, scope)] = self._evaluate_node(
+                    value, scope
+                )
+
+            return dictionary_result
 
         if isinstance(node, ast.BoolOp):
             if isinstance(node.op, ast.And):
-                result = True
+                and_result: Any = True
+
                 for value in node.values:
-                    result = self._evaluate_node(value, scope)
-                    if not result:
-                        return result
-                return result
+                    and_result = self._evaluate_node(value, scope)
+
+                    if not and_result:
+                        return and_result
+
+                return and_result
 
             if isinstance(node.op, ast.Or):
-                result = False
+                or_result: Any = False
+
                 for value in node.values:
-                    result = self._evaluate_node(value, scope)
-                    if result:
-                        return result
-                return result
+                    or_result = self._evaluate_node(value, scope)
+
+                    if or_result:
+                        return or_result
+
+                return or_result
 
             raise ValueError("Unsupported boolean operator.")
 
         if isinstance(node, ast.UnaryOp):
             operator_function = self._unary_operators.get(type(node.op))
+
             if operator_function is None:
                 raise ValueError("Unsupported unary operator.")
 
-            return operator_function(
-                self._evaluate_node(node.operand, scope)
-            )
+            return operator_function(self._evaluate_node(node.operand, scope))
 
         if isinstance(node, ast.BinOp):
             operator_function = self._binary_operators.get(type(node.op))
+
             if operator_function is None:
                 raise ValueError("Unsupported binary operator.")
 
@@ -153,9 +164,7 @@ class WorkflowExpression:
                 node.ops,
                 node.comparators,
             ):
-                operator_function = self._comparison_operators.get(
-                    type(operator_node)
-                )
+                operator_function = self._comparison_operators.get(type(operator_node))
 
                 if operator_function is None:
                     raise ValueError("Unsupported comparison operator.")
@@ -169,6 +178,4 @@ class WorkflowExpression:
 
             return True
 
-        raise ValueError(
-            f"Unsupported expression construct: {type(node).__name__}."
-        )
+        raise ValueError(f"Unsupported expression construct: {type(node).__name__}.")

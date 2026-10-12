@@ -1,15 +1,16 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from datetime import datetime
+from pathlib import Path
 
 from bindai_core.executable.result import ExecutionResult
-from pathlib import Path
-from typing import Callable
 
 from .instance import WorkflowInstance
 from .store import WorkflowStore
 from .task import HumanTask
+from .workflow import Workflow
 
 
 class FileWorkflowStore(WorkflowStore):
@@ -25,7 +26,7 @@ class FileWorkflowStore(WorkflowStore):
     def __init__(
         self,
         root: str | Path,
-        workflow_resolver: Callable[[str, int], object | None],
+        workflow_resolver: Callable[[str, int], Workflow | None],
     ) -> None:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
@@ -55,8 +56,7 @@ class FileWorkflowStore(WorkflowStore):
 
         if data.get("schema_version") != self.SCHEMA_VERSION:
             raise ValueError(
-                f"Unsupported workflow run schema version: "
-                f"{data.get('schema_version')!r}"
+                f"Unsupported workflow run schema version: {data.get('schema_version')!r}"
             )
 
         workflow_id = data["workflow_id"]
@@ -69,8 +69,7 @@ class FileWorkflowStore(WorkflowStore):
 
         if workflow is None:
             raise ValueError(
-                f"Workflow '{workflow_id}' version "
-                f"{workflow_version} could not be resolved."
+                f"Workflow '{workflow_id}' version {workflow_version} could not be resolved."
             )
 
         instance = workflow.create_instance()
@@ -104,9 +103,7 @@ class FileWorkflowStore(WorkflowStore):
 
         finished_at = data["context"]["finished_at"]
         context.finished_at = (
-            datetime.fromisoformat(finished_at)
-            if finished_at is not None
-            else None
+            datetime.fromisoformat(finished_at) if finished_at is not None else None
         )
 
         context.user = data["context"]["user"]
@@ -118,11 +115,7 @@ class FileWorkflowStore(WorkflowStore):
         )
 
         task = data["context"]["task"]
-        context.task = (
-            self._deserialize_task(task)
-            if task is not None
-            else None
-        )
+        context.task = self._deserialize_task(task) if task is not None else None
 
         return instance
 
@@ -148,9 +141,7 @@ class FileWorkflowStore(WorkflowStore):
                 "join_state": dict(context.join_state),
                 "started_at": context.started_at.isoformat(),
                 "finished_at": (
-                    context.finished_at.isoformat()
-                    if context.finished_at is not None
-                    else None
+                    context.finished_at.isoformat() if context.finished_at is not None else None
                 ),
                 "user": context.user,
                 "tenant": context.tenant,
@@ -176,22 +167,13 @@ class FileWorkflowStore(WorkflowStore):
             }
 
         if isinstance(value, dict):
-            return {
-                str(key): cls._serialize_value(item)
-                for key, item in value.items()
-            }
+            return {str(key): cls._serialize_value(item) for key, item in value.items()}
 
         if isinstance(value, (list, tuple)):
-            return [
-                cls._serialize_value(item)
-                for item in value
-            ]
+            return [cls._serialize_value(item) for item in value]
 
         if isinstance(value, set):
-            return [
-                cls._serialize_value(item)
-                for item in value
-            ]
+            return [cls._serialize_value(item) for item in value]
 
         return value
 
@@ -212,16 +194,10 @@ class FileWorkflowStore(WorkflowStore):
                     error=value.get("error"),
                 )
 
-            return {
-                key: FileWorkflowStore._deserialize_value(item)
-                for key, item in value.items()
-            }
+            return {key: FileWorkflowStore._deserialize_value(item) for key, item in value.items()}
 
         if isinstance(value, list):
-            return [
-                FileWorkflowStore._deserialize_value(item)
-                for item in value
-            ]
+            return [FileWorkflowStore._deserialize_value(item) for item in value]
 
         return value
 
@@ -231,9 +207,7 @@ class FileWorkflowStore(WorkflowStore):
             return None
 
         if not isinstance(task, HumanTask):
-            raise TypeError(
-                "Only HumanTask instances can currently be persisted."
-            )
+            raise TypeError("Only HumanTask instances can currently be persisted.")
 
         return {
             "id": task.id,

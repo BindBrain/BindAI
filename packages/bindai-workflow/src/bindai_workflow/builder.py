@@ -86,10 +86,7 @@ class WorkflowBuilder:
 
         if diagnostics:
             raise ValueError(
-                "\n".join(
-                    diagnostic.message
-                    for diagnostic in diagnostics
-                ),
+                "\n".join(diagnostic.message for diagnostic in diagnostics),
             )
 
         return self._workflow

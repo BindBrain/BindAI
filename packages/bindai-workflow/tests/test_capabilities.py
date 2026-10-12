@@ -1,4 +1,4 @@
-﻿from bindai_workflow import (
+from bindai_workflow import (
     NodeCapability,
     NodeField,
     WorkflowCapabilityRegistry,
@@ -20,10 +20,7 @@ def test_default_registry_contains_core_nodes():
         "SubWorkflowNode",
     }
 
-    capabilities = {
-        capability.type
-        for capability in default_capability_registry.all()
-    }
+    capabilities = {capability.type for capability in default_capability_registry.all()}
 
     assert expected.issubset(capabilities)
 
@@ -37,10 +34,7 @@ def test_agent_capability_matches_agent_node_configuration():
     assert capability.category == "AI"
     assert capability.connection_mode == "single"
 
-    fields = {
-        field.name: field
-        for field in capability.configuration
-    }
+    fields = {field.name: field for field in capability.configuration}
 
     assert fields["agent"].type == "agent"
     assert fields["agent"].required is True
@@ -143,18 +137,18 @@ def test_custom_capability_registry():
     assert registry.contains("ExampleNode")
     assert registry.get("ExampleNode") is capability
     assert registry.all() == [capability]
+
+
 def test_loop_capability_uses_expression():
     capability = default_capability_registry.get(
         "LoopNode",
     )
 
-    fields = {
-        field.name: field
-        for field in capability.configuration
-    }
+    fields = {field.name: field for field in capability.configuration}
 
     assert fields["expression"].type == "expression"
     assert fields["expression"].required is True
+
 
 def test_subworkflow_capability_uses_workflow_id():
     capability = default_capability_registry.get(
@@ -165,10 +159,7 @@ def test_subworkflow_capability_uses_workflow_id():
     assert capability.category == "Control"
     assert capability.connection_mode == "single"
 
-    fields = {
-        field.name: field
-        for field in capability.configuration
-    }
+    fields = {field.name: field for field in capability.configuration}
 
     assert fields["workflow_id"].type == "workflow"
     assert fields["workflow_id"].required is True

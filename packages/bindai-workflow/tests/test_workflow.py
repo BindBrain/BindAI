@@ -285,6 +285,7 @@ def test_agent_stores_result_output_in_configured_variable():
     assert result.success is True
     assert result.output.get("classification") == "true"
 
+
 def test_parallel_branches_execute_and_join():
     executed = []
 
@@ -310,22 +311,17 @@ def test_parallel_branches_execute_and_join():
     assert result.success is True
     assert executed == ["branch_a", "branch_b"]
     assert instance.context.completed is True
+
+
 def test_file_workflow_store_reconstructs_instance(tmp_path):
     from bindai_workflow.file_store import FileWorkflowStore
 
-    workflow = (
-        WorkflowBuilder("persistent-workflow")
-        .start_node()
-        .end_node()
-        .build()
-    )
+    workflow = WorkflowBuilder("persistent-workflow").start_node().end_node().build()
 
     store = FileWorkflowStore(
         tmp_path,
         workflow_resolver=lambda workflow_id, version: (
-            workflow
-            if workflow_id == workflow.id and version == workflow.version
-            else None
+            workflow if workflow_id == workflow.id and version == workflow.version else None
         ),
     )
 
@@ -339,9 +335,7 @@ def test_file_workflow_store_reconstructs_instance(tmp_path):
     reloaded_store = FileWorkflowStore(
         tmp_path,
         workflow_resolver=lambda workflow_id, version: (
-            workflow
-            if workflow_id == workflow.id and version == workflow.version
-            else None
+            workflow if workflow_id == workflow.id and version == workflow.version else None
         ),
     )
 
@@ -356,6 +350,8 @@ def test_file_workflow_store_reconstructs_instance(tmp_path):
     assert restored.context.waiting is True
     assert restored.context.instance is restored
     assert restored.workflow is workflow
+
+
 def test_file_workflow_store_restores_waiting_human_task_and_resumes(tmp_path):
     from bindai_workflow.file_store import FileWorkflowStore
 

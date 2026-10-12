@@ -68,14 +68,10 @@ class WorkflowDefinition:
 
     def add_edge(self, edge: WorkflowEdgeDefinition) -> None:
         if not self.has_node(edge.source):
-            raise ValueError(
-                f"Workflow edge references unknown source node: {edge.source}"
-            )
+            raise ValueError(f"Workflow edge references unknown source node: {edge.source}")
 
         if not self.has_node(edge.target):
-            raise ValueError(
-                f"Workflow edge references unknown target node: {edge.target}"
-            )
+            raise ValueError(f"Workflow edge references unknown target node: {edge.target}")
 
         self.edges.append(edge)
 
@@ -103,9 +99,7 @@ class WorkflowDefinition:
         workflow_data = data.get("workflow")
 
         if not isinstance(workflow_data, dict):
-            raise ValueError(
-                "Workflow definition must contain a 'workflow' mapping."
-            )
+            raise ValueError("Workflow definition must contain a 'workflow' mapping.")
 
         workflow_id = workflow_data.get("id")
         workflow_name = workflow_data.get("name")
@@ -125,22 +119,16 @@ class WorkflowDefinition:
 
         for index, raw_node in enumerate(raw_nodes):
             if not isinstance(raw_node, dict):
-                raise ValueError(
-                    f"Workflow node at index {index} must be a mapping."
-                )
+                raise ValueError(f"Workflow node at index {index} must be a mapping.")
 
             node_id = raw_node.get("id")
             node_type = raw_node.get("type")
 
             if not node_id:
-                raise ValueError(
-                    f"Workflow node at index {index} is missing 'id'."
-                )
+                raise ValueError(f"Workflow node at index {index} is missing 'id'.")
 
             if not node_type:
-                raise ValueError(
-                    f"Workflow node '{node_id}' is missing 'type'."
-                )
+                raise ValueError(f"Workflow node '{node_id}' is missing 'type'.")
 
             configuration = dict(raw_node)
 
@@ -167,22 +155,16 @@ class WorkflowDefinition:
 
         for index, raw_edge in enumerate(raw_edges):
             if not isinstance(raw_edge, dict):
-                raise ValueError(
-                    f"Workflow edge at index {index} must be a mapping."
-                )
+                raise ValueError(f"Workflow edge at index {index} must be a mapping.")
 
             source = raw_edge.get("from")
             target = raw_edge.get("to")
 
             if not source:
-                raise ValueError(
-                    f"Workflow edge at index {index} is missing 'from'."
-                )
+                raise ValueError(f"Workflow edge at index {index} is missing 'from'.")
 
             if not target:
-                raise ValueError(
-                    f"Workflow edge at index {index} is missing 'to'."
-                )
+                raise ValueError(f"Workflow edge at index {index} is missing 'to'.")
 
             port = raw_edge.get("port")
 
@@ -210,15 +192,9 @@ class WorkflowDefinition:
 
             for edge in definition.edges:
                 if edge.source not in node_ids:
-                    raise ValueError(
-                        "Workflow edge references unknown source node: "
-                        f"{edge.source}"
-                    )
+                    raise ValueError(f"Workflow edge references unknown source node: {edge.source}")
 
                 if edge.target not in node_ids:
-                    raise ValueError(
-                        "Workflow edge references unknown target node: "
-                        f"{edge.target}"
-                    )
+                    raise ValueError(f"Workflow edge references unknown target node: {edge.target}")
 
         return definition

@@ -17,9 +17,7 @@ class NodeCapability:
     type: str
     label: str
     category: str
-    configuration: tuple[NodeField, ...] = field(
-        default_factory=tuple
-    )
+    configuration: tuple[NodeField, ...] = field(default_factory=tuple)
     connection_mode: str = "single"
 
     def to_dict(self) -> dict:
@@ -57,10 +55,7 @@ class WorkflowCapabilityRegistry:
         return list(self._capabilities.values())
 
     def to_dict(self) -> list[dict]:
-        return [
-            capability.to_dict()
-            for capability in self._capabilities.values()
-        ]
+        return [capability.to_dict() for capability in self._capabilities.values()]
 
 
 def create_default_capability_registry() -> WorkflowCapabilityRegistry:

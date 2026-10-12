@@ -1,4 +1,4 @@
-﻿from bindai_workflow.definition import (
+from bindai_workflow.definition import (
     WorkflowDefinition,
     WorkflowDefinitionValidator,
     WorkflowEdgeDefinition,
@@ -208,15 +208,13 @@ def test_unreachable_node_is_warning():
 
     diagnostics = WorkflowDefinitionValidator().validate(definition)
 
-    unreachable = [
-        item
-        for item in diagnostics
-        if item.code == "workflow.unreachable_node"
-    ]
+    unreachable = [item for item in diagnostics if item.code == "workflow.unreachable_node"]
 
     assert len(unreachable) == 1
     assert unreachable[0].node_id == "unused"
     assert unreachable[0].is_warning
+
+
 def test_human_approval_ports_are_valid():
     definition = WorkflowDefinition(
         id="test-human-approval",
@@ -259,16 +257,8 @@ def test_human_approval_ports_are_valid():
 
     diagnostics = WorkflowDefinitionValidator().validate(definition)
 
-    assert not [
-        item
-        for item in diagnostics
-        if item.code == "edge.unused_port"
-    ]
-    assert not [
-        item
-        for item in diagnostics
-        if item.code == "edge.invalid_port"
-    ]
+    assert not [item for item in diagnostics if item.code == "edge.unused_port"]
+    assert not [item for item in diagnostics if item.code == "edge.invalid_port"]
 
 
 def test_human_approval_rejects_unknown_port():
@@ -304,11 +294,7 @@ def test_human_approval_rejects_unknown_port():
 
     diagnostics = WorkflowDefinitionValidator().validate(definition)
 
-    invalid_ports = [
-        item
-        for item in diagnostics
-        if item.code == "edge.invalid_port"
-    ]
+    invalid_ports = [item for item in diagnostics if item.code == "edge.invalid_port"]
 
     assert len(invalid_ports) == 1
     assert invalid_ports[0].node_id == "human-approval"
@@ -362,6 +348,7 @@ def test_loop_requires_expression():
     codes = {item.code for item in diagnostics}
 
     assert "node.missing_required_configuration" in codes
+
 
 def test_condition_requires_expression():
     definition = WorkflowDefinition(

@@ -265,6 +265,8 @@ def test_json_round_trip():
     assert set(restored.nodes) == set(
         workflow.nodes,
     )
+
+
 def test_loop_expression_survives_round_trip():
     from bindai_workflow import LoopNode
 
@@ -318,6 +320,7 @@ def test_loop_expression_survives_round_trip():
         "body",
         "exit",
     ]
+
 
 def test_loop_expression_serializes():
     from bindai_workflow import LoopNode

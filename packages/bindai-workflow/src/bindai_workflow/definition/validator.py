@@ -104,10 +104,7 @@ class WorkflowDefinitionValidator:
                     DefinitionDiagnostic(
                         severity="error",
                         code="workflow.duplicate_node_id",
-                        message=(
-                            f"Workflow contains duplicate node id "
-                            f"'{node.id}'."
-                        ),
+                        message=(f"Workflow contains duplicate node id '{node.id}'."),
                         node_id=node.id,
                         node_type=node.type,
                         suggestion="Give every node a unique id.",
@@ -131,15 +128,10 @@ class WorkflowDefinitionValidator:
                     DefinitionDiagnostic(
                         severity="error",
                         code="node.unknown_type",
-                        message=(
-                            f"Node '{node.id}' uses unsupported type "
-                            f"'{node.type}'."
-                        ),
+                        message=(f"Node '{node.id}' uses unsupported type '{node.type}'."),
                         node_id=node.id,
                         node_type=node.type,
-                        suggestion=(
-                            "Choose a supported BindAI workflow node type."
-                        ),
+                        suggestion=("Choose a supported BindAI workflow node type."),
                     )
                 )
                 continue
@@ -208,16 +200,10 @@ class WorkflowDefinitionValidator:
                     DefinitionDiagnostic(
                         severity="error",
                         code="node.missing_required_configuration",
-                        message=(
-                            f"Join node '{node.id}' is missing "
-                            "'expected'."
-                        ),
+                        message=(f"Join node '{node.id}' is missing 'expected'."),
                         node_id=node.id,
                         node_type=node.type,
-                        suggestion=(
-                            "Configure the number of branches the join "
-                            "must wait for."
-                        ),
+                        suggestion=("Configure the number of branches the join must wait for."),
                     )
                 )
             else:
@@ -232,14 +218,11 @@ class WorkflowDefinitionValidator:
                             severity="error",
                             code="join.invalid_expected",
                             message=(
-                                f"Join node '{node.id}' has invalid "
-                                f"expected value '{expected}'."
+                                f"Join node '{node.id}' has invalid expected value '{expected}'."
                             ),
                             node_id=node.id,
                             node_type=node.type,
-                            suggestion=(
-                                "Set expected to a positive integer."
-                            ),
+                            suggestion=("Set expected to a positive integer."),
                         )
                     )
 
@@ -266,15 +249,10 @@ class WorkflowDefinitionValidator:
                 DefinitionDiagnostic(
                     severity="error",
                     code="node.missing_required_configuration",
-                    message=(
-                        f"Node '{node.id}' is missing required "
-                        f"configuration '{field_name}'."
-                    ),
+                    message=(f"Node '{node.id}' is missing required configuration '{field_name}'."),
                     node_id=node.id,
                     node_type=node.type,
-                    suggestion=(
-                        f"Configure '{field_name}' for this node."
-                    ),
+                    suggestion=(f"Configure '{field_name}' for this node."),
                 )
             )
 
@@ -295,13 +273,8 @@ class WorkflowDefinitionValidator:
                     DefinitionDiagnostic(
                         severity="error",
                         code="workflow.invalid_node_reference",
-                        message=(
-                            f"Edge references unknown source node "
-                            f"'{edge.source}'."
-                        ),
-                        suggestion=(
-                            "Connect the edge to an existing node."
-                        ),
+                        message=(f"Edge references unknown source node '{edge.source}'."),
+                        suggestion=("Connect the edge to an existing node."),
                     )
                 )
                 continue
@@ -311,15 +284,10 @@ class WorkflowDefinitionValidator:
                     DefinitionDiagnostic(
                         severity="error",
                         code="workflow.invalid_node_reference",
-                        message=(
-                            f"Edge references unknown target node "
-                            f"'{edge.target}'."
-                        ),
+                        message=(f"Edge references unknown target node '{edge.target}'."),
                         node_id=source.id,
                         node_type=source.type,
-                        suggestion=(
-                            "Connect the edge to an existing node."
-                        ),
+                        suggestion=("Connect the edge to an existing node."),
                     )
                 )
                 continue
@@ -376,15 +344,11 @@ class WorkflowDefinitionValidator:
                             severity="error",
                             code="parallel.insufficient_branches",
                             message=(
-                                f"Parallel node '{node.id}' has fewer "
-                                "than two outgoing branches."
+                                f"Parallel node '{node.id}' has fewer than two outgoing branches."
                             ),
                             node_id=node.id,
                             node_type=node.type,
-                            suggestion=(
-                                "Connect the parallel node to at least "
-                                "two branch nodes."
-                            ),
+                            suggestion=("Connect the parallel node to at least two branch nodes."),
                         )
                     )
 
@@ -407,15 +371,10 @@ class WorkflowDefinitionValidator:
                     DefinitionDiagnostic(
                         severity="error",
                         code="edge.invalid_port",
-                        message=(
-                            f"Node '{source.id}' requires edge port "
-                            "'true' or 'false'."
-                        ),
+                        message=(f"Node '{source.id}' requires edge port 'true' or 'false'."),
                         node_id=source.id,
                         node_type=source.type,
-                        suggestion=(
-                            "Set the edge port to 'true' or 'false'."
-                        ),
+                        suggestion=("Set the edge port to 'true' or 'false'."),
                     )
                 )
             return
@@ -426,15 +385,10 @@ class WorkflowDefinitionValidator:
                     DefinitionDiagnostic(
                         severity="error",
                         code="edge.invalid_port",
-                        message=(
-                            f"Loop node '{source.id}' requires edge port "
-                            "'body' or 'exit'."
-                        ),
+                        message=(f"Loop node '{source.id}' requires edge port 'body' or 'exit'."),
                         node_id=source.id,
                         node_type=source.type,
-                        suggestion=(
-                            "Set the edge port to 'body' or 'exit'."
-                        ),
+                        suggestion=("Set the edge port to 'body' or 'exit'."),
                     )
                 )
             return
@@ -455,9 +409,7 @@ class WorkflowDefinitionValidator:
                         ),
                         node_id=source.id,
                         node_type=source.type,
-                        suggestion=(
-                            "Set the edge port to 'approved' or 'rejected'."
-                        ),
+                        suggestion=("Set the edge port to 'approved' or 'rejected'."),
                     )
                 )
             return
@@ -466,10 +418,7 @@ class WorkflowDefinitionValidator:
                 DefinitionDiagnostic(
                     severity="warning",
                     code="edge.unused_port",
-                    message=(
-                        f"Edge port '{port}' is not used by node "
-                        f"'{source.id}'."
-                    ),
+                    message=(f"Edge port '{port}' is not used by node '{source.id}'."),
                     node_id=source.id,
                     node_type=source.type,
                     suggestion="Remove the unnecessary edge port.",
@@ -483,29 +432,17 @@ class WorkflowDefinitionValidator:
         port: str,
         diagnostics: list[DefinitionDiagnostic],
     ) -> None:
-        matching = [
-            edge
-            for edge in edges
-            if edge.port == port
-        ]
+        matching = [edge for edge in edges if edge.port == port]
 
         if not matching:
             diagnostics.append(
                 DefinitionDiagnostic(
                     severity="error",
-                    code=(
-                        f"{node.type.strip().lower()}"
-                        f".missing_{port}_branch"
-                    ),
-                    message=(
-                        f"Node '{node.id}' is missing its "
-                        f"'{port}' branch."
-                    ),
+                    code=(f"{node.type.strip().lower()}.missing_{port}_branch"),
+                    message=(f"Node '{node.id}' is missing its '{port}' branch."),
                     node_id=node.id,
                     node_type=node.type,
-                    suggestion=(
-                        f"Connect the '{port}' output to another node."
-                    ),
+                    suggestion=(f"Connect the '{port}' output to another node."),
                 )
             )
             return
@@ -514,19 +451,11 @@ class WorkflowDefinitionValidator:
             diagnostics.append(
                 DefinitionDiagnostic(
                     severity="error",
-                    code=(
-                        f"{node.type.strip().lower()}"
-                        f".multiple_{port}_branches"
-                    ),
-                    message=(
-                        f"Node '{node.id}' has multiple "
-                        f"'{port}' branches."
-                    ),
+                    code=(f"{node.type.strip().lower()}.multiple_{port}_branches"),
+                    message=(f"Node '{node.id}' has multiple '{port}' branches."),
                     node_id=node.id,
                     node_type=node.type,
-                    suggestion=(
-                        f"Keep exactly one '{port}' outgoing edge."
-                    ),
+                    suggestion=(f"Keep exactly one '{port}' outgoing edge."),
                 )
             )
 
@@ -541,10 +470,7 @@ class WorkflowDefinitionValidator:
             return
 
         start_nodes = [
-            node
-            for node in definition.nodes
-            if node.type.strip().lower()
-            in {"start", "startnode"}
+            node for node in definition.nodes if node.type.strip().lower() in {"start", "startnode"}
         ]
 
         if len(start_nodes) != 1:
@@ -553,10 +479,7 @@ class WorkflowDefinitionValidator:
         adjacency: dict[str, list[str]] = defaultdict(list)
 
         for edge in definition.edges:
-            if (
-                edge.source in node_map
-                and edge.target in node_map
-            ):
+            if edge.source in node_map and edge.target in node_map:
                 adjacency[edge.source].append(edge.target)
 
         reachable: set[str] = set()
@@ -578,14 +501,12 @@ class WorkflowDefinitionValidator:
                         severity="warning",
                         code="workflow.unreachable_node",
                         message=(
-                            f"Node '{node.id}' is not reachable from "
-                            "the workflow start node."
+                            f"Node '{node.id}' is not reachable from the workflow start node."
                         ),
                         node_id=node.id,
                         node_type=node.type,
                         suggestion=(
-                            "Connect this node to the reachable "
-                            "workflow graph or remove it."
+                            "Connect this node to the reachable workflow graph or remove it."
                         ),
                     )
                 )

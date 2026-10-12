@@ -112,6 +112,7 @@ def test_node_stops_retrying_after_success() -> None:
     assert node.attempts == 3
     assert instance.context.retry_attempt == 0
 
+
 def test_node_runs_once_without_retry_policy() -> None:
     node = FailingNode()
     instance = create_instance()

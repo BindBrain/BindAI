@@ -42,12 +42,7 @@ def test_human_task_pauses_workflow_until_approved() -> None:
     )
 
     workflow = (
-        WorkflowBuilder("human-review")
-        .start_node()
-        .then(human)
-        .then(after)
-        .end_node()
-        .build()
+        WorkflowBuilder("human-review").start_node().then(human).then(after).end_node().build()
     )
 
     instance = workflow.create_instance()
@@ -93,12 +88,7 @@ def test_human_task_can_be_rejected_and_workflow_resumes() -> None:
     )
 
     workflow = (
-        WorkflowBuilder("human-review")
-        .start_node()
-        .then(human)
-        .then(after)
-        .end_node()
-        .build()
+        WorkflowBuilder("human-review").start_node().then(human).then(after).end_node().build()
     )
 
     instance = workflow.create_instance()
@@ -129,12 +119,7 @@ def test_human_task_can_be_rejected_and_workflow_resumes() -> None:
 
 
 def test_resume_requires_waiting_workflow() -> None:
-    workflow = (
-        WorkflowBuilder("human-review")
-        .start_node()
-        .end_node()
-        .build()
-    )
+    workflow = WorkflowBuilder("human-review").start_node().end_node().build()
 
     instance = workflow.create_instance()
 
@@ -149,9 +134,7 @@ def test_resume_requires_waiting_workflow() -> None:
     except RuntimeError as exc:
         assert str(exc) == "Workflow is not waiting."
     else:
-        raise AssertionError(
-            "Expected RuntimeError when workflow is not waiting."
-        )
+        raise AssertionError("Expected RuntimeError when workflow is not waiting.")
 
 
 def test_human_task_routes_to_approved_branch() -> None:

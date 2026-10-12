@@ -45,10 +45,7 @@ class WorkflowValidator:
                         WorkflowDiagnostic(
                             severity="error",
                             code="workflow.invalid_node_reference",
-                            message=(
-                                f"Node '{node.id}' references missing "
-                                f"node '{next_node}'."
-                            ),
+                            message=(f"Node '{node.id}' references missing node '{next_node}'."),
                             node_id=node.id,
                             node_type=type(node).__name__,
                             suggestion=(

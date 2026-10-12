@@ -8,6 +8,7 @@ from bindai_core.context import Variables
 
 if TYPE_CHECKING:
     from .instance import WorkflowInstance
+    from .task import HumanTask
 
 from .retry import RetryPolicy
 from .timeout import TimeoutPolicy
@@ -95,7 +96,7 @@ class WorkflowContext:
 
         self.waiting = False
 
-        self.task: object | None = None
+        self.task: HumanTask | None = None
 
         self.instance: WorkflowInstance | None = None
 

@@ -1,6 +1,6 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from bindai_core.context import ExecutionContext
 from bindai_tool import Tool, ToolResult
@@ -11,9 +11,7 @@ if TYPE_CHECKING:
     from ..context import WorkflowContext
 
 
-class ToolNode(
-    ExecutableNode,
-):
+class ToolNode(ExecutableNode):
     """
     Executes a BindAI Tool.
 
@@ -43,7 +41,6 @@ class ToolNode(
         self,
         context: WorkflowContext,
     ) -> WorkflowContext:
-
         if context.metadata.get("bindai_simulation") is True:
             result = ToolResult.ok(
                 {
@@ -51,47 +48,24 @@ class ToolNode(
                     "tool": self.tool.name,
                 }
             )
-
-            return self.after_execute(
-                context,
-                result,
-            )
+            return self.after_execute(context, result)
 
         execution_context = ExecutionContext()
-
         execution_context.variables = context.variables.copy()
 
-        execution_context.metadata.update(
-            getattr(
-                context,
-                "metadata",
-                {},
-            )
-        )
+        execution_context.metadata.update(getattr(context, "metadata", {}))
 
         if self.parameter_mapping:
             for parameter, variable in self.parameter_mapping.items():
                 value = context.get(variable)
 
-                if (
-                    hasattr(value, "value")
-                    and hasattr(value, "success")
-                ):
+                if hasattr(value, "value") and hasattr(value, "success"):
                     value = value.value
 
-                execution_context.variables.set(
-                    parameter,
-                    value,
-                )
+                execution_context.variables.set(parameter, value)
 
-        result = self.tool.execute(
-            execution_context,
-        )
-
-        return self.after_execute(
-            context,
-            result,
-        )
+        result = self.tool.execute(execution_context)
+        return self.after_execute(context, result)
 
     def get_executable(
         self,
@@ -101,19 +75,14 @@ class ToolNode(
 
     def after_execute(
         self,
-        context,
-        result,
-    ):
-        context.set(
-            self.output_variable,
-            result,
-        )
+        context: WorkflowContext,
+        result: ToolResult,
+    ) -> WorkflowContext:
+        context.set(self.output_variable, result)
         return context
-    def to_dict(
-        self,
-    ) -> dict:
-        data = super().to_dict()
 
+    def to_dict(self) -> dict[str, Any]:
+        data = super().to_dict()
         data.update(
             {
                 "tool": self.tool.name,
@@ -121,24 +90,18 @@ class ToolNode(
                 "parameter_mapping": self.parameter_mapping,
             }
         )
-
         return data
 
     def load_dict(
         self,
-        data: dict,
+        data: dict[str, Any],
     ) -> None:
-        super().load_dict(
-            data,
-        )
-
+        super().load_dict(data)
         self.tool = data["tool"]
-
         self.output_variable = data.get(
             "output_variable",
             "tool_output",
         )
-
         self.parameter_mapping = data.get(
             "parameter_mapping",
             {},

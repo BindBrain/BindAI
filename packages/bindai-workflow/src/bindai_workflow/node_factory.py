@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from collections.abc import Callable
 from typing import Any
@@ -69,11 +69,11 @@ class WorkflowNodeFactory:
         node_type = data["type"]
 
         if node_type not in self._types:
-            raise ValueError(
-                f"Unknown workflow node type: {node_type}"
-            )
+            raise ValueError(f"Unknown workflow node type: {node_type}")
 
         node_class = self._types[node_type]
+
+        node: WorkflowNode
 
         if node_class is AgentNode:
             node = self._create_agent(data)
@@ -136,9 +136,7 @@ class WorkflowNodeFactory:
         agent_name = data["agent"]
 
         if not AgentRegistry.contains(agent_name):
-            raise ValueError(
-                f"Agent '{agent_name}' is not registered."
-            )
+            raise ValueError(f"Agent '{agent_name}' is not registered.")
 
         return AgentNode(
             node_id=data["id"],
@@ -164,16 +162,12 @@ class WorkflowNodeFactory:
     ) -> ToolNode:
 
         if self.tool_registry is None:
-            raise ValueError(
-                "A ToolRegistry is required to deserialize ToolNode."
-            )
+            raise ValueError("A ToolRegistry is required to deserialize ToolNode.")
 
         tool_name = data["tool"]
 
         if not self.tool_registry.contains(tool_name):
-            raise ValueError(
-                f"Tool '{tool_name}' is not registered."
-            )
+            raise ValueError(f"Tool '{tool_name}' is not registered.")
 
         return ToolNode(
             node_id=data["id"],
@@ -196,8 +190,7 @@ class WorkflowNodeFactory:
 
         if self.callable_resolver is None:
             raise ValueError(
-                "ConditionNode requires a callable_resolver "
-                "when deserializing a workflow."
+                "ConditionNode requires a callable_resolver when deserializing a workflow."
             )
 
         predicate = self.callable_resolver(

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from collections.abc import Callable
 from typing import TYPE_CHECKING
@@ -28,30 +28,22 @@ class LoopNode(WorkflowNode):
         expression: str | None = None,
         name: str | None = None,
     ):
-
         super().__init__(
             node_id=node_id,
             name=name,
         )
 
         if predicate is None and expression is None:
-            raise ValueError(
-                "LoopNode requires either a predicate or expression."
-            )
+            raise ValueError("LoopNode requires either a predicate or expression.")
 
         if predicate is not None and expression is not None:
-            raise ValueError(
-                "LoopNode cannot use both a predicate and expression."
-            )
+            raise ValueError("LoopNode cannot use both a predicate and expression.")
 
         self.predicate = predicate
         self.expression = expression
         self.engine = WorkflowExpression()
 
-    def to_dict(
-        self,
-    ) -> dict[str, object]:
-
+    def to_dict(self) -> dict[str, object]:
         data = super().to_dict()
 
         if self.expression is not None:
@@ -63,18 +55,20 @@ class LoopNode(WorkflowNode):
         self,
         context: WorkflowContext,
     ) -> WorkflowContext:
-
         if len(self.next_nodes) < 2:
-            raise RuntimeError(
-                "LoopNode requires two next nodes (body and exit)."
-            )
+            raise RuntimeError("LoopNode requires two next nodes (body and exit).")
 
         if self.expression is not None:
             result = self.engine.evaluate(
                 self.expression,
-                context.variables,
+                context.variables.as_dict(),
             )
         else:
+            if self.predicate is None:
+                raise RuntimeError(
+                    "LoopNode requires a predicate when no expression is configured."
+                )
+
             result = self.predicate(context)
 
         if result:

@@ -16,8 +16,8 @@ from ..nodes.parallel import ParallelNode
 from ..nodes.start import StartNode
 from ..nodes.subworkflow import SubWorkflowNode
 from ..nodes.tool import ToolNode
-from ..workflow import Workflow
 from ..store import WorkflowStore
+from ..workflow import Workflow
 from .models import WorkflowDefinition, WorkflowNodeDefinition
 
 
@@ -26,8 +26,7 @@ class WorkflowDefinitionRuntime:
         self,
         *,
         tool_registry: Any | None = None,
-        callable_resolver: Callable[[WorkflowNodeDefinition], Callable]
-        | None = None,
+        callable_resolver: Callable[[WorkflowNodeDefinition], Callable] | None = None,
         store: WorkflowStore | None = None,
     ) -> None:
         self.tool_registry = tool_registry
@@ -64,14 +63,10 @@ class WorkflowDefinitionRuntime:
             agent_name = config.get("agent")
 
             if not agent_name:
-                raise ValueError(
-                    f"Agent node '{definition.id}' is missing 'agent'."
-                )
+                raise ValueError(f"Agent node '{definition.id}' is missing 'agent'.")
 
             if not AgentRegistry.contains(agent_name):
-                raise ValueError(
-                    f"Agent '{agent_name}' is not registered."
-                )
+                raise ValueError(f"Agent '{agent_name}' is not registered.")
 
             return AgentNode(
                 node_id=definition.id,
@@ -90,19 +85,13 @@ class WorkflowDefinitionRuntime:
             tool_name = config.get("tool")
 
             if not tool_name:
-                raise ValueError(
-                    f"Tool node '{definition.id}' is missing 'tool'."
-                )
+                raise ValueError(f"Tool node '{definition.id}' is missing 'tool'.")
 
             if self.tool_registry is None:
-                raise ValueError(
-                    "A tool registry is required to build tool nodes."
-                )
+                raise ValueError("A tool registry is required to build tool nodes.")
 
             if not self.tool_registry.contains(tool_name):
-                raise ValueError(
-                    f"Tool '{tool_name}' is not registered."
-                )
+                raise ValueError(f"Tool '{tool_name}' is not registered.")
 
             tool = self.tool_registry.get(tool_name)
 
@@ -123,10 +112,7 @@ class WorkflowDefinitionRuntime:
             expression = config.get("expression")
 
             if not expression:
-                raise ValueError(
-                    f"Decision node '{definition.id}' is missing "
-                    "'expression'."
-                )
+                raise ValueError(f"Decision node '{definition.id}' is missing 'expression'.")
 
             return DecisionNode(
                 node_id=definition.id,
@@ -144,8 +130,7 @@ class WorkflowDefinitionRuntime:
 
             if self.callable_resolver is None:
                 raise ValueError(
-                    "Condition node requires either an expression "
-                    "or a callable resolver."
+                    "Condition node requires either an expression or a callable resolver."
                 )
 
             predicate = self.callable_resolver(definition)
@@ -162,9 +147,7 @@ class WorkflowDefinitionRuntime:
             expected = config.get("expected")
 
             if expected is None:
-                raise ValueError(
-                    f"Join node '{definition.id}' is missing 'expected'."
-                )
+                raise ValueError(f"Join node '{definition.id}' is missing 'expected'.")
 
             return JoinNode(
                 node_id=definition.id,
@@ -183,10 +166,7 @@ class WorkflowDefinitionRuntime:
                 )
 
             if self.callable_resolver is None:
-                raise ValueError(
-                    "Loop node requires either an expression "
-                    "or a callable resolver."
-                )
+                raise ValueError("Loop node requires either an expression or a callable resolver.")
 
             predicate = self.callable_resolver(definition)
 
@@ -215,10 +195,7 @@ class WorkflowDefinitionRuntime:
             workflow_id = config.get("workflow_id")
 
             if not workflow_id:
-                raise ValueError(
-                    f"Subworkflow node '{definition.id}' is missing "
-                    "'workflow_id'."
-                )
+                raise ValueError(f"Subworkflow node '{definition.id}' is missing 'workflow_id'.")
 
             return SubWorkflowNode(
                 node_id=definition.id,
@@ -226,15 +203,15 @@ class WorkflowDefinitionRuntime:
                 name=definition.name,
             )
 
-        raise ValueError(
-            f"Unsupported workflow node type '{definition.type}'."
-        )
+        raise ValueError(f"Unsupported workflow node type '{definition.type}'.")
 
     def _connect(
         self,
         workflow: Workflow,
         definition: WorkflowDefinition,
     ) -> None:
+        loop_branches: dict[str, dict[str, str]] = {}
+
         for node in workflow.nodes.values():
             node.next_nodes.clear()
 
@@ -268,6 +245,7 @@ class WorkflowDefinitionRuntime:
 
             if isinstance(source, LoopNode):
                 self._connect_loop(
+                    loop_branches,
                     source,
                     target.id,
                     edge.port,
@@ -277,23 +255,24 @@ class WorkflowDefinitionRuntime:
             source.next_nodes.append(target.id)
 
         start_nodes = [
-            node
-            for node in definition.nodes
-            if node.type.strip().lower()
-            in {"start", "startnode"}
+            node for node in definition.nodes if node.type.strip().lower() in {"start", "startnode"}
         ]
 
         if not start_nodes:
-            raise ValueError(
-                "Workflow definition does not contain a start node."
-            )
+            raise ValueError("Workflow definition does not contain a start node.")
 
         if len(start_nodes) > 1:
-            raise ValueError(
-                "Workflow definition contains multiple start nodes."
-            )
+            raise ValueError("Workflow definition contains multiple start nodes.")
 
         workflow.start_node = start_nodes[0].id
+
+        for node_id, branches in loop_branches.items():
+            if "body" not in branches or "exit" not in branches:
+                missing = "body" if "body" not in branches else "exit"
+                raise ValueError(f"Loop node '{node_id}' is missing its {missing} branch.")
+
+            loop_node = workflow.get(node_id)
+            loop_node.next_nodes = [branches["body"], branches["exit"]]
 
     @staticmethod
     def _connect_branch(
@@ -302,24 +281,17 @@ class WorkflowDefinitionRuntime:
         port: str | None,
     ) -> None:
         if port not in {"true", "false"}:
-            raise ValueError(
-                f"Node '{source.id}' requires edge port "
-                "'true' or 'false'."
-            )
+            raise ValueError(f"Node '{source.id}' requires edge port 'true' or 'false'.")
 
         if port == "true":
             if source.true_node is not None:
-                raise ValueError(
-                    f"Node '{source.id}' has multiple true branches."
-                )
+                raise ValueError(f"Node '{source.id}' has multiple true branches.")
 
             source.true_node = target_id
             return
 
         if source.false_node is not None:
-            raise ValueError(
-                f"Node '{source.id}' has multiple false branches."
-            )
+            raise ValueError(f"Node '{source.id}' has multiple false branches.")
 
         source.false_node = target_id
 
@@ -336,20 +308,14 @@ class WorkflowDefinitionRuntime:
 
         if port == "approved":
             if source.approved_node is not None:
-                raise ValueError(
-                    f"Human task node '{source.id}' has multiple "
-                    "approved branches."
-                )
+                raise ValueError(f"Human task node '{source.id}' has multiple approved branches.")
 
             source.approved_node = target_id
             return
 
         if port == "rejected":
             if source.rejected_node is not None:
-                raise ValueError(
-                    f"Human task node '{source.id}' has multiple "
-                    "rejected branches."
-                )
+                raise ValueError(f"Human task node '{source.id}' has multiple rejected branches.")
 
             source.rejected_node = target_id
             return
@@ -361,28 +327,18 @@ class WorkflowDefinitionRuntime:
 
     @staticmethod
     def _connect_loop(
+        loop_branches: dict[str, dict[str, str]],
         source: LoopNode,
         target_id: str,
         port: str | None,
     ) -> None:
         if port not in {"body", "exit"}:
-            raise ValueError(
-                f"Loop node '{source.id}' requires edge port "
-                "'body' or 'exit'."
-            )
+            raise ValueError(f"Loop node '{source.id}' requires edge port 'body' or 'exit'.")
 
-        while len(source.next_nodes) < 2:
-            source.next_nodes.append(None)
+        branches = loop_branches.setdefault(source.id, {})
+        existing = branches.get(port)
 
-        index = 0 if port == "body" else 1
+        if existing is not None:
+            raise ValueError(f"Loop node '{source.id}' has multiple {port} branches.")
 
-        existing = source.next_nodes[index]
-
-        if existing is not None and existing != target_id:
-            branch = "body" if index == 0 else "exit"
-            raise ValueError(
-                f"Loop node '{source.id}' has multiple "
-                f"{branch} branches."
-            )
-
-        source.next_nodes[index] = target_id
+        branches[port] = target_id

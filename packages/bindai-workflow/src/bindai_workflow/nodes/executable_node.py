@@ -20,8 +20,7 @@ class ExecutableNode(
     def get_executable(
         self,
         context: WorkflowContext,
-    ) -> Executable:
-        ...
+    ) -> Executable: ...
 
     def before_execute(
         self,
@@ -49,9 +48,7 @@ class ExecutableNode(
         )
 
         if executable is None:
-            raise RuntimeError(
-                f"{self.__class__.__name__} returned no executable."
-            )
+            raise RuntimeError(f"{self.__class__.__name__} returned no executable.")
 
         execution_context = ExecutionContext()
 
