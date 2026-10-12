@@ -16,10 +16,11 @@ from .routes.projects import router as projects_router
 from .routes.runs import router as runs_router
 from .routes.studio import (
     configure_studio_workspace,
+)
+from .routes.studio import (
     router as studio_router,
 )
 from .routes.workflows import router as workflows_router
-
 
 load_dotenv(
     Path(__file__).resolve().parents[4] / ".env",
@@ -60,17 +61,12 @@ def _configure_studio() -> None:
     workspace_value = os.getenv("BINDAI_STUDIO_WORKSPACE")
 
     if not workspace_value:
-        raise RuntimeError(
-            "BINDAI_STUDIO_WORKSPACE is not configured."
-        )
+        raise RuntimeError("BINDAI_STUDIO_WORKSPACE is not configured.")
 
     workspace_root = Path(workspace_value).expanduser().resolve()
 
     if not workspace_root.is_dir():
-        raise RuntimeError(
-            "BINDAI_STUDIO_WORKSPACE does not exist: "
-            f"{workspace_root}"
-        )
+        raise RuntimeError(f"BINDAI_STUDIO_WORKSPACE does not exist: {workspace_root}")
 
     configure_studio_workspace(workspace_root)
 

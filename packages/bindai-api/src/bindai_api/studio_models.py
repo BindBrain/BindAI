@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from typing import Any
 
@@ -39,9 +39,7 @@ class StudioWorkflowCreateRequest(BaseModel):
 class StudioWorkflowCreateResponse(BaseModel):
     workflow: dict[str, Any]
     path: str
-    diagnostics: list["StudioDiagnosticResponse"] = Field(
-        default_factory=list
-    )
+    diagnostics: list[StudioDiagnosticResponse] = Field(default_factory=list)
 
 
 class StudioDiagnosticResponse(BaseModel):
@@ -59,9 +57,7 @@ class StudioWorkflowNodeRequest(BaseModel):
     id: str
     type: str
     name: str | None = None
-    configuration: dict[str, Any] = Field(
-        default_factory=dict
-    )
+    configuration: dict[str, Any] = Field(default_factory=dict)
 
     def to_definition_dict(self) -> dict[str, Any]:
         data = {
@@ -110,25 +106,15 @@ class StudioWorkflowEdgeRequest(BaseModel):
 class StudioWorkflowPayload(BaseModel):
     id: str
     name: str
-    nodes: list[StudioWorkflowNodeRequest] = Field(
-        default_factory=list
-    )
-    edges: list[StudioWorkflowEdgeRequest] = Field(
-        default_factory=list
-    )
+    nodes: list[StudioWorkflowNodeRequest] = Field(default_factory=list)
+    edges: list[StudioWorkflowEdgeRequest] = Field(default_factory=list)
 
     def to_definition_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
-            "nodes": [
-                node.to_definition_dict()
-                for node in self.nodes
-            ],
-            "edges": [
-                edge.to_definition_dict()
-                for edge in self.edges
-            ],
+            "nodes": [node.to_definition_dict() for node in self.nodes],
+            "edges": [edge.to_definition_dict() for edge in self.edges],
         }
 
 
@@ -149,9 +135,7 @@ class StudioWorkflowSaveResponse(BaseModel):
 
 
 class StudioWorkflowRunRequest(BaseModel):
-    variables: dict[str, Any] = Field(
-        default_factory=dict
-    )
+    variables: dict[str, Any] = Field(default_factory=dict)
 
 
 class StudioHumanTaskResponse(BaseModel):
@@ -180,6 +164,7 @@ class StudioAgentResponse(BaseModel):
     id: str
     name: str
     path: str
+
 
 class StudioKnowledgeResponse(BaseModel):
     id: str
@@ -237,7 +222,6 @@ class StudioFormDefinitionResponse(BaseModel):
 
 class StudioFormDefinitionRequest(BaseModel):
     form: dict[str, Any]
-
 
 
 class StudioConnectionResponse(BaseModel):

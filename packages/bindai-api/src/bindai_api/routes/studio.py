@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
-from bindai_connections import ConnectionRegistry
 from bindai_core.context import Variables
-from bindai_tool import ToolResult
-from bindai_providers import ProviderRegistry, bootstrap
 from bindai_project import (
     FormDefinition,
     ProjectStudioService,
     ProjectWorkspace,
 )
+from bindai_providers import ProviderRegistry, bootstrap
+from bindai_tool import ToolResult
 from bindai_workflow import FileWorkflowStore, WorkflowDefinition
 from fastapi import (
     APIRouter,
@@ -40,11 +39,11 @@ from ..studio_models import (
     StudioFormDefinitionResponse,
     StudioFormResponse,
     StudioHumanTaskResponse,
+    StudioKnowledgeResponse,
     StudioProjectCreateRequest,
     StudioProjectCreateResponse,
     StudioProjectResponse,
     StudioToolResponse,
-    StudioKnowledgeResponse,
     StudioWorkflowCreateRequest,
     StudioWorkflowCreateResponse,
     StudioWorkflowDefinitionRequest,
@@ -54,7 +53,6 @@ from ..studio_models import (
     StudioWorkflowRunResponse,
     StudioWorkflowSaveResponse,
 )
-
 
 router = APIRouter(
     prefix="/api/v1/studio",
@@ -83,9 +81,7 @@ def configure_studio_workspace(
     root = Path(workspace_root).expanduser().resolve()
 
     if not root.is_dir():
-        raise ValueError(
-            f"Studio workspace directory does not exist: {root}"
-        )
+        raise ValueError(f"Studio workspace directory does not exist: {root}")
 
     _workspace_root = root
 
@@ -114,9 +110,7 @@ def configure_studio_project(
     root = Path(project_root).expanduser().resolve()
 
     if not root.is_dir():
-        raise ValueError(
-            f"Studio project directory does not exist: {root}"
-        )
+        raise ValueError(f"Studio project directory does not exist: {root}")
 
     _project_roots[project_id] = root
     _workspace_root = root.parent
@@ -203,28 +197,16 @@ def studio_json_value(value: Any) -> Any:
         return studio_json_value(value.value)
 
     if isinstance(value, Variables):
-        return {
-            key: studio_json_value(item)
-            for key, item in value.items()
-        }
+        return {key: studio_json_value(item) for key, item in value.items()}
 
     if isinstance(value, dict):
-        return {
-            str(key): studio_json_value(item)
-            for key, item in value.items()
-        }
+        return {str(key): studio_json_value(item) for key, item in value.items()}
 
     if isinstance(value, (list, tuple)):
-        return [
-            studio_json_value(item)
-            for item in value
-        ]
+        return [studio_json_value(item) for item in value]
 
     if isinstance(value, set):
-        return [
-            studio_json_value(item)
-            for item in value
-        ]
+        return [studio_json_value(item) for item in value]
 
     return value
 
@@ -319,10 +301,7 @@ def find_workflow_instance(
     candidates = []
 
     for instance_id, instance in instances.items():
-        if (
-            instance_ids is not None
-            and instance_id not in instance_ids
-        ):
+        if instance_ids is not None and instance_id not in instance_ids:
             continue
 
         candidates.append(instance)
@@ -331,6 +310,7 @@ def find_workflow_instance(
         return None
 
     return candidates[-1]
+
 
 def studio_run_response(
     service: ProjectStudioService,
@@ -361,11 +341,7 @@ def studio_run_response(
         workflow=workflow_id,
         instance_id=str(instance.id),
         waiting=waiting,
-        human_task=(
-            studio_human_task_response(task)
-            if task is not None
-            else None
-        ),
+        human_task=(studio_human_task_response(task) if task is not None else None),
         result=studio_result_response(result),
     )
 
@@ -380,9 +356,7 @@ def slugify_workflow_name(
     ).strip("-")
 
     if not value:
-        raise ValueError(
-            "Workflow name must contain at least one letter or number."
-        )
+        raise ValueError("Workflow name must contain at least one letter or number.")
 
     return value
 
@@ -414,9 +388,7 @@ def slugify_agent_name(
     ).strip("-")
 
     if not value:
-        raise ValueError(
-            "Agent name must contain at least one letter or number."
-        )
+        raise ValueError("Agent name must contain at least one letter or number.")
 
     return value
 
@@ -448,9 +420,7 @@ def slugify_form_name(
     ).strip("-")
 
     if not value:
-        raise ValueError(
-            "Form name must contain at least one letter or number."
-        )
+        raise ValueError("Form name must contain at least one letter or number.")
 
     return value
 
@@ -485,8 +455,7 @@ def validate_agent_id(
         value,
     ):
         raise ValueError(
-            "Agent ID may contain only letters, numbers, "
-            "dots, underscores, and hyphens."
+            "Agent ID may contain only letters, numbers, dots, underscores, and hyphens."
         )
 
     return value
@@ -521,6 +490,7 @@ def list_studio_projects():
 def list_studio_providers() -> list[str]:
     bootstrap()
     return ProviderRegistry.list()
+
 
 @router.get("/capabilities")
 def list_studio_capabilities() -> list[dict]:
@@ -598,6 +568,7 @@ def list_studio_agents(
         for agent in service.list_agents()
     ]
 
+
 @router.get(
     "/projects/{project_id}/knowledge",
     response_model=list[StudioKnowledgeResponse],
@@ -616,6 +587,7 @@ def list_studio_knowledge(
         )
         for item in service.list_knowledge()
     ]
+
 
 @router.post(
     "/projects/{project_id}/knowledge",
@@ -642,14 +614,11 @@ def upload_studio_knowledge(
         raise HTTPException(
             status_code=400,
             detail=(
-                "Unsupported knowledge file type. "
-                "Supported types: .txt, .md, .pdf, .html, .htm."
+                "Unsupported knowledge file type. Supported types: .txt, .md, .pdf, .html, .htm."
             ),
         )
 
-    knowledge_directory = (
-        service.project.knowledge_directory()
-    )
+    knowledge_directory = service.project.knowledge_directory()
     knowledge_directory.mkdir(
         parents=True,
         exist_ok=True,
@@ -667,6 +636,7 @@ def upload_studio_knowledge(
         path=str(destination),
         type=suffix.lstrip("."),
     )
+
 
 @router.get(
     "/projects/{project_id}/tools",
@@ -706,10 +676,7 @@ def create_studio_agent(
             detail="Agent name is required.",
         )
 
-    existing_ids = {
-        agent.id
-        for agent in service.list_agents()
-    }
+    existing_ids = {agent.id for agent in service.list_agents()}
 
     try:
         if payload.id:
@@ -791,10 +758,7 @@ def save_studio_agent(
     if str(data.get("id", "")) != agent_id:
         raise HTTPException(
             status_code=400,
-            detail=(
-                f"Agent body id '{data.get('id')}' "
-                f"does not match URL agent id '{agent_id}'."
-            ),
+            detail=(f"Agent body id '{data.get('id')}' does not match URL agent id '{agent_id}'."),
         )
 
     try:
@@ -823,6 +787,7 @@ def save_studio_agent(
 def list_studio_connection_providers() -> list[str]:
     return ["webhook"]
 
+
 @router.get(
     "/projects/{project_id}/connections",
     response_model=list[StudioConnectionResponse],
@@ -836,7 +801,7 @@ def list_studio_connections(
         StudioConnectionResponse(
             name=connection.name,
             provider=connection.provider,
-        configured=service.credentials.exists(connection.name),
+            configured=service.credentials.exists(connection.name),
         )
         for connection in service.list_connections()
     ]
@@ -893,6 +858,7 @@ def set_studio_connection_credential(
         "name": connection_name,
     }
 
+
 @router.delete(
     "/projects/{project_id}/connections/{connection_name}",
 )
@@ -907,6 +873,7 @@ def delete_studio_connection(
         "status": "deleted",
         "name": connection_name,
     }
+
 
 @router.delete(
     "/projects/{project_id}/agents/{agent_id}",
@@ -975,10 +942,7 @@ def create_studio_form(
 
     existing_forms = service.list_forms()
 
-    existing_ids = {
-        form.id
-        for form in existing_forms
-    }
+    existing_ids = {form.id for form in existing_forms}
 
     if payload.id:
         form_id = payload.id.strip()
@@ -990,8 +954,7 @@ def create_studio_form(
             raise HTTPException(
                 status_code=400,
                 detail=(
-                    "Form id may contain only letters, numbers, "
-                    "dots, underscores, and hyphens."
+                    "Form id may contain only letters, numbers, dots, underscores, and hyphens."
                 ),
             )
 
@@ -1070,10 +1033,7 @@ def save_studio_form(
     if str(data.get("id", "")) != form_id:
         raise HTTPException(
             status_code=400,
-            detail=(
-                f"Form body id '{data.get('id')}' "
-                f"does not match URL form id '{form_id}'."
-            ),
+            detail=(f"Form body id '{data.get('id')}' does not match URL form id '{form_id}'."),
         )
 
     form_path: Path | None = None
@@ -1184,10 +1144,7 @@ def create_studio_workflow(
 
     existing_workflows = service.list_workflows()
 
-    existing_ids = {
-        workflow.id
-        for workflow in existing_workflows
-    }
+    existing_ids = {workflow.id for workflow in existing_workflows}
 
     try:
         workflow_id = payload.id or make_unique_workflow_id(
@@ -1213,8 +1170,7 @@ def create_studio_workflow(
         raise HTTPException(
             status_code=400,
             detail=(
-                "Workflow id may contain only letters, numbers, "
-                "dots, underscores, and hyphens."
+                "Workflow id may contain only letters, numbers, dots, underscores, and hyphens."
             ),
         )
 
@@ -1271,10 +1227,7 @@ def save_studio_workflow(
             break
 
     if workflow_path is None:
-        workflow_path = (
-            service.project.workflow_directory()
-            / f"{workflow_id}.yaml"
-        )
+        workflow_path = service.project.workflow_directory() / f"{workflow_id}.yaml"
 
     if payload.workflow.id != workflow_id:
         raise HTTPException(
@@ -1305,10 +1258,7 @@ def save_studio_workflow(
 
     return StudioWorkflowSaveResponse(
         workflow=definition.to_dict(),
-        diagnostics=[
-            diagnostic_response(diagnostic)
-            for diagnostic in diagnostics
-        ],
+        diagnostics=[diagnostic_response(diagnostic) for diagnostic in diagnostics],
     )
 
 
@@ -1350,10 +1300,7 @@ def validate_studio_workflow(
             definition = service.load_workflow(workflow.path)
             diagnostics = service.validate_workflow(definition)
 
-            return [
-                diagnostic_response(diagnostic)
-                for diagnostic in diagnostics
-            ]
+            return [diagnostic_response(diagnostic) for diagnostic in diagnostics]
 
     raise HTTPException(
         status_code=404,
@@ -1389,11 +1336,7 @@ def run_studio_workflow(
 
     diagnostics = service.validate_workflow(definition)
 
-    errors = [
-        diagnostic
-        for diagnostic in diagnostics
-        if diagnostic.severity.lower() == "error"
-    ]
+    errors = [diagnostic for diagnostic in diagnostics if diagnostic.severity.lower() == "error"]
 
     if errors:
         raise HTTPException(
@@ -1401,10 +1344,7 @@ def run_studio_workflow(
             detail={
                 "message": "Workflow validation failed.",
                 "diagnostics": [
-                    diagnostic_response(
-                        diagnostic
-                    ).model_dump()
-                    for diagnostic in errors
+                    diagnostic_response(diagnostic).model_dump() for diagnostic in errors
                 ],
             },
         )
@@ -1450,9 +1390,7 @@ def run_studio_workflow(
             ).keys()
         )
 
-        new_instance_ids = (
-            current_instance_ids - existing_instance_ids
-        )
+        new_instance_ids = current_instance_ids - existing_instance_ids
 
     return studio_run_response(
         service,
@@ -1479,9 +1417,7 @@ def resolve_studio_human_task(
     if action not in {"approved", "rejected"}:
         raise HTTPException(
             status_code=400,
-            detail=(
-                "Human task action must be 'approved' or 'rejected'."
-            ),
+            detail=("Human task action must be 'approved' or 'rejected'."),
         )
 
     try:
