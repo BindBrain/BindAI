@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
-    "bindai-config>=0.2.0",
+    "bindai-config>=0.2.1",
     "bindai-workflow>=0.2.1",
     "bindai-agent>=0.2.1",
 ]
