@@ -121,7 +121,7 @@ def run(
         [
             sys.executable,
             str(path),
-            *args,
+            *(args or []),
         ],
         check=True,
         env=environment,

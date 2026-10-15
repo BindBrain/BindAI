@@ -151,3 +151,33 @@ def test_workflow_name_resolves_to_workflow_file(
 
     pythonpath = calls[0][1]["env"]["PYTHONPATH"]
     assert pythonpath.split(os.pathsep)[0] == str(tmp_path)
+
+def test_workflow_run_without_extra_arguments(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+
+    workflow_file = tmp_path / "workflow.py"
+    workflow_file.write_text("", encoding="utf-8")
+
+    calls = []
+
+    def fake_run(*args, **kwargs):
+        calls.append((args, kwargs))
+
+    monkeypatch.setattr(
+        "bindai_cli.commands.workflow.subprocess.run",
+        fake_run,
+    )
+
+    result = runner.invoke(
+        app,
+        ["workflow", "run", str(workflow_file)],
+    )
+
+    assert result.exit_code == 0
+    assert calls[0][0] == (
+        [sys.executable, str(workflow_file)],
+    )
+    assert calls[0][1]["check"] is True
