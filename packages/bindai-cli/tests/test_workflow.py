@@ -34,6 +34,23 @@ def test_workflow_run_requires_workflow_path(
     assert calls == []
 
 
+def test_workflow_run_missing_file_exits_with_error(
+    tmp_path: Path,
+    monkeypatch,
+):
+    monkeypatch.chdir(tmp_path)
+    missing_file = tmp_path / "missing_workflow.py"
+
+    result = runner.invoke(
+        app,
+        ["workflow", "run", str(missing_file)],
+    )
+
+    assert result.exit_code == 1
+    assert missing_file.name in result.output
+    assert "not found." in result.output
+
+
 def test_workflow_validate_uses_visible_check_mark(
     tmp_path: Path,
 ):
