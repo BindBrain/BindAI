@@ -5,7 +5,6 @@ from pathlib import Path
 
 from bindai_automation import AutomationDefinition, AutomationWorker
 from bindai_project import Project
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -21,11 +20,6 @@ from .routes.studio import (
     router as studio_router,
 )
 from .routes.workflows import router as workflows_router
-
-load_dotenv(
-    Path(__file__).resolve().parents[4] / ".env",
-)
-
 
 app = FastAPI(
     title="BindAI API",

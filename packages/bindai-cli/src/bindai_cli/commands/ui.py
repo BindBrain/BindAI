@@ -53,7 +53,7 @@ def ui(
     """
     Start the local BindAI Studio server.
     """
-    load_dotenv(override=True)
+    load_dotenv(Path.cwd() / ".env", override=True)
     root = Path.cwd().resolve()
 
     if not (root / "bindai.toml").is_file():
